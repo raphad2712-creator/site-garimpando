@@ -76,12 +76,17 @@ a {
   border: 0;
   background: none;
 }
-.nav-dropdown { position: relative; display: flex; align-items: center; }
-.submenu { position: absolute; top: calc(100% - 1px); left: 50%; width: 285px; padding: 10px; background: #fff; border: 1px solid var(--line); box-shadow: 0 18px 45px #1d2f2326; opacity: 0; visibility: hidden; transform: translate(-50%, 10px); transition: .22s; display: grid; z-index: 60; }
-.submenu a { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 11px 13px; font-size: 11px; border-bottom: 1px solid #f0f0ed; }
-.submenu a:last-child { border-bottom: 0; }
-.submenu a:hover { background: #f6f3ed; }
-.submenu a span { color: #999; font-weight: 500; }
+.nav-dropdown { position: static; display: flex; align-items: center; }
+.submenu { position: absolute; top: 100%; left: 50%; width: min(1168px, calc(100vw - 40px)); min-height: 410px; padding: 28px; background: #fff; border: 1px solid var(--line); box-shadow: 0 22px 55px #1d2f2326; opacity: 0; visibility: hidden; transform: translate(-50%, 12px); transition: opacity .22s ease, transform .22s ease, visibility .22s; display: grid; grid-template-columns: 190px 1fr; gap: 28px; z-index: 60; }
+.mega-categories { border-right: 1px solid #eee; padding-right: 20px; }
+.nav .mega-categories button { display: block; width: 100%; padding: 16px 0; border: 0; border-bottom: 1px dotted #d8d8d8; background: transparent; color: #303030; text-align: left; text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: .1em; cursor: pointer; }
+.nav .mega-categories button:hover, .nav .mega-categories button.active { color: var(--orange); padding-left: 7px; }
+.mega-posts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.nav .mega-card { display: block; padding: 0; text-align: center; }
+.mega-card img { width: 100%; height: 260px; object-fit: cover; transition: transform .4s ease, filter .4s ease; }
+.mega-card:hover img { transform: translateY(-4px); filter: saturate(1.08); }
+.mega-card strong { display: block; padding: 16px 8px 0; color: #2d2d2d; font: 700 21px/1.05 Arial, sans-serif; text-transform: none; letter-spacing: 0; }
+.mega-empty { grid-column: 1/-1; padding: 80px 20px !important; text-align: center; color: var(--orange); }
 .nav-dropdown:hover .submenu, .nav-dropdown:focus-within .submenu, .nav-dropdown.open .submenu { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
 .hero {
   width: min(1155px, calc(100% - 40px));
@@ -485,10 +490,16 @@ footer p {
   }
   .nav-dropdown { display: grid; grid-template-columns: 1fr auto; }
   .nav .nav-dropdown > button { display: block; width: 44px; padding: 8px; font-size: 22px; color: var(--green); cursor: pointer; }
-  .submenu { position: static; grid-column: 1/-1; width: 100%; max-height: 0; padding: 0 12px; border: 0; box-shadow: none; opacity: 1; visibility: hidden; overflow: hidden; transform: none; transition: max-height .3s ease, padding .3s ease; }
+  .submenu { position: static; grid-column: 1/-1; width: 100%; min-height: 0; max-height: 0; padding: 0 4px; border: 0; box-shadow: none; opacity: 1; visibility: hidden; overflow: hidden; transform: none; transition: max-height .3s ease, padding .3s ease; grid-template-columns: 1fr; gap: 14px; }
   .nav-dropdown:hover .submenu, .nav-dropdown:focus-within .submenu { visibility: hidden; }
-  .nav-dropdown.open .submenu { max-height: 600px; padding-block: 6px 12px; visibility: visible; transform: none; }
-  .submenu a { padding: 11px 8px; }
+  .nav-dropdown.open .submenu { max-height: 650px; padding-block: 8px 18px; visibility: visible; transform: none; }
+  .mega-categories { display: flex; gap: 8px; overflow-x: auto; border: 0; padding: 0 0 8px; }
+  .nav .mega-categories button { display: block; width: auto; min-width: max-content; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; }
+  .nav .mega-categories button:hover, .nav .mega-categories button.active { padding-left: 12px; border-color: var(--orange); }
+  .mega-posts { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+  .nav .mega-card { min-width: min(75vw, 250px); scroll-snap-align: start; }
+  .mega-card img { height: 145px; }
+  .mega-card strong { padding: 10px 5px 0; font-size: 16px; }
   .social {
     right: 24px;
     top: 28px;

@@ -104,13 +104,35 @@ const categoryMenu = document.querySelector("#categoryMenu");
 const categoryCount = (category) =>
   posts.filter((post) => belongsToCategory(post, category)).length;
 function renderCategoryMenu() {
-  categoryMenu.innerHTML = categories
-    .filter((c) => categoryCount(c) > 0 && c.slug !== "destaques")
-    .map(
-      (c) =>
-        `<a href="#categoria/${c.slug}"><b>${esc(c.name)}</b><span>${categoryCount(c)}</span></a>`,
-    )
-    .join("");
+  const preferred = ["estilo-de-vida", "gastronomia", "turismo"],
+    available = categories.filter(
+      (category) => categoryCount(category) > 0 && category.slug !== "destaques",
+    ),
+    menuCategories = preferred
+      .map((slug) => available.find((category) => category.slug === slug))
+      .filter(Boolean),
+    selected = menuCategories[0] || available[0];
+  categoryMenu.innerHTML =
+    `<div class="mega-categories">${menuCategories
+      .map(
+        (category, index) =>
+          `<button type="button" data-mega-category="${category.slug}" class="${index === 0 ? "active" : ""}">${esc(category.name)}</button>`,
+      )
+      .join("")}</div><div class="mega-posts" id="megaPosts"></div>`;
+  if (selected) renderMegaPosts(selected);
+}
+function renderMegaPosts(category) {
+  const selectedPosts = posts
+    .filter((post) => belongsToCategory(post, category))
+    .slice(0, 3);
+  document.querySelector("#megaPosts").innerHTML = selectedPosts.length
+    ? selectedPosts
+        .map(
+          (post) =>
+            `<a class="mega-card" href="#post/${post.slug}"><img src="${esc(post.image || "images/hero.png")}" alt="${esc(post.title)}"><strong>${esc(post.title)}</strong></a>`,
+        )
+        .join("")
+    : `<a class="mega-empty" href="#categoria/${category.slug}">Ver matérias de ${esc(category.name)}</a>`;
 }
 renderCategoryMenu();
 const categoryToggle = document.querySelector("#categoryToggle");
@@ -120,10 +142,27 @@ categoryToggle.addEventListener("click", (event) => {
   const open = dropdown.classList.toggle("open");
   event.currentTarget.setAttribute("aria-expanded", String(open));
 });
-categoryMenu.addEventListener("click", () => {
-  menu.classList.remove("show");
-  categoryToggle.closest(".nav-dropdown").classList.remove("open");
-  categoryToggle.setAttribute("aria-expanded", "false");
+categoryMenu.addEventListener("click", (event) => {
+  const categoryButton = event.target.closest("[data-mega-category]");
+  if (categoryButton) {
+    const category = categories.find(
+      (item) => item.slug === categoryButton.dataset.megaCategory,
+    );
+    categoryMenu
+      .querySelectorAll("[data-mega-category]")
+      .forEach((button) => button.classList.toggle("active", button === categoryButton));
+    if (category) renderMegaPosts(category);
+    return;
+  }
+  if (event.target.closest("a")) {
+    menu.classList.remove("show");
+    categoryToggle.closest(".nav-dropdown").classList.remove("open");
+    categoryToggle.setAttribute("aria-expanded", "false");
+  }
+});
+categoryMenu.addEventListener("mouseover", (event) => {
+  const categoryButton = event.target.closest("[data-mega-category]");
+  if (categoryButton) categoryButton.click();
 });
 document
   .querySelector("#menuBtn")
