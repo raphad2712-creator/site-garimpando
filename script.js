@@ -48,6 +48,7 @@ async function loadOnlinePosts() {
         categorySlug:
           resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
         image: p.image_url || "",
+        isFeatured: Boolean(p.is_featured),
         imageAlt: p.title,
         originalUrl: "",
       });
@@ -221,11 +222,17 @@ function archive(title, items, intro) {
 }
 function home() {
   const latest = posts.slice(0, 12),
-    intro = "Uma seleção das publicações mais recentes do Garimpando Life.";
+    intro = "Uma seleção das publicações mais recentes do Garimpando Life.",
+    featured = posts.find((post) => post.isFeatured),
+    featuredCategory = featured ? categoryForPost(featured) : null,
+    heroImage = featured?.image || "images/hero.png",
+    heroTitle = featured?.title || "Jordânia, Apaixonante Jordânia",
+    heroLink = featured ? `#post/${featured.slug}` : "#categoria/viagens",
+    heroCategory = featuredCategory?.name || "Viagens";
   archive("Últimas matérias", latest, intro);
   const built = app.innerHTML;
   app.innerHTML =
-    '<section class="hero"><img src="images/hero.png" alt="Jordânia"><div><h1>Jordânia, Apaixonante Jordânia</h1><p><a href="#categoria/viagens">Viagens</a></p></div></section><section class="icons"><a href="#categoria/viagens"><b>✈</b><span>Viagens</span></a><a href="#categoria/garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>' +
+    `<section class="hero"><a class="hero-link" href="${heroLink}"><img src="${esc(heroImage)}" alt="${esc(heroTitle)}"><div><h1>${esc(heroTitle)}</h1><p><span>${esc(heroCategory)}</span></p></div></a></section><section class="icons"><a href="#categoria/viagens"><b>✈</b><span>Viagens</span></a><a href="#categoria/garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>` +
     built;
   bindArchive("Últimas matérias", latest, intro);
 }

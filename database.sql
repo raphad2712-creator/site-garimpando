@@ -10,11 +10,16 @@ create table if not exists public.blog_posts (
   category_id integer,
   category_name text not null default 'Blog',
   image_url text,
+  is_featured boolean not null default false,
   published boolean not null default true,
   published_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Atualiza também os bancos que já foram criados anteriormente.
+alter table public.blog_posts
+add column if not exists is_featured boolean not null default false;
 
 alter table public.blog_posts enable row level security;
 

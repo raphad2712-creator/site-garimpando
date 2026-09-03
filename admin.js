@@ -108,6 +108,7 @@ function reset() {
   $("#editorTitle").textContent = "Nova matéria";
   $("#saveState").textContent = "Não salva";
   $("#excerptCount").textContent = "0";
+  $("#featured").checked = false;
   updateCategoryDestination();
   editor.classList.remove("hidden");
   list.classList.add("hidden");
@@ -195,10 +196,18 @@ form.addEventListener("submit", async (e) => {
         category_id,
         category_name: category?.name || "Blog",
         image_url,
+        is_featured: $("#featured").checked,
         published: true,
         published_at: $("#date").value + "T12:00:00",
       };
     if (id) delete payload.slug;
+    if (payload.is_featured) {
+      const { error: coverError } = await db
+        .from("blog_posts")
+        .update({ is_featured: false })
+        .eq("is_featured", true);
+      if (coverError) throw coverError;
+    }
     const query = id
         ? db.from("blog_posts").update(payload).eq("id", id)
         : db.from("blog_posts").insert(payload).select("id").single(),
@@ -235,7 +244,7 @@ async function showList() {
     ? data
         .map(
           (p) =>
-            `<article class="post-item"><img src="${esc(p.image_url || "images/hero.png")}"><div><h2>${esc(p.title)}</h2><p>${new Date(p.published_at).toLocaleDateString("pt-BR")} · ${esc(p.category_name)}</p></div><div class="item-actions"><button data-edit="${p.id}">Editar</button><button class="delete" data-delete="${p.id}">Excluir</button></div></article>`,
+            `<article class="post-item"><img src="${esc(p.image_url || "images/hero.png")}"><div><h2>${esc(p.title)}</h2><p>${new Date(p.published_at).toLocaleDateString("pt-BR")} · ${esc(p.category_name)}${p.is_featured ? " · Destaque na capa" : ""}</p></div><div class="item-actions"><button data-edit="${p.id}">Editar</button><button class="delete" data-delete="${p.id}">Excluir</button></div></article>`,
         )
         .join("")
     : "<p>Nenhuma matéria criada no banco de dados.</p>";
@@ -269,6 +278,7 @@ async function edit(id) {
     .replace(/<br\s*\/?>/g, "\n")
     .trim();
   $("#imageUrl").value = p.image_url || "";
+  $("#featured").checked = Boolean(p.is_featured);
   previewImage(p.image_url);
   $("#editorTitle").textContent = "Editar matéria";
   $("#saveState").textContent = "Salva online";

@@ -180,6 +180,11 @@ label {
   font-size: 13px;
 }
 .field-help { display: block; margin-top: 7px; color: #7b827c; font-size: 11px; font-weight: 500; line-height: 1.4; }
+.cover-option { display: flex; align-items: flex-start; gap: 14px; padding: 18px; border: 1px solid #eadfce; border-radius: 12px; background: #fffaf3; cursor: pointer; }
+.cover-option input { width: 21px; height: 21px; margin-top: 1px; accent-color: var(--orange); }
+.cover-option span { display: grid; gap: 5px; }
+.cover-option b { color: var(--green); }
+.cover-option small { color: #687169; line-height: 1.45; }
 input,
 select,
 textarea {

@@ -94,6 +94,11 @@ a {
   height: 470px;
   object-fit: cover;
 }
+.hero-link { display: block; height: 100%; position: relative; overflow: hidden; }
+.hero-link > img { width: 100%; height: 470px; object-fit: cover; transition: transform .7s ease; }
+.hero-link:hover > img { transform: scale(1.025); }
+.hero-link > div { position: absolute; left: 17%; right: 17%; bottom: 15px; background: #fff; text-align: center; padding: 42px; box-shadow: 0 16px 40px #0000000e; }
+.hero-link p span { margin-left: 0; color: var(--orange); font-weight: 800; }
 .hero > div {
   position: absolute;
   left: 17%;
@@ -504,6 +509,7 @@ footer p {
     left: 8%;
     right: 8%;
   }
+  .hero-link > div { left: 8%; right: 8%; }
   .contact-card { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
@@ -531,12 +537,14 @@ footer p {
   .hero > img {
     height: 315px;
   }
+  .hero-link > img { height: 315px; }
   .hero > div {
     left: 18px;
     right: 18px;
     bottom: 30px;
     padding: 30px 20px;
   }
+  .hero-link > div { left: 18px; right: 18px; bottom: 30px; padding: 30px 20px; }
   .hero h1 {
     font-size: 39px;
   }
