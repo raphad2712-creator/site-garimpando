@@ -304,18 +304,15 @@ form.addEventListener("submit", async (e) => {
       if (coverError) throw coverError;
     }
     const query = id
-        ? db.from("blog_posts").update(payload).eq("id", id)
-        : db.from("blog_posts").insert(payload).select("id").single(),
+        ? db.from("blog_posts").update(payload).eq("id", id).select("*").single()
+        : db.from("blog_posts").insert(payload).select("*").single(),
       { data, error } = await query;
     if (error) throw error;
-    if (!id) $("#postId").value = data.id;
     selectedImage = null;
     selectedGalleryFiles.forEach((item) => URL.revokeObjectURL(item.preview));
     selectedGalleryFiles = [];
-    currentImage = image_url || "";
-    renderGalleryPreview();
-    $("#saveState").textContent = "Publicado online";
-    toast("Matéria publicada para todos!");
+    await edit(data.id);
+    toast(id ? "Alterações e fotos salvas!" : "Matéria publicada para todos!");
   } catch (error) {
     console.error(error);
     toast("Não foi possível publicar. Confira o Supabase.");
@@ -413,44 +410,6 @@ $("#previewBtn").onclick = () => {
   $("#preview").showModal();
 };
 $("#closePreview").onclick = () => $("#preview").close();
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let activeRecognition = null;
-document.querySelectorAll("[data-dictate]").forEach((button) => {
-  button.addEventListener("click", () => {
-    if (!SpeechRecognition) {
-      toast("Use o microfone do teclado do celular para ditar");
-      $("#" + button.dataset.dictate).focus();
-      return;
-    }
-    if (activeRecognition) {
-      activeRecognition.stop();
-      return;
-    }
-    const field = $("#" + button.dataset.dictate),
-      recognition = new SpeechRecognition();
-    activeRecognition = recognition;
-    recognition.lang = "pt-BR";
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    button.classList.add("listening");
-    button.textContent = "⏹ Parar ditado";
-    recognition.onresult = (event) => {
-      const spoken = [...event.results].slice(event.resultIndex).map((result) => result[0].transcript).join(" "),
-        start = field.selectionStart ?? field.value.length,
-        space = field.value && start > 0 && !/\s$/.test(field.value.slice(0, start)) ? " " : "";
-      field.setRangeText(space + spoken, start, field.selectionEnd ?? start, "end");
-      field.dispatchEvent(new Event("input"));
-    };
-    recognition.onerror = () => toast("Não consegui ouvir. Use o microfone do teclado.");
-    recognition.onend = () => {
-      activeRecognition = null;
-      button.classList.remove("listening");
-      button.textContent = button.dataset.dictate === "body" ? "🎙️ Ditar texto" : "🎙️ Ditar";
-    };
-    recognition.start();
-    toast("Pode começar a falar");
-  });
-});
 $("#exportBtn").onclick = async () => {
   const { data, error } = await db
     .from("blog_posts")

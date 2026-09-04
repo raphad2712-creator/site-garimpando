@@ -269,10 +269,6 @@ textarea {
 .publish-guide { display: grid; gap: 7px; padding: 18px; border-radius: 12px; background: #edf3ef; border-left: 5px solid var(--green); color: #29483a; }
 .publish-guide b { font-size: 18px; }
 .publish-guide span { font-size: 14px; }
-.field-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.dictate { border: 1px solid var(--green); border-radius: 999px; background: #fff; color: var(--green); padding: 7px 12px; font-weight: 800; cursor: pointer; }
-.dictate.listening { background: #a32626; border-color: #a32626; color: #fff; }
-.voice-help { display: block; margin: 5px 0 9px; color: #666; font-weight: 500; }
 .toolbar {
   display: flex;
   flex-wrap: wrap;
