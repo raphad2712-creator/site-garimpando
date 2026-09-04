@@ -181,7 +181,6 @@ function sidebar() {
     { name: "Dona Deôla", domain: "donadeola.com.br", url: "https://www.donadeola.com.br/" },
     { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
     { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
-    { name: "À Mesa Gastronomia", initials: "AM", url: "https://www.instagram.com/amesagastronomia/" },
     { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
     { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
     { name: "UNIT", domain: "unit.br", url: "https://www.unit.br/" },
