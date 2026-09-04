@@ -129,7 +129,7 @@ function renderMegaPosts(category) {
     ? selectedPosts
         .map(
           (post) =>
-            `<a class="mega-card" href="#post/${post.slug}"><img src="${esc(post.image || "images/hero.png")}" alt="${esc(post.title)}"><strong>${esc(post.title)}</strong></a>`,
+            `<a class="mega-card" href="#materia/${post.slug}"><img src="${esc(post.image || "images/hero.png")}" alt="${esc(post.title)}"><strong>${esc(post.title)}</strong></a>`,
         )
         .join("")
     : `<a class="mega-empty" href="#categoria/${category.slug}">Ver matérias de ${esc(category.name)}</a>`;
@@ -173,8 +173,38 @@ document
     a.addEventListener("click", () => menu.classList.remove("show")),
   );
 function sidebar() {
+  const partnerBrands = [
+    { name: "Beeva Brazil", image: "images/parceiro-beeva.png", url: "https://www.beevabrazil.com/" },
+    { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
+    { name: "Oceanic", image: "images/parceiro-oceanic.jpg" },
+    { name: "Entreposto", image: "images/parceiro-entreposto.jpg" },
+    { name: "Dona Deola" },
+    { name: "Ótica Brasolin" },
+    { name: "Diasi Massas Artesanais" },
+    { name: "À Mesa" },
+    { name: "Kangaroo Brasil" },
+    { name: "Mister Travel" },
+    { name: "UNIT" },
+    { name: "GNC Suécia Salvador" },
+    { name: "Sais Beach Hotel Maceió" },
+    { name: "Ricardo Almeida" },
+    { name: "Sococo" },
+    { name: "Jacques Janine Granja Viana" },
+  ];
+  const partnersHtml = partnerBrands
+    .map((brand) => {
+      const content = brand.image
+        ? `<img src="${brand.image}" alt="${esc(brand.name)}">`
+        : `<span class="partner-name">${esc(brand.name)}</span>`;
+      return brand.url
+        ? `<a href="${brand.url}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
+        : `<div class="partner-card">${content}</div>`;
+    })
+    .join("");
   return (
-    '<aside><h3>Para Você</h3><a class="ad" href="https://www.pedrasdopatacho.com.br/" target="_blank"><img src="images/sobre.jpg"><span>Experiências especiais</span></a><h3>Marcas Parceiras</h3><div class="partners"><a href="https://www.beevabrazil.com/" target="_blank"><img src="images/parceiro-beeva.png" alt="Beeva Brazil"></a><a href="http://www.massasricci.com.br" target="_blank"><img src="images/parceiro-massas.jpg" alt="Massas Ricci"></a><a href="https://www.forthousemoveis.com.br/" target="_blank"><img src="images/parceiro-forthouse.png" alt="Forthouse"></a><a href="https://www.pedrasdopatacho.com.br/" target="_blank"><img src="images/parceiro-pedras.png" alt="Pedras do Patacho"></a><a><img src="images/parceiro-oceanic.jpg" alt="Oceanic"></a><a><img src="images/parceiro-entreposto.jpg" alt="Entreposto"></a></div><h3>Categorias</h3><ul>' +
+    '<aside><h3>Para Você</h3><a class="ad" href="https://www.pedrasdopatacho.com.br/" target="_blank"><img src="images/sobre.jpg"><span>Experiências especiais</span></a><h3>Marcas Parceiras</h3><div class="partners">' +
+    partnersHtml +
+    '</div><h3>Categorias</h3><ul>' +
     categories
       .filter((c) => categoryCount(c) > 0 && c.slug !== "destaques")
       .map(
@@ -266,12 +296,12 @@ function home() {
     featuredCategory = featured ? categoryForPost(featured) : null,
     heroImage = featured?.image || "images/hero.png",
     heroTitle = featured?.title || "Jordânia, Apaixonante Jordânia",
-    heroLink = featured ? `#post/${featured.slug}` : "#categoria/viagens",
+    heroLink = featured ? `#materia/${featured.slug}` : "#categoria/viagem",
     heroCategory = featuredCategory?.name || "Viagens";
   archive("Últimas matérias", latest, intro);
   const built = app.innerHTML;
   app.innerHTML =
-    `<section class="hero"><a class="hero-link" href="${heroLink}"><img src="${esc(heroImage)}" alt="${esc(heroTitle)}"><div><h1>${esc(heroTitle)}</h1><p><span>${esc(heroCategory)}</span></p></div></a></section><section class="icons"><a href="#categoria/viagens"><b>✈</b><span>Viagens</span></a><a href="#categoria/garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>` +
+    `<section class="hero"><a class="hero-link" href="${heroLink}"><img src="${esc(heroImage)}" alt="${esc(heroTitle)}"><div><h1>${esc(heroTitle)}</h1><p><span>${esc(heroCategory)}</span></p></div></a></section><section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>` +
     built;
   bindArchive("Últimas matérias", latest, intro);
 }
@@ -289,6 +319,12 @@ function bindArchive(title, items, intro) {
     shown += 18;
     archive(title, items, intro);
   });
+}
+function collaboratorHighlights() {
+  return `<section class="collaborator-highlights" aria-label="Colaboradores em destaque">
+    <article><span>LG</span><div><small>COLABORADOR</small><h2>Let’s Go</h2><p>Conteúdos, experiências e novidades em parceria com o Garimpando Life.</p></div></article>
+    <article><span>TR</span><div><small>COLABORADOR</small><h2>Tudo em Revista</h2><p>Informação, comportamento e diferentes olhares para os leitores.</p></div></article>
+  </section>`;
 }
 function article(p) {
   const c = categoryForPost(p);
@@ -349,7 +385,7 @@ function contact() {
 }
 function animatePage() {
   const elements = document.querySelectorAll(
-    ".post-list article,.icons a,.page-title,.article-body,aside",
+    ".post-list article,.icons a,.page-title,.article-body,aside,.collaborator-highlights article",
   );
   elements.forEach((el) => el.classList.add("reveal-item"));
   const observer = new IntersectionObserver(
@@ -384,6 +420,9 @@ function route() {
       items,
       "Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.",
     );
+    document
+      .querySelector(".layout")
+      ?.insertAdjacentHTML("beforebegin", collaboratorHighlights());
   } else if (parts[0] === "materia") {
     const p = posts.find((x) => x.slug === parts.slice(1).join("/"));
     p ? article(p) : home();
