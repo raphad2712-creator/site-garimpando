@@ -142,14 +142,14 @@ $("#imageFile").addEventListener("change", (e) => {
 });
 function renderGalleryPreview() {
   const saved = currentGalleryUrls.map((url, index) =>
-    `<div class="gallery-thumb"><img src="${esc(url)}" alt="Foto adicional"><button type="button" data-remove-saved="${index}" aria-label="Remover foto">×</button></div>`,
+    `<div class="gallery-thumb"><img src="${esc(url)}" alt="Foto adicional"><button class="remove-photo" type="button" data-remove-saved="${index}" aria-label="Remover foto">×</button></div>`,
   );
-  const selected = selectedGalleryFiles.map((file, index) =>
-    `<div class="gallery-thumb"><img src="${URL.createObjectURL(file)}" alt="Nova foto"><button type="button" data-remove-new="${index}" aria-label="Remover foto">×</button></div>`,
+  const selected = selectedGalleryFiles.map((item, index) =>
+    `<div class="gallery-thumb ${$("#body").value.includes(item.token) ? "inserted" : ""}"><img src="${item.preview}" alt="Nova foto"><button class="remove-photo" type="button" data-remove-new="${index}" aria-label="Remover foto">×</button><button class="insert-photo" type="button" data-insert-photo="${index}">${$("#body").value.includes(item.token) ? "✓ Inserida — mover aqui" : "Inserir aqui"}</button></div>`,
   );
   $("#galleryPreview").innerHTML = saved.length || selected.length
     ? saved.concat(selected).join("")
-    : "<span>Nenhuma foto adicional selecionada</span>";
+    : "<span>Nenhuma foto para inserir</span>";
   document.querySelectorAll("[data-remove-saved]").forEach((button) => {
     button.onclick = () => {
       currentGalleryUrls.splice(Number(button.dataset.removeSaved), 1);
@@ -158,8 +158,25 @@ function renderGalleryPreview() {
   });
   document.querySelectorAll("[data-remove-new]").forEach((button) => {
     button.onclick = () => {
+      const item = selectedGalleryFiles[Number(button.dataset.removeNew)];
+      $("#body").value = $("#body").value.replaceAll(item.token, "").replace(/\n{3,}/g, "\n\n");
+      URL.revokeObjectURL(item.preview);
       selectedGalleryFiles.splice(Number(button.dataset.removeNew), 1);
       renderGalleryPreview();
+    };
+  });
+  document.querySelectorAll("[data-insert-photo]").forEach((button) => {
+    button.onclick = () => {
+      const item = selectedGalleryFiles[Number(button.dataset.insertPhoto)],
+        field = $("#body"),
+        clean = field.value.replaceAll(item.token, "").replace(/\n{3,}/g, "\n\n"),
+        position = Math.min(field.selectionStart, clean.length),
+        insertion = `\n\n${item.token}\n\n`;
+      field.value = clean.slice(0, position) + insertion + clean.slice(position);
+      field.focus();
+      field.setSelectionRange(position + insertion.length, position + insertion.length);
+      renderGalleryPreview();
+      toast("Foto inserida na posição escolhida");
     };
   });
 }
@@ -170,7 +187,12 @@ $("#galleryFiles").addEventListener("change", (e) => {
     e.target.value = "";
     return;
   }
-  selectedGalleryFiles.push(...files);
+  const stamp = Date.now();
+  selectedGalleryFiles.push(...files.map((file, index) => ({
+    file,
+    token: `[[FOTO_${stamp}_${index}]]`,
+    preview: URL.createObjectURL(file),
+  })));
   e.target.value = "";
   renderGalleryPreview();
   toast(`${files.length} ${files.length === 1 ? "foto adicionada" : "fotos adicionadas"}`);
@@ -199,14 +221,20 @@ function galleryMarkup(urls) {
     ? `<section class="article-gallery" aria-label="Galeria de fotos">${urls.map((url) => `<img loading="lazy" src="${esc(url)}" alt="Foto da matéria">`).join("")}</section>`
     : "";
 }
-function htmlContent(galleryUrls = currentGalleryUrls) {
+function htmlContent(inlineImages = []) {
   const body = $("#body")
     .value.split(/\n{2,}/)
     .map((x) =>
       x.trim().startsWith("<") ? x : `<p>${x.replace(/\n/g, "<br>")}</p>`,
     )
     .join("");
-  return body + galleryMarkup(galleryUrls);
+  const withImages = inlineImages.reduce((html, image) => {
+    const figure = `<figure class="article-inline-image"><img loading="lazy" src="${esc(image.url)}" alt="Foto da matéria"></figure>`;
+    return html
+      .replace(`<p>${image.token}</p>`, figure)
+      .replace(image.token, figure);
+  }, body);
+  return withImages + galleryMarkup(currentGalleryUrls);
 }
 async function uploadImage() {
   if (!selectedImage)
@@ -223,19 +251,20 @@ async function uploadImage() {
   return db.storage.from("blog-images").getPublicUrl(path).data.publicUrl;
 }
 async function uploadGalleryImages() {
-  if (!selectedGalleryFiles.length) return [];
+  const inserted = selectedGalleryFiles.filter((item) => $("#body").value.includes(item.token));
+  if (!inserted.length) return [];
   const {
     data: { user },
   } = await db.auth.getUser();
-  return Promise.all(selectedGalleryFiles.map(async (file, index) => {
-    const safe = file.name.normalize("NFD").replace(/[^a-zA-Z0-9._-]/g, "-"),
+  return Promise.all(inserted.map(async (item, index) => {
+    const safe = item.file.name.normalize("NFD").replace(/[^a-zA-Z0-9._-]/g, "-"),
       path = `${user.id}/${Date.now()}-${index}-${safe}`,
-      { error } = await db.storage.from("blog-images").upload(path, file, {
+      { error } = await db.storage.from("blog-images").upload(path, item.file, {
         cacheControl: "3600",
         upsert: false,
       });
     if (error) throw error;
-    return db.storage.from("blog-images").getPublicUrl(path).data.publicUrl;
+    return { token: item.token, url: db.storage.from("blog-images").getPublicUrl(path).data.publicUrl };
   }));
 }
 form.addEventListener("submit", async (e) => {
@@ -245,8 +274,7 @@ form.addEventListener("submit", async (e) => {
   button.textContent = "Publicando...";
   try {
     const image_url = await uploadImage(),
-      newGalleryUrls = await uploadGalleryImages(),
-      galleryUrls = currentGalleryUrls.concat(newGalleryUrls),
+      inlineImages = await uploadGalleryImages(),
       id = $("#postId").value,
       category_id = Number($("#category").value),
       category = categories.find((c) => c.id === category_id),
@@ -256,7 +284,7 @@ form.addEventListener("submit", async (e) => {
           ? undefined
           : slugify($("#title").value) + "-" + Date.now().toString().slice(-6),
         excerpt: $("#excerpt").value.trim(),
-        content: htmlContent(galleryUrls),
+        content: htmlContent(inlineImages),
         category_id,
         category_name: category?.name || "Blog",
         image_url,
@@ -279,8 +307,8 @@ form.addEventListener("submit", async (e) => {
     if (error) throw error;
     if (!id) $("#postId").value = data.id;
     selectedImage = null;
+    selectedGalleryFiles.forEach((item) => URL.revokeObjectURL(item.preview));
     selectedGalleryFiles = [];
-    currentGalleryUrls = galleryUrls;
     currentImage = image_url || "";
     renderGalleryPreview();
     $("#saveState").textContent = "Publicado online";
@@ -374,7 +402,9 @@ $("#previewBtn").onclick = () => {
   $("#previewTitle").textContent = $("#title").value || "Título da matéria";
   $("#previewCategory").textContent = category?.name || "Blog";
   $("#previewExcerpt").textContent = $("#excerpt").value;
-  $("#previewBody").innerHTML = htmlContent();
+  $("#previewBody").innerHTML = htmlContent(selectedGalleryFiles
+    .filter((item) => $("#body").value.includes(item.token))
+    .map((item) => ({ token: item.token, url: item.preview })));
   const img = $("#previewImage");
   img.src = currentImage || $("#imageUrl").value;
   img.style.display = img.src ? "block" : "none";

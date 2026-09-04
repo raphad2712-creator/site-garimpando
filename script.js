@@ -323,11 +323,30 @@ function bindArchive(title, items, intro) {
     archive(title, items, intro);
   });
 }
+const collaboratorPosts = [
+  {
+    slug: "lets-go",
+    title: "Let’s Go",
+    excerpt: "Conteúdos, experiências e novidades em parceria com o Garimpando Life.",
+    content: "<p>Let’s Go reúne conteúdos, experiências e novidades em parceria com o Garimpando Life.</p>",
+    date: "2026-09-04T12:00:00",
+    categories: [314],
+    image: "",
+    imageAlt: "Let’s Go",
+  },
+  {
+    slug: "tudo-em-revista",
+    title: "Tudo em Revista",
+    excerpt: "Informação, comportamento e diferentes olhares para os leitores.",
+    content: "<p>Tudo em Revista apresenta informação, comportamento e diferentes olhares para os leitores do Garimpando Life.</p>",
+    date: "2026-09-04T12:00:00",
+    categories: [314],
+    image: "",
+    imageAlt: "Tudo em Revista",
+  },
+];
 function collaboratorHighlights() {
-  return `<section class="page-title"><span>Garimpando Life</span><h1>Colaboradores</h1><p>Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.</p></section><section class="collaborator-highlights" aria-label="Colaboradores">
-    <article><span>LG</span><div><small>COLABORADOR</small><h2>Let’s Go</h2><p>Conteúdos, experiências e novidades em parceria com o Garimpando Life.</p></div></article>
-    <article><span>TR</span><div><small>COLABORADOR</small><h2>Tudo em Revista</h2><p>Informação, comportamento e diferentes olhares para os leitores.</p></div></article>
-  </section><div class="collaborator-sidebar">${sidebar()}</div>`;
+  return `<section class="page-title"><span>Garimpando Life</span><h1>Colaboradores</h1><p>Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.</p></section><div class="collaborator-layout"><section class="collaborator-highlights" aria-label="Colaboradores">${collaboratorPosts.map((post, index) => `<article><span>${index ? "TR" : "LG"}</span><div><small>COLABORADOR</small><h2><a href="#materia/${post.slug}">${post.title}</a></h2><p>${post.excerpt}</p><a class="more" href="#materia/${post.slug}">Leia mais →</a></div></article>`).join("")}</section>${sidebar()}</div>`;
 }
 function article(p) {
   const c = categoryForPost(p);
@@ -418,7 +437,8 @@ function route() {
   else if (hash === "colaboradores") {
     app.innerHTML = collaboratorHighlights();
   } else if (parts[0] === "materia") {
-    const p = posts.find((x) => x.slug === parts.slice(1).join("/"));
+    const p = posts.find((x) => x.slug === parts.slice(1).join("/")) ||
+      collaboratorPosts.find((x) => x.slug === parts.slice(1).join("/"));
     p ? article(p) : home();
   } else if (parts[0] === "categoria") {
     const c = categories.find((x) => x.slug === parts.slice(1).join("/")),
