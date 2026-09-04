@@ -176,26 +176,26 @@ function sidebar() {
   const partnerBrands = [
     { name: "Beeva Brazil", image: "images/parceiro-beeva.png", url: "https://www.beevabrazil.com/" },
     { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
-    { name: "Oceanic", image: "images/parceiro-oceanic.jpg" },
-    { name: "Entreposto", image: "images/parceiro-entreposto.jpg" },
-    { name: "Dona Deola" },
-    { name: "Ótica Brasolin" },
-    { name: "Diasi Massas Artesanais" },
-    { name: "À Mesa" },
-    { name: "Kangaroo Brasil" },
-    { name: "Mister Travel" },
-    { name: "UNIT" },
-    { name: "GNC Suécia Salvador" },
-    { name: "Sais Beach Hotel Maceió" },
-    { name: "Ricardo Almeida" },
-    { name: "Sococo" },
-    { name: "Jacques Janine Granja Viana" },
+    { name: "Oceanic", image: "images/parceiro-oceanic.jpg", url: "https://www.oceanic.com.br/" },
+    { name: "Entreposto", image: "images/parceiro-entreposto.jpg", url: "https://www.entreposto.com.br/" },
+    { name: "Dona Deôla", domain: "donadeola.com.br", url: "https://www.donadeola.com.br/" },
+    { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
+    { name: "Diasi Massas Artesanais", domain: "diasimassasartesanais.com.br", url: "https://diasimassasartesanais.com.br/" },
+    { name: "À Mesa Gastronomia", domain: "instagram.com", url: "https://www.instagram.com/amesagastronomia/" },
+    { name: "Kangaroo Brasil", domain: "kangaroo.com.br", url: "https://www.kangaroo.com.br/" },
+    { name: "Mister Travel", domain: "mistertravel.com.br", url: "https://www.mistertravel.com.br/" },
+    { name: "UNIT", domain: "unit.br", url: "https://www.unit.br/" },
+    { name: "GNC Suécia Salvador", domain: "gncsuecia.com.br", url: "https://www.gncsuecia.com.br/" },
+    { name: "Sais Beach Hotel Maceió", domain: "saishotel.com.br", url: "https://www.saishotel.com.br/" },
+    { name: "Ricardo Almeida", domain: "ricardoalmeida.com.br", url: "https://www.ricardoalmeida.com.br/" },
+    { name: "Sococo", domain: "sococo.com.br", url: "https://www.sococo.com.br/" },
+    { name: "Jacques Janine Granja Viana", domain: "jacquesjanine.com.br", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
   ];
   const partnersHtml = partnerBrands
     .map((brand) => {
-      const content = brand.image
-        ? `<img src="${brand.image}" alt="${esc(brand.name)}">`
-        : `<span class="partner-name">${esc(brand.name)}</span>`;
+      const logo = brand.image ||
+        `https://www.google.com/s2/favicons?domain_url=https://${brand.domain}&sz=256`;
+      const content = `<img class="partner-logo" src="${logo}" alt="Logo ${esc(brand.name)}" onerror="this.style.display='none'"><span class="partner-name">${esc(brand.name)}</span>`;
       return brand.url
         ? `<a href="${brand.url}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
         : `<div class="partner-card">${content}</div>`;
