@@ -145,7 +145,7 @@ function renderGalleryPreview() {
     `<div class="gallery-thumb"><img src="${esc(url)}" alt="Foto adicional"><button class="remove-photo" type="button" data-remove-saved="${index}" aria-label="Remover foto">×</button></div>`,
   );
   const selected = selectedGalleryFiles.map((item, index) =>
-    `<div class="gallery-thumb ${$("#body").value.includes(item.token) ? "inserted" : ""}"><img src="${item.preview}" alt="Nova foto"><button class="remove-photo" type="button" data-remove-new="${index}" aria-label="Remover foto">×</button><button class="insert-photo" type="button" data-insert-photo="${index}">${$("#body").value.includes(item.token) ? "✓ No meio do texto — mover" : "Opcional: colocar no ponto do texto"}</button></div>`,
+    `<div class="gallery-thumb"><img src="${item.preview}" alt="Nova foto"><button class="remove-photo" type="button" data-remove-new="${index}" aria-label="Remover foto">×</button></div>`,
   );
   $("#galleryPreview").innerHTML = saved.length || selected.length
     ? saved.concat(selected).join("")
@@ -159,24 +159,9 @@ function renderGalleryPreview() {
   document.querySelectorAll("[data-remove-new]").forEach((button) => {
     button.onclick = () => {
       const item = selectedGalleryFiles[Number(button.dataset.removeNew)];
-      $("#body").value = $("#body").value.replaceAll(item.token, "").replace(/\n{3,}/g, "\n\n");
       URL.revokeObjectURL(item.preview);
       selectedGalleryFiles.splice(Number(button.dataset.removeNew), 1);
       renderGalleryPreview();
-    };
-  });
-  document.querySelectorAll("[data-insert-photo]").forEach((button) => {
-    button.onclick = () => {
-      const item = selectedGalleryFiles[Number(button.dataset.insertPhoto)],
-        field = $("#body"),
-        clean = field.value.replaceAll(item.token, "").replace(/\n{3,}/g, "\n\n"),
-        position = Math.min(field.selectionStart, clean.length),
-        insertion = `\n\n${item.token}\n\n`;
-      field.value = clean.slice(0, position) + insertion + clean.slice(position);
-      field.focus();
-      field.setSelectionRange(position + insertion.length, position + insertion.length);
-      renderGalleryPreview();
-      toast("Foto inserida na posição escolhida");
     };
   });
 }
@@ -187,10 +172,8 @@ $("#galleryFiles").addEventListener("change", (e) => {
     e.target.value = "";
     return;
   }
-  const stamp = Date.now();
-  selectedGalleryFiles.push(...files.map((file, index) => ({
+  selectedGalleryFiles.push(...files.map((file) => ({
     file,
-    token: `[[FOTO_${stamp}_${index}]]`,
     preview: URL.createObjectURL(file),
   })));
   e.target.value = "";
@@ -221,24 +204,12 @@ function galleryMarkup(urls) {
     ? `<section class="article-gallery" aria-label="Galeria de fotos">${urls.map((url) => `<img loading="lazy" src="${esc(url)}" alt="Foto da matéria">`).join("")}</section>`
     : "";
 }
-function htmlContent(inlineImages = []) {
-  const plainBody = $("#body").value,
-    body = plainBody
+function htmlContent(newImages = []) {
+  const body = $("#body").value
     .split(/\n{2,}/)
-    .map((x) =>
-      x.trim().startsWith("<") ? x : `<p>${x.replace(/\n/g, "<br>")}</p>`,
-    )
+    .map((x) => `<p>${esc(x).replace(/\n/g, "<br>")}</p>`)
     .join("");
-  const withImages = inlineImages.reduce((html, image) => {
-    const figure = `<figure class="article-inline-image"><img loading="lazy" src="${esc(image.url)}" alt="Foto da matéria"></figure>`;
-    return html
-      .replace(`<p>${image.token}</p>`, figure)
-      .replace(image.token, figure);
-  }, body);
-  const automaticGallery = inlineImages
-    .filter((image) => !plainBody.includes(image.token))
-    .map((image) => image.url);
-  return withImages + galleryMarkup(currentGalleryUrls.concat(automaticGallery));
+  return body + galleryMarkup(currentGalleryUrls.concat(newImages.map((image) => image.url)));
 }
 async function uploadImage() {
   if (!selectedImage)
@@ -367,14 +338,20 @@ async function edit(id) {
   $("#category").value = savedCategory?.id || "";
   updateCategoryDestination();
   $("#excerpt").value = p.excerpt;
-  currentGalleryUrls = [...p.content.matchAll(/<section class="article-gallery"[^>]*>([\s\S]*?)<\/section>/g)]
-    .flatMap((section) => [...section[1].matchAll(/<img[^>]+src="([^"]+)"/g)].map((image) => image[1]));
-  const contentWithoutGallery = p.content.replace(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g, "");
-  $("#body").value = contentWithoutGallery
-    .replace(/<p>/g, "")
-    .replace(/<\/p>/g, "\n\n")
-    .replace(/<br\s*\/?>/g, "\n")
-    .trim();
+  const galleryUrls = [...p.content.matchAll(/<section class="article-gallery"[^>]*>([\s\S]*?)<\/section>/g)]
+      .flatMap((section) => [...section[1].matchAll(/<img[^>]+src="([^"]+)"/g)].map((image) => image[1])),
+    inlineUrls = [...p.content.matchAll(/<figure class="article-inline-image"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*>[\s\S]*?<\/figure>/g)]
+      .map((image) => image[1]);
+  currentGalleryUrls = [...new Set(galleryUrls.concat(inlineUrls))];
+  const contentWithoutImages = p.content
+    .replace(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g, "")
+    .replace(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g, "");
+  const textDecoder = document.createElement("textarea");
+  textDecoder.innerHTML = contentWithoutImages
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|h1|h2|h3|h4|blockquote|div|section)>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "");
+  $("#body").value = textDecoder.value.replace(/\n{3,}/g, "\n\n").trim();
   $("#imageUrl").value = p.image_url || "";
   $("#featured").checked = Boolean(p.is_featured);
   previewImage(p.image_url);
@@ -403,7 +380,7 @@ $("#previewBtn").onclick = () => {
   $("#previewCategory").textContent = category?.name || "Blog";
   $("#previewExcerpt").textContent = $("#excerpt").value;
   $("#previewBody").innerHTML = htmlContent(selectedGalleryFiles
-    .map((item) => ({ token: item.token, url: item.preview })));
+    .map((item) => ({ url: item.preview })));
   const img = $("#previewImage");
   img.src = currentImage || $("#imageUrl").value;
   img.style.display = img.src ? "block" : "none";
