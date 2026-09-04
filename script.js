@@ -414,7 +414,7 @@ function contact() {
 }
 function animatePage() {
   const elements = document.querySelectorAll(
-    ".post-list article,.icons a,.page-title,.article-body,aside,.collaborator-highlights article",
+    ".post-list article,.icons a,.page-title,aside,.collaborator-highlights article",
   );
   elements.forEach((el) => el.classList.add("reveal-item"));
   const observer = new IntersectionObserver(
