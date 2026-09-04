@@ -145,11 +145,11 @@ function renderGalleryPreview() {
     `<div class="gallery-thumb"><img src="${esc(url)}" alt="Foto adicional"><button class="remove-photo" type="button" data-remove-saved="${index}" aria-label="Remover foto">×</button></div>`,
   );
   const selected = selectedGalleryFiles.map((item, index) =>
-    `<div class="gallery-thumb ${$("#body").value.includes(item.token) ? "inserted" : ""}"><img src="${item.preview}" alt="Nova foto"><button class="remove-photo" type="button" data-remove-new="${index}" aria-label="Remover foto">×</button><button class="insert-photo" type="button" data-insert-photo="${index}">${$("#body").value.includes(item.token) ? "✓ Inserida — mover aqui" : "Inserir aqui"}</button></div>`,
+    `<div class="gallery-thumb ${$("#body").value.includes(item.token) ? "inserted" : ""}"><img src="${item.preview}" alt="Nova foto"><button class="remove-photo" type="button" data-remove-new="${index}" aria-label="Remover foto">×</button><button class="insert-photo" type="button" data-insert-photo="${index}">${$("#body").value.includes(item.token) ? "✓ No meio do texto — mover" : "Opcional: colocar no ponto do texto"}</button></div>`,
   );
   $("#galleryPreview").innerHTML = saved.length || selected.length
     ? saved.concat(selected).join("")
-    : "<span>Nenhuma foto para inserir</span>";
+    : "<span>Nenhuma foto escolhida</span>";
   document.querySelectorAll("[data-remove-saved]").forEach((button) => {
     button.onclick = () => {
       currentGalleryUrls.splice(Number(button.dataset.removeSaved), 1);
@@ -195,7 +195,7 @@ $("#galleryFiles").addEventListener("change", (e) => {
   })));
   e.target.value = "";
   renderGalleryPreview();
-  toast(`${files.length} ${files.length === 1 ? "foto adicionada" : "fotos adicionadas"}`);
+  toast(`${files.length} ${files.length === 1 ? "foto pronta" : "fotos prontas"} para publicar`);
 });
 $("#excerpt").addEventListener(
   "input",
@@ -222,8 +222,9 @@ function galleryMarkup(urls) {
     : "";
 }
 function htmlContent(inlineImages = []) {
-  const body = $("#body")
-    .value.split(/\n{2,}/)
+  const plainBody = $("#body").value,
+    body = plainBody
+    .split(/\n{2,}/)
     .map((x) =>
       x.trim().startsWith("<") ? x : `<p>${x.replace(/\n/g, "<br>")}</p>`,
     )
@@ -234,7 +235,10 @@ function htmlContent(inlineImages = []) {
       .replace(`<p>${image.token}</p>`, figure)
       .replace(image.token, figure);
   }, body);
-  return withImages + galleryMarkup(currentGalleryUrls);
+  const automaticGallery = inlineImages
+    .filter((image) => !plainBody.includes(image.token))
+    .map((image) => image.url);
+  return withImages + galleryMarkup(currentGalleryUrls.concat(automaticGallery));
 }
 async function uploadImage() {
   if (!selectedImage)
@@ -251,12 +255,11 @@ async function uploadImage() {
   return db.storage.from("blog-images").getPublicUrl(path).data.publicUrl;
 }
 async function uploadGalleryImages() {
-  const inserted = selectedGalleryFiles.filter((item) => $("#body").value.includes(item.token));
-  if (!inserted.length) return [];
+  if (!selectedGalleryFiles.length) return [];
   const {
     data: { user },
   } = await db.auth.getUser();
-  return Promise.all(inserted.map(async (item, index) => {
+  return Promise.all(selectedGalleryFiles.map(async (item, index) => {
     const safe = item.file.name.normalize("NFD").replace(/[^a-zA-Z0-9._-]/g, "-"),
       path = `${user.id}/${Date.now()}-${index}-${safe}`,
       { error } = await db.storage.from("blog-images").upload(path, item.file, {
@@ -283,7 +286,7 @@ form.addEventListener("submit", async (e) => {
         slug: id
           ? undefined
           : slugify($("#title").value) + "-" + Date.now().toString().slice(-6),
-        excerpt: $("#excerpt").value.trim(),
+        excerpt: $("#excerpt").value.trim() || $("#body").value.replace(/<[^>]*>/g, "").trim().slice(0, 440),
         content: htmlContent(inlineImages),
         category_id,
         category_name: category?.name || "Blog",
@@ -403,7 +406,6 @@ $("#previewBtn").onclick = () => {
   $("#previewCategory").textContent = category?.name || "Blog";
   $("#previewExcerpt").textContent = $("#excerpt").value;
   $("#previewBody").innerHTML = htmlContent(selectedGalleryFiles
-    .filter((item) => $("#body").value.includes(item.token))
     .map((item) => ({ token: item.token, url: item.preview })));
   const img = $("#previewImage");
   img.src = currentImage || $("#imageUrl").value;
@@ -411,6 +413,44 @@ $("#previewBtn").onclick = () => {
   $("#preview").showModal();
 };
 $("#closePreview").onclick = () => $("#preview").close();
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let activeRecognition = null;
+document.querySelectorAll("[data-dictate]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!SpeechRecognition) {
+      toast("Use o microfone do teclado do celular para ditar");
+      $("#" + button.dataset.dictate).focus();
+      return;
+    }
+    if (activeRecognition) {
+      activeRecognition.stop();
+      return;
+    }
+    const field = $("#" + button.dataset.dictate),
+      recognition = new SpeechRecognition();
+    activeRecognition = recognition;
+    recognition.lang = "pt-BR";
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    button.classList.add("listening");
+    button.textContent = "⏹ Parar ditado";
+    recognition.onresult = (event) => {
+      const spoken = [...event.results].slice(event.resultIndex).map((result) => result[0].transcript).join(" "),
+        start = field.selectionStart ?? field.value.length,
+        space = field.value && start > 0 && !/\s$/.test(field.value.slice(0, start)) ? " " : "";
+      field.setRangeText(space + spoken, start, field.selectionEnd ?? start, "end");
+      field.dispatchEvent(new Event("input"));
+    };
+    recognition.onerror = () => toast("Não consegui ouvir. Use o microfone do teclado.");
+    recognition.onend = () => {
+      activeRecognition = null;
+      button.classList.remove("listening");
+      button.textContent = button.dataset.dictate === "body" ? "🎙️ Ditar texto" : "🎙️ Ditar";
+    };
+    recognition.start();
+    toast("Pode começar a falar");
+  });
+});
 $("#exportBtn").onclick = async () => {
   const { data, error } = await db
     .from("blog_posts")

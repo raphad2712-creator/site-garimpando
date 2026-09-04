@@ -266,6 +266,13 @@ textarea {
 .gallery-thumb .insert-photo { flex: 1; border: 0; padding: 9px 6px; background: var(--green); color: #fff; cursor: pointer; font-size: 11px; font-weight: 800; }
 .gallery-thumb .remove-photo { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: #8d2b2b; color: #fff; cursor: pointer; font-size: 17px; }
 .gallery-thumb.inserted .insert-photo { background: var(--orange); }
+.publish-guide { display: grid; gap: 7px; padding: 18px; border-radius: 12px; background: #edf3ef; border-left: 5px solid var(--green); color: #29483a; }
+.publish-guide b { font-size: 18px; }
+.publish-guide span { font-size: 14px; }
+.field-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dictate { border: 1px solid var(--green); border-radius: 999px; background: #fff; color: var(--green); padding: 7px 12px; font-weight: 800; cursor: pointer; }
+.dictate.listening { background: #a32626; border-color: #a32626; color: #fff; }
+.voice-help { display: block; margin: 5px 0 9px; color: #666; font-weight: 500; }
 .toolbar {
   display: flex;
   flex-wrap: wrap;
