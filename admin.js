@@ -322,12 +322,19 @@ async function showList() {
     .forEach((b) => (b.onclick = () => remove(b.dataset.delete)));
 }
 async function edit(id) {
-  const { data: p, error } = await db
+  const { data, error } = await db
     .from("blog_posts")
     .select("*")
     .eq("id", id)
     .single();
   if (error) return toast("Não foi possível abrir a matéria");
+  const correction = data.title.trim().toLowerCase() === "cariri"
+    ? window.GARIMPANDO_EDITORIAL_CORRECTIONS?.[data.slug]
+    : null,
+    savedPhotos =
+      (String(data.content || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
+      (String(data.content || "").match(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g) || []).join(""),
+    p = correction ? { ...data, ...correction, content: correction.content + savedPhotos } : data;
   reset();
   $("#postId").value = p.id;
   $("#title").value = p.title;

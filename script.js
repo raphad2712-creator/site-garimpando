@@ -16,6 +16,10 @@ const data = window.GARIMPANDO_CONTENT || {
   publicDb = dbReady
     ? window.supabase.createClient(cfg.url, cfg.anonKey)
     : null;
+const editorialCorrections = window.GARIMPANDO_EDITORIAL_CORRECTIONS || {};
+const savedArticlePhotos = (html) =>
+  (String(html || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
+  (String(html || "").match(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g) || []).join("");
 async function loadOnlinePosts() {
   if (!publicDb) return;
   const { data: online, error } = await publicDb
@@ -30,6 +34,9 @@ async function loadOnlinePosts() {
   const ids = new Set(posts.map((p) => String(p.id)));
   online.reverse().forEach((p) => {
     if (!ids.has(String(p.id))) {
+      const correction = p.title.trim().toLowerCase() === "cariri"
+        ? editorialCorrections[p.slug]
+        : null;
       const resolvedCategory =
         categories.find((c) => c.id === p.category_id) ||
         categories.find(
@@ -40,16 +47,16 @@ async function loadOnlinePosts() {
         id: p.id,
         slug: p.slug,
         date: p.published_at,
-        title: p.title,
-        excerpt: p.excerpt,
-        content: p.content,
+        title: correction?.title || p.title,
+        excerpt: correction?.excerpt || p.excerpt,
+        content: correction ? correction.content + savedArticlePhotos(p.content) : p.content,
         categories: resolvedCategory ? [resolvedCategory.id] : [],
         categoryName: p.category_name || resolvedCategory?.name || "Blog",
         categorySlug:
           resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
         image: p.image_url || "",
-        isFeatured: Boolean(p.is_featured),
-        imageAlt: p.title,
+        isFeatured: correction?.is_featured || Boolean(p.is_featured),
+        imageAlt: correction?.title || p.title,
         originalUrl: "",
       });
     }
