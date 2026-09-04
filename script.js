@@ -181,7 +181,7 @@ function sidebar() {
     { name: "Dona Deôla", domain: "donadeola.com.br", url: "https://www.donadeola.com.br/" },
     { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
     { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
-    { name: "À Mesa Gastronomia", domain: "instagram.com", url: "https://www.instagram.com/amesagastronomia/" },
+    { name: "À Mesa Gastronomia", initials: "AM", url: "https://www.instagram.com/amesagastronomia/" },
     { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
     { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
     { name: "UNIT", domain: "unit.br", url: "https://www.unit.br/" },
@@ -193,9 +193,12 @@ function sidebar() {
   ];
   const partnersHtml = partnerBrands
     .map((brand) => {
-      const logo = brand.image ||
-        `https://www.google.com/s2/favicons?domain_url=https://${brand.domain}&sz=256`;
-      const visual = `<img class="partner-logo" src="${logo}" alt="Logo ${esc(brand.name)}" onerror="this.style.display='none'">`;
+      const logo = brand.image || (brand.domain
+        ? `https://www.google.com/s2/favicons?domain_url=https://${brand.domain}&sz=256`
+        : "");
+      const visual = logo
+        ? `<img class="partner-logo" src="${logo}" alt="Logo ${esc(brand.name)}" onerror="this.style.display='none'">`
+        : `<span class="partner-monogram" aria-hidden="true">${esc(brand.initials)}</span>`;
       const content = `${visual}<span class="partner-name">${esc(brand.name)}</span>`;
       return brand.url
         ? `<a href="${brand.url}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
