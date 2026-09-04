@@ -11,6 +11,8 @@ const db = configured
   editor = document.querySelector("#editor"),
   list = document.querySelector("#postList");
 let selectedImage = null,
+  selectedGalleryFiles = [],
+  currentGalleryUrls = [],
   currentImage = "";
 const $ = (s) => document.querySelector(s),
   esc = (s) =>
@@ -103,8 +105,11 @@ function reset() {
   $("#postId").value = "";
   $("#date").value = new Date().toISOString().slice(0, 10);
   selectedImage = null;
+  selectedGalleryFiles = [];
+  currentGalleryUrls = [];
   currentImage = "";
   $("#imagePreview").innerHTML = "<span>Nenhuma imagem selecionada</span>";
+  renderGalleryPreview();
   $("#editorTitle").textContent = "Nova matéria";
   $("#saveState").textContent = "Não salva";
   $("#excerptCount").textContent = "0";
@@ -135,6 +140,41 @@ $("#imageFile").addEventListener("change", (e) => {
   previewImage(URL.createObjectURL(file));
   toast("Imagem pronta para enviar");
 });
+function renderGalleryPreview() {
+  const saved = currentGalleryUrls.map((url, index) =>
+    `<div class="gallery-thumb"><img src="${esc(url)}" alt="Foto adicional"><button type="button" data-remove-saved="${index}" aria-label="Remover foto">×</button></div>`,
+  );
+  const selected = selectedGalleryFiles.map((file, index) =>
+    `<div class="gallery-thumb"><img src="${URL.createObjectURL(file)}" alt="Nova foto"><button type="button" data-remove-new="${index}" aria-label="Remover foto">×</button></div>`,
+  );
+  $("#galleryPreview").innerHTML = saved.length || selected.length
+    ? saved.concat(selected).join("")
+    : "<span>Nenhuma foto adicional selecionada</span>";
+  document.querySelectorAll("[data-remove-saved]").forEach((button) => {
+    button.onclick = () => {
+      currentGalleryUrls.splice(Number(button.dataset.removeSaved), 1);
+      renderGalleryPreview();
+    };
+  });
+  document.querySelectorAll("[data-remove-new]").forEach((button) => {
+    button.onclick = () => {
+      selectedGalleryFiles.splice(Number(button.dataset.removeNew), 1);
+      renderGalleryPreview();
+    };
+  });
+}
+$("#galleryFiles").addEventListener("change", (e) => {
+  const files = [...e.target.files];
+  if (files.some((file) => file.size > 5 * 1024 * 1024)) {
+    toast("Cada foto deve ter menos de 5 MB");
+    e.target.value = "";
+    return;
+  }
+  selectedGalleryFiles.push(...files);
+  e.target.value = "";
+  renderGalleryPreview();
+  toast(`${files.length} ${files.length === 1 ? "foto adicionada" : "fotos adicionadas"}`);
+});
 $("#excerpt").addEventListener(
   "input",
   (e) => ($("#excerptCount").textContent = e.target.value.length),
@@ -154,13 +194,19 @@ document.querySelectorAll(".toolbar button").forEach((b) =>
     field.focus();
   }),
 );
-function htmlContent() {
-  return $("#body")
+function galleryMarkup(urls) {
+  return urls.length
+    ? `<section class="article-gallery" aria-label="Galeria de fotos">${urls.map((url) => `<img loading="lazy" src="${esc(url)}" alt="Foto da matéria">`).join("")}</section>`
+    : "";
+}
+function htmlContent(galleryUrls = currentGalleryUrls) {
+  const body = $("#body")
     .value.split(/\n{2,}/)
     .map((x) =>
       x.trim().startsWith("<") ? x : `<p>${x.replace(/\n/g, "<br>")}</p>`,
     )
     .join("");
+  return body + galleryMarkup(galleryUrls);
 }
 async function uploadImage() {
   if (!selectedImage)
@@ -176,6 +222,22 @@ async function uploadImage() {
   if (error) throw error;
   return db.storage.from("blog-images").getPublicUrl(path).data.publicUrl;
 }
+async function uploadGalleryImages() {
+  if (!selectedGalleryFiles.length) return [];
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  return Promise.all(selectedGalleryFiles.map(async (file, index) => {
+    const safe = file.name.normalize("NFD").replace(/[^a-zA-Z0-9._-]/g, "-"),
+      path = `${user.id}/${Date.now()}-${index}-${safe}`,
+      { error } = await db.storage.from("blog-images").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+    if (error) throw error;
+    return db.storage.from("blog-images").getPublicUrl(path).data.publicUrl;
+  }));
+}
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const button = e.submitter;
@@ -183,6 +245,8 @@ form.addEventListener("submit", async (e) => {
   button.textContent = "Publicando...";
   try {
     const image_url = await uploadImage(),
+      newGalleryUrls = await uploadGalleryImages(),
+      galleryUrls = currentGalleryUrls.concat(newGalleryUrls),
       id = $("#postId").value,
       category_id = Number($("#category").value),
       category = categories.find((c) => c.id === category_id),
@@ -192,7 +256,7 @@ form.addEventListener("submit", async (e) => {
           ? undefined
           : slugify($("#title").value) + "-" + Date.now().toString().slice(-6),
         excerpt: $("#excerpt").value.trim(),
-        content: htmlContent(),
+        content: htmlContent(galleryUrls),
         category_id,
         category_name: category?.name || "Blog",
         image_url,
@@ -215,7 +279,10 @@ form.addEventListener("submit", async (e) => {
     if (error) throw error;
     if (!id) $("#postId").value = data.id;
     selectedImage = null;
+    selectedGalleryFiles = [];
+    currentGalleryUrls = galleryUrls;
     currentImage = image_url || "";
+    renderGalleryPreview();
     $("#saveState").textContent = "Publicado online";
     toast("Matéria publicada para todos!");
   } catch (error) {
@@ -272,7 +339,10 @@ async function edit(id) {
   $("#category").value = savedCategory?.id || "";
   updateCategoryDestination();
   $("#excerpt").value = p.excerpt;
-  $("#body").value = p.content
+  currentGalleryUrls = [...p.content.matchAll(/<section class="article-gallery"[^>]*>([\s\S]*?)<\/section>/g)]
+    .flatMap((section) => [...section[1].matchAll(/<img[^>]+src="([^"]+)"/g)].map((image) => image[1]));
+  const contentWithoutGallery = p.content.replace(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g, "");
+  $("#body").value = contentWithoutGallery
     .replace(/<p>/g, "")
     .replace(/<\/p>/g, "\n\n")
     .replace(/<br\s*\/?>/g, "\n")
@@ -280,6 +350,7 @@ async function edit(id) {
   $("#imageUrl").value = p.image_url || "";
   $("#featured").checked = Boolean(p.is_featured);
   previewImage(p.image_url);
+  renderGalleryPreview();
   $("#editorTitle").textContent = "Editar matéria";
   $("#saveState").textContent = "Salva online";
   $("#excerptCount").textContent = p.excerpt.length;

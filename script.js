@@ -324,10 +324,10 @@ function bindArchive(title, items, intro) {
   });
 }
 function collaboratorHighlights() {
-  return `<section class="collaborator-highlights" aria-label="Colaboradores em destaque">
+  return `<section class="page-title"><span>Garimpando Life</span><h1>Colaboradores</h1><p>Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.</p></section><section class="collaborator-highlights" aria-label="Colaboradores">
     <article><span>LG</span><div><small>COLABORADOR</small><h2>Let’s Go</h2><p>Conteúdos, experiências e novidades em parceria com o Garimpando Life.</p></div></article>
     <article><span>TR</span><div><small>COLABORADOR</small><h2>Tudo em Revista</h2><p>Informação, comportamento e diferentes olhares para os leitores.</p></div></article>
-  </section>`;
+  </section><div class="collaborator-sidebar">${sidebar()}</div>`;
 }
 function article(p) {
   const c = categoryForPost(p);
@@ -416,16 +416,7 @@ function route() {
     );
   else if (hash === "contato") contact();
   else if (hash === "colaboradores") {
-    const c = categories.find((x) => x.slug === "colaboradores"),
-      items = c ? posts.filter((p) => belongsToCategory(p, c)) : [];
-    archive(
-      "Colaboradores",
-      items,
-      "Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.",
-    );
-    document
-      .querySelector(".layout")
-      ?.insertAdjacentHTML("beforebegin", collaboratorHighlights());
+    app.innerHTML = collaboratorHighlights();
   } else if (parts[0] === "materia") {
     const p = posts.find((x) => x.slug === parts.slice(1).join("/"));
     p ? article(p) : home();

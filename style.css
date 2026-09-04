@@ -265,13 +265,15 @@ aside .ad {
   gap: 8px;
   margin-bottom: 42px;
 }
-.collaborator-highlights { width: min(1120px, calc(100% - 40px)); margin: 50px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.collaborator-highlights { width: min(760px, calc(100% - 40px)); margin: 50px auto 0; display: grid; grid-template-columns: 1fr; gap: 22px; }
 .collaborator-highlights article { display: flex; align-items: center; gap: 22px; padding: 28px; border: 1px solid var(--line); background: #fff; box-shadow: 0 15px 40px #26392d0c; transition: transform .25s ease, box-shadow .25s ease; }
 .collaborator-highlights article:hover { transform: translateY(-4px); box-shadow: 0 20px 45px #26392d18; }
 .collaborator-highlights article > span { flex: 0 0 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; background: var(--green); color: #fff; font: 700 22px Georgia, serif; }
 .collaborator-highlights small { color: var(--orange); font-weight: 800; letter-spacing: .12em; }
 .collaborator-highlights h2 { margin: 7px 0; color: var(--green); font: 700 27px Georgia, serif; }
 .collaborator-highlights p { margin: 0; color: #666; line-height: 1.55; }
+.collaborator-sidebar { width: min(760px, calc(100% - 40px)); margin: 38px auto 0; }
+.collaborator-sidebar aside { width: 100%; display: none; }
 .columns a {
   border: 1px solid var(--line);
   padding: 13px;
@@ -653,6 +655,9 @@ footer p {
   object-fit: cover;
   margin-bottom: 36px;
 }
+.article-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 34px 0; }
+.article-gallery img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; }
+.article-gallery img:nth-child(3n + 1) { grid-column: 1 / -1; height: 430px; }
 .article-body h2,
 .article-body h3,
 .article-body h4 {
@@ -739,4 +744,6 @@ footer p {
   .collaborator-highlights article > span { flex-basis: 58px; height: 58px; font-size: 18px; }
   .collaborator-highlights h2 { font-size: 23px; }
   .partners > a, .partners > .partner-card { min-height: 105px; }
+  .article-gallery { grid-template-columns: 1fr; gap: 12px; }
+  .article-gallery img, .article-gallery img:nth-child(3n + 1) { grid-column: auto; height: 260px; }
 }
