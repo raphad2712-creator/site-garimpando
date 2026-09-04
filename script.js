@@ -178,24 +178,24 @@ function sidebar() {
     { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
     { name: "Oceanic", image: "images/parceiro-oceanic.jpg", url: "https://www.oceanic.com.br/" },
     { name: "Entreposto", image: "images/parceiro-entreposto.jpg", url: "https://www.entreposto.com.br/" },
-    { name: "Dona Deôla", initials: "DD", url: "https://www.donadeola.com.br/" },
-    { name: "Ótica Brasolin", initials: "OB", url: "https://www.brasolin.com.br/" },
+    { name: "Dona Deôla", domain: "donadeola.com.br", url: "https://www.donadeola.com.br/" },
+    { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
     { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
-    { name: "À Mesa Gastronomia", initials: "AM", url: "https://www.instagram.com/amesagastronomia/" },
+    { name: "À Mesa Gastronomia", domain: "instagram.com", url: "https://www.instagram.com/amesagastronomia/" },
     { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
     { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
-    { name: "UNIT", initials: "U", url: "https://www.unit.br/" },
-    { name: "GNC Suécia Salvador", initials: "GNC", url: "https://www.gncsuecia.com.br/" },
-    { name: "Sais Beach Hotel Maceió", initials: "SB", url: "https://www.saishotel.com.br/" },
+    { name: "UNIT", domain: "unit.br", url: "https://www.unit.br/" },
+    { name: "GNC Suécia Salvador", domain: "gncsuecia.com.br", url: "https://www.gncsuecia.com.br/" },
+    { name: "Sais Beach Hotel Maceió", domain: "saishotel.com.br", url: "https://www.saishotel.com.br/" },
     { name: "Ricardo Almeida", image: "images/logo-ricardo-almeida.png", url: "https://www.ricardoalmeida.com.br/" },
-    { name: "Sococo", initials: "S", url: "https://www.sococo.com.br/" },
-    { name: "Jacques Janine Granja Viana", initials: "JJ", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
+    { name: "Sococo", domain: "sococo.com.br", url: "https://www.sococo.com.br/" },
+    { name: "Jacques Janine Granja Viana", domain: "jacquesjanine.com.br", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
   ];
   const partnersHtml = partnerBrands
     .map((brand) => {
-      const visual = brand.image
-        ? `<img class="partner-logo" src="${brand.image}" alt="Logo ${esc(brand.name)}">`
-        : `<span class="partner-monogram" aria-hidden="true">${esc(brand.initials)}</span>`;
+      const logo = brand.image ||
+        `https://www.google.com/s2/favicons?domain_url=https://${brand.domain}&sz=256`;
+      const visual = `<img class="partner-logo" src="${logo}" alt="Logo ${esc(brand.name)}" onerror="this.style.display='none'">`;
       const content = `${visual}<span class="partner-name">${esc(brand.name)}</span>`;
       return brand.url
         ? `<a href="${brand.url}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
