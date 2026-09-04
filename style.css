@@ -663,6 +663,7 @@ footer p {
   object-fit: cover;
   margin-bottom: 36px;
 }
+.article-cover[src*="cariri-capa"] { max-height: none; object-fit: contain; }
 .article-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 34px 0; }
 .article-gallery img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; }
 .article-gallery img:nth-child(3n + 1) { grid-column: 1 / -1; height: 430px; }

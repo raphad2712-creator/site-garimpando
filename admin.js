@@ -328,9 +328,7 @@ async function edit(id) {
     .eq("id", id)
     .single();
   if (error) return toast("Não foi possível abrir a matéria");
-  const correction = data.title.trim().toLowerCase() === "cariri"
-    ? window.GARIMPANDO_EDITORIAL_CORRECTIONS?.[data.slug]
-    : null,
+  const correction = window.GARIMPANDO_EDITORIAL_CORRECTIONS?.[data.slug] || null,
     savedPhotos =
       (String(data.content || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
       (String(data.content || "").match(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g) || []).join(""),

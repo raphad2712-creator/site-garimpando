@@ -34,9 +34,7 @@ async function loadOnlinePosts() {
   const ids = new Set(posts.map((p) => String(p.id)));
   online.reverse().forEach((p) => {
     if (!ids.has(String(p.id))) {
-      const correction = p.title.trim().toLowerCase() === "cariri"
-        ? editorialCorrections[p.slug]
-        : null;
+      const correction = editorialCorrections[p.slug] || null;
       const resolvedCategory =
         categories.find((c) => c.id === p.category_id) ||
         categories.find(
