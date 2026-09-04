@@ -356,6 +356,9 @@ function collaboratorHighlights() {
 }
 function article(p) {
   const c = categoryForPost(p);
+  const coverClass = p.image?.includes("cariri-capa")
+    ? "article-cover article-cover-full"
+    : "article-cover";
   app.innerHTML =
     '<section class="page-title"><span>' +
     esc(c?.name || "Garimpando Life") +
@@ -365,7 +368,7 @@ function article(p) {
     date(p.date) +
     '</p></section><div class="article-layout"><article class="article-body">' +
     (p.image
-      ? '<img class="article-cover" src="' +
+      ? '<img class="' + coverClass + '" src="' +
         esc(p.image) +
         '" alt="' +
         esc(p.imageAlt || p.title) +
