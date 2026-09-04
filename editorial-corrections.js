@@ -2,9 +2,8 @@ window.GARIMPANDO_EDITORIAL_CORRECTIONS = {
   "cariri-545726": {
     title: "CARIRI, Arte e Cultura do Ceará",
     excerpt: "Voamos para Juazeiro do Norte, Ceará, em uma jornada pela arte, cultura, fé e história do Cariri.",
-    image: "images/cariri-capa.jpeg",
     is_featured: true,
-    content: [
+    content: `<figure class="article-inline-image"><img loading="lazy" src="images/cariri-capa.jpeg" alt="Cariri, arte e cultura do Ceará"></figure>` + [
       `Voamos para Juazeiro do Norte, Ceará. A cidade surpreendeu-nos com sua beleza e tamanho, além da diversidade de seus mestres artesãos, a começar com a Associação de Artesãos do Centro Mestre Noza onde encontram-se outros diversos artistas detentores de uma destreza fantástica em esculpir madeira criando figuras maravilhosas da arte popular e emocionantes figuras religiosas. Amei e comprei diversas para mim.`,
       `Um escândalo de poesia.`,
       `Rodamos a cidade e fomos visitar outros mestres sensacionais como o Mestre Índio que amei seu trabalho e outros da região.`,

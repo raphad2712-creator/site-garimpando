@@ -54,7 +54,7 @@ async function loadOnlinePosts() {
         categoryName: p.category_name || resolvedCategory?.name || "Blog",
         categorySlug:
           resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
-        image: correction?.image || p.image_url || "",
+        image: p.image_url || "",
         isFeatured: correction?.is_featured || Boolean(p.is_featured),
         imageAlt: correction?.title || p.title,
         originalUrl: "",
