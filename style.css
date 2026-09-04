@@ -104,6 +104,10 @@ a {
 .hero-link:hover > img { transform: scale(1.025); }
 .hero-link > div { position: absolute; left: 17%; right: 17%; bottom: 15px; background: #fff; text-align: center; padding: 42px; box-shadow: 0 16px 40px #0000000e; }
 .hero-link p span { margin-left: 0; color: var(--orange); font-weight: 800; }
+.hero-collage { height: auto; margin-bottom: 55px; }
+.hero-collage .hero-link { display: flex; flex-direction: column; overflow: visible; }
+.hero-collage .hero-link > img { height: auto; aspect-ratio: 1536 / 720; object-fit: contain; }
+.hero-collage .hero-link > div { position: relative; left: auto; right: auto; bottom: auto; width: min(760px, 86%); margin: -55px auto 0; z-index: 1; }
 .hero > div {
   position: absolute;
   left: 17%;
@@ -564,6 +568,9 @@ footer p {
     padding: 30px 20px;
   }
   .hero-link > div { left: 18px; right: 18px; bottom: 30px; padding: 30px 20px; }
+  .hero-collage { height: auto; margin-bottom: 35px; }
+  .hero-collage .hero-link > img { height: auto; object-fit: contain; }
+  .hero-collage .hero-link > div { left: auto; right: auto; bottom: auto; width: calc(100% - 36px); margin: -18px auto 0; padding: 25px 18px; }
   .hero h1 {
     font-size: 39px;
   }

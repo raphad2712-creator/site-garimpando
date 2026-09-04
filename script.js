@@ -307,11 +307,12 @@ function home() {
     heroImage = featured?.image || "images/hero.png",
     heroTitle = featured?.title || "Jordânia, Apaixonante Jordânia",
     heroLink = featured ? `#materia/${featured.slug}` : "#categoria/viagem",
-    heroCategory = featuredCategory?.name || "Viagens";
+    heroCategory = featuredCategory?.name || "Viagens",
+    heroClass = heroImage.includes("cariri-capa") ? "hero hero-collage" : "hero";
   archive("Últimas matérias", latest, intro);
   const built = app.innerHTML;
   app.innerHTML =
-    `<section class="hero"><a class="hero-link" href="${heroLink}"><img src="${esc(heroImage)}" alt="${esc(heroTitle)}"><div><h1>${esc(heroTitle)}</h1><p><span>${esc(heroCategory)}</span></p></div></a></section><section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>` +
+    `<section class="${heroClass}"><a class="hero-link" href="${heroLink}"><img src="${esc(heroImage)}" alt="${esc(heroTitle)}"><div><h1>${esc(heroTitle)}</h1><p><span>${esc(heroCategory)}</span></p></div></a></section><section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>` +
     built;
   bindArchive("Últimas matérias", latest, intro);
 }
