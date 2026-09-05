@@ -17,6 +17,17 @@ const data = window.GARIMPANDO_CONTENT || {
     ? window.supabase.createClient(cfg.url, cfg.anonKey)
     : null;
 const editorialCorrections = window.GARIMPANDO_EDITORIAL_CORRECTIONS || {};
+const localCoverBySlug = {
+  "uma-viagem-pela-alma-meu-roteiro-espiritual-pela-italia": "images/italia.jpg",
+  "aeromexico-celebra-seus-90-anos-com-coquetel-em-sao-paulo-no-hilton-morumbi": "images/aeromexico.jpg",
+  "paz-e-bem-estar": "images/bemestar.jpg",
+  "sergipe-cultura-educacao-e-muita-tradicao": "images/sergipe.jpeg",
+  "comidinhas-de-inverno": "images/comidinhas.jpg",
+  "bem-estar-bem-viver": "images/unique.jpg",
+};
+posts.forEach((post) => {
+  if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
+});
 const savedArticlePhotos = (html) =>
   (String(html || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
   (String(html || "").match(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g) || []).join("");
@@ -431,6 +442,23 @@ function animatePage() {
   );
   elements.forEach((el) => observer.observe(el));
 }
+function protectImages() {
+  document.querySelectorAll("img").forEach((image) => {
+    image.addEventListener(
+      "error",
+      () => {
+        if (image.closest(".article-body > div")) {
+          image.style.display = "none";
+          return;
+        }
+        if (!image.src.endsWith("/images/hero.png")) {
+          image.src = "images/hero.png";
+        }
+      },
+      { once: true },
+    );
+  });
+}
 function route() {
   shown = 18;
   const hash = location.hash.slice(1) || "inicio",
@@ -465,6 +493,7 @@ function route() {
     const p = pages.find((x) => x.slug === hash);
     p ? publicPage(p) : home();
   }
+  protectImages();
   window.scrollTo({ top: 0, behavior: "smooth" });
   requestAnimationFrame(animatePage);
 }

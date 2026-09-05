@@ -1,0 +1,26 @@
+COMO PUBLICAR O SITE NO CPANEL
+
+1. Abra o Gerenciador de Arquivos do cPanel.
+2. Entre na pasta public_html do domínio.
+3. Envie o arquivo site-garimpando-cpanel.zip.
+4. Clique com o botão direito no ZIP e escolha Extrair.
+5. O index.html e a pasta images precisam ficar juntos, diretamente dentro de public_html.
+
+Estrutura correta:
+
+public_html/
+  index.html
+  style.css
+  script.js
+  content.js
+  editorial-corrections.js
+  admin.html
+  admin.css
+  admin.js
+  supabase-config.js
+  images/
+
+Não deixe esses arquivos dentro de outra pasta chamada site-garimpando-cpanel.
+
+Depois de publicar, abra o site e atualize a página usando Ctrl + F5.
+O painel administrativo fica em: https://SEU-DOMINIO.com.br/admin.html
