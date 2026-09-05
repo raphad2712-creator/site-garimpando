@@ -42,33 +42,36 @@ async function loadOnlinePosts() {
     console.warn("Banco do blog indisponível", error.message);
     return;
   }
-  const ids = new Set(posts.map((p) => String(p.id)));
   online.reverse().forEach((p) => {
-    if (!ids.has(String(p.id))) {
-      const correction = editorialCorrections[p.slug] || null;
-      const resolvedCategory =
-        categories.find((c) => c.id === p.category_id) ||
-        categories.find(
-          (c) =>
-            normalizeSlug(c.name) === normalizeSlug(p.category_name || ""),
-        );
-      posts.unshift({
-        id: p.id,
-        slug: p.slug,
-        date: p.published_at,
-        title: correction?.title || p.title,
-        excerpt: correction?.excerpt || p.excerpt,
-        content: correction ? correction.content + savedArticlePhotos(p.content) : p.content,
-        categories: resolvedCategory ? [resolvedCategory.id] : [],
-        categoryName: p.category_name || resolvedCategory?.name || "Blog",
-        categorySlug:
-          resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
-        image: correction?.image || p.image_url || "",
-        isFeatured: correction?.is_featured || Boolean(p.is_featured),
-        imageAlt: correction?.title || p.title,
-        originalUrl: "",
-      });
-    }
+    const correction = editorialCorrections[p.slug] || null;
+    const resolvedCategory =
+      categories.find((c) => c.id === p.category_id) ||
+      categories.find(
+        (c) =>
+          normalizeSlug(c.name) === normalizeSlug(p.category_name || ""),
+      );
+    const onlinePost = {
+      id: p.id,
+      slug: p.slug,
+      date: p.published_at,
+      title: correction?.title || p.title,
+      excerpt: correction?.excerpt || p.excerpt,
+      content: correction ? correction.content + savedArticlePhotos(p.content) : p.content,
+      categories: resolvedCategory ? [resolvedCategory.id] : [],
+      categoryName: p.category_name || resolvedCategory?.name || "Blog",
+      categorySlug:
+        resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
+      image: correction?.image || p.image_url || "",
+      isFeatured: correction?.is_featured || Boolean(p.is_featured),
+      imageAlt: correction?.title || p.title,
+      originalUrl: "",
+    };
+    const existingIndex = posts.findIndex(
+      (existing) =>
+        String(existing.id) === String(p.id) || existing.slug === p.slug,
+    );
+    if (existingIndex >= 0) posts.splice(existingIndex, 1, onlinePost);
+    else posts.unshift(onlinePost);
   });
   renderCategoryMenu();
   route();
