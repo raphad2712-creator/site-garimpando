@@ -66,13 +66,21 @@ async function loadOnlinePosts() {
       imageAlt: correction?.title || p.title,
       originalUrl: "",
     };
-    const existingIndex = posts.findIndex(
+    const sameMatter = (existing) =>
+      String(existing.id) === String(p.id) ||
+      existing.slug === p.slug ||
+      normalizeSlug(existing.title) === normalizeSlug(onlinePost.title);
+    const correctedVersionExists = posts.some(
       (existing) =>
-        String(existing.id) === String(p.id) || existing.slug === p.slug,
+        sameMatter(existing) && editorialCorrections[existing.slug],
     );
-    if (existingIndex >= 0) posts.splice(existingIndex, 1, onlinePost);
-    else posts.unshift(onlinePost);
+    if (!correction && correctedVersionExists) return;
+    for (let index = posts.length - 1; index >= 0; index -= 1) {
+      if (sameMatter(posts[index])) posts.splice(index, 1);
+    }
+    posts.unshift(onlinePost);
   });
+  removeRepeatedPosts();
   renderCategoryMenu();
   route();
 }
@@ -119,6 +127,26 @@ const belongsToCategory = (post, category) => {
     normalizeSlug(post.categoryName) === category.slug
   );
 };
+function removeRepeatedPosts() {
+  const usedIds = new Set();
+  const usedSlugs = new Set();
+  const usedTitles = new Set();
+  const uniquePosts = posts.filter((post) => {
+    const id = String(post.id || "");
+    const slug = normalizeSlug(post.slug);
+    const title = normalizeSlug(post.title);
+    const repeated =
+      (id && usedIds.has(id)) ||
+      (slug && usedSlugs.has(slug)) ||
+      (title && usedTitles.has(title));
+    if (repeated) return false;
+    if (id) usedIds.add(id);
+    if (slug) usedSlugs.add(slug);
+    if (title) usedTitles.add(title);
+    return true;
+  });
+  posts.splice(0, posts.length, ...uniquePosts);
+}
 const categoryMenu = document.querySelector("#categoryMenu");
 const categoryCount = (category) =>
   posts.filter((post) => belongsToCategory(post, category)).length;
@@ -501,5 +529,6 @@ function route() {
   requestAnimationFrame(animatePage);
 }
 addEventListener("hashchange", route);
+removeRepeatedPosts();
 route();
 loadOnlinePosts();
