@@ -81,8 +81,6 @@ async function loadOnlinePosts() {
     posts.unshift(onlinePost);
   });
   removeRepeatedPosts();
-  renderCategoryMenu();
-  route();
 }
 const app = document.querySelector("#app"),
   menu = document.querySelector("#menu");
@@ -529,6 +527,14 @@ function route() {
   requestAnimationFrame(animatePage);
 }
 addEventListener("hashchange", route);
-removeRepeatedPosts();
-route();
-loadOnlinePosts();
+async function startSite() {
+  removeRepeatedPosts();
+  if (publicDb) {
+    app.innerHTML =
+      '<section class="page-title"><span>Garimpando Life</span><h1>Carregando matérias...</h1></section>';
+    await loadOnlinePosts();
+  }
+  renderCategoryMenu();
+  route();
+}
+startSite();
