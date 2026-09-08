@@ -102,6 +102,7 @@ $("#logoutBtn").addEventListener("click", async () => {
 });
 function reset() {
   form.reset();
+  $("#body").innerHTML = "";
   $("#postId").value = "";
   $("#date").value = new Date().toISOString().slice(0, 10);
   selectedImage = null;
@@ -184,31 +185,55 @@ $("#excerpt").addEventListener(
   "input",
   (e) => ($("#excerptCount").textContent = e.target.value.length),
 );
-document.querySelectorAll(".toolbar button").forEach((b) =>
-  b.addEventListener("click", () => {
-    const field = $("#body"),
-      tag = b.dataset.tag,
-      start = field.selectionStart,
-      end = field.selectionEnd,
-      selected = field.value.slice(start, end) || "texto";
-    const value =
-      tag === "a"
-        ? `<a href="${prompt("Cole o endereço do link:") || "#"}">${selected}</a>`
-        : `<${tag}>${selected}</${tag}>`;
-    field.setRangeText(value, start, end, "end");
-    field.focus();
-  }),
-);
+document.querySelectorAll(".toolbar button").forEach((button) => {
+  button.addEventListener("mousedown", (event) => event.preventDefault());
+  button.addEventListener("click", () => {
+    const editor = $("#body"),
+      command = button.dataset.command;
+    editor.focus();
+    if (command === "createLink") {
+      let address = prompt("Cole o endereço do link:");
+      if (!address) return;
+      address = address.trim();
+      if (!/^(https?:\/\/|mailto:|tel:|#)/i.test(address)) address = "https://" + address;
+      document.execCommand("createLink", false, address);
+    } else {
+      document.execCommand(command, false, null);
+    }
+  });
+});
+function sanitizedEditorHtml() {
+  const holder = document.createElement("div");
+  holder.innerHTML = $("#body").innerHTML.trim();
+  holder.querySelectorAll("script,style,iframe,object,embed").forEach((element) => element.remove());
+  const allowed = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "A"]);
+  [...holder.querySelectorAll("*")].forEach((element) => {
+    if (!allowed.has(element.tagName)) {
+      element.replaceWith(...element.childNodes);
+      return;
+    }
+    const linkAddress = element.tagName === "A" ? element.getAttribute("href") || "" : "";
+    [...element.attributes].forEach((attribute) => element.removeAttribute(attribute.name));
+    if (element.tagName === "A") {
+      if (!/^(https?:\/\/|mailto:|tel:|#)/i.test(linkAddress)) {
+        element.replaceWith(...element.childNodes);
+        return;
+      }
+      element.setAttribute("href", linkAddress);
+      element.setAttribute("target", "_blank");
+      element.setAttribute("rel", "noopener");
+    }
+  });
+  const result = holder.innerHTML.trim();
+  return result && !/<(p|div)[\s>]/i.test(result) ? `<p>${result}</p>` : result;
+}
 function galleryMarkup(urls) {
   return urls.length
     ? `<section class="article-gallery" aria-label="Galeria de fotos">${urls.map((url) => `<img loading="lazy" src="${esc(url)}" alt="Foto da matéria">`).join("")}</section>`
     : "";
 }
 function htmlContent(newImages = []) {
-  const body = $("#body").value
-    .split(/\n{2,}/)
-    .map((x) => `<p>${esc(x).replace(/\n/g, "<br>")}</p>`)
-    .join("");
+  const body = sanitizedEditorHtml();
   return body + galleryMarkup(currentGalleryUrls.concat(newImages.map((image) => image.url)));
 }
 async function uploadImage() {
@@ -243,6 +268,11 @@ async function uploadGalleryImages() {
 }
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  if (!$("#body").textContent.trim()) {
+    toast("Escreva o texto da matéria");
+    $("#body").focus();
+    return;
+  }
   const button = e.submitter;
   button.disabled = true;
   button.textContent = "Publicando...";
@@ -257,7 +287,7 @@ form.addEventListener("submit", async (e) => {
         slug: id
           ? undefined
           : slugify($("#title").value) + "-" + Date.now().toString().slice(-6),
-        excerpt: $("#excerpt").value.trim() || $("#body").value.replace(/<[^>]*>/g, "").trim().slice(0, 440),
+        excerpt: $("#excerpt").value.trim() || $("#body").textContent.trim().slice(0, 440),
         content: htmlContent(inlineImages),
         category_id,
         category_name: category?.name || "Blog",
@@ -351,12 +381,7 @@ async function edit(id) {
   const contentWithoutImages = p.content
     .replace(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g, "")
     .replace(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g, "");
-  const textDecoder = document.createElement("textarea");
-  textDecoder.innerHTML = contentWithoutImages
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/(p|h1|h2|h3|h4|blockquote|div|section)>/gi, "\n\n")
-    .replace(/<[^>]+>/g, "");
-  $("#body").value = textDecoder.value.replace(/\n{3,}/g, "\n\n").trim();
+  $("#body").innerHTML = contentWithoutImages.trim();
   $("#imageUrl").value = p.image_url || "";
   $("#featured").checked = Boolean(p.is_featured);
   previewImage(p.image_url);

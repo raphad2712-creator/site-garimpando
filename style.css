@@ -664,9 +664,17 @@ footer p {
   margin-bottom: 36px;
 }
 .article-cover[src*="cariri-capa"], .article-cover-full { max-height: none; height: auto; object-fit: contain; }
-.article-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 34px 0; }
-.article-gallery img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; }
-.article-gallery img:nth-child(3n + 1) { grid-column: 1 / -1; height: 430px; }
+.article-gallery { position: relative; margin: 34px 0; overflow: hidden; border-radius: 10px; background: #f4f1eb; }
+.gallery-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.gallery-track::-webkit-scrollbar { display: none; }
+.article-gallery img { flex: 0 0 100%; width: 100%; height: 520px; padding: 10px; object-fit: contain; scroll-snap-align: center; border-radius: 10px; cursor: zoom-in; }
+.gallery-arrow { position: absolute; z-index: 2; top: 50%; width: 46px; height: 46px; border: 0; border-radius: 50%; background: #294b3be8; color: #fff; font-size: 34px; line-height: 1; cursor: pointer; transform: translateY(-50%); box-shadow: 0 5px 18px #0003; }
+.gallery-previous { left: 12px; }
+.gallery-next { right: 12px; }
+.photo-viewer { width: min(1100px, 94vw); max-width: none; padding: 0; border: 0; border-radius: 12px; background: #111; overflow: visible; }
+.photo-viewer::backdrop { background: #000c; }
+.photo-viewer img { display: block; width: 100%; max-height: 88vh; object-fit: contain; border-radius: 12px; }
+.photo-viewer button { position: absolute; z-index: 2; top: -18px; right: -18px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #fff; color: #222; font-size: 28px; cursor: pointer; box-shadow: 0 4px 20px #0005; }
 .article-inline-image { margin: 32px 0; }
 .article-inline-image img { display: block; width: 100%; max-height: 620px; object-fit: contain; border-radius: 8px; background: #f4f1eb; }
 .article-body h2,
@@ -757,6 +765,6 @@ footer p {
   .collaborator-highlights article > span { flex-basis: 58px; height: 58px; font-size: 18px; }
   .collaborator-highlights h2 { font-size: 23px; }
   .partners > a, .partners > .partner-card { min-height: 105px; }
-  .article-gallery { grid-template-columns: 1fr; gap: 12px; }
-  .article-gallery img, .article-gallery img:nth-child(3n + 1) { grid-column: auto; height: 260px; }
+  .article-gallery img { height: 360px; padding: 6px; }
+  .gallery-arrow { flex-basis: 40px; width: 40px; height: 40px; font-size: 29px; }
 }

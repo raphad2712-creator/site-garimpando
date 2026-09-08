@@ -44,6 +44,9 @@ async function loadOnlinePosts() {
   }
   online.reverse().forEach((p) => {
     const correction = editorialCorrections[p.slug] || null;
+    const isCaririMain =
+      normalizeSlug(correction?.title || p.title) ===
+      "cariri-arte-e-cultura-do-ceara";
     const resolvedCategory =
       categories.find((c) => c.id === p.category_id) ||
       categories.find(
@@ -62,6 +65,7 @@ async function loadOnlinePosts() {
       categorySlug:
         resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
       image: correction?.image || p.image_url || "",
+      articleImage: isCaririMain ? "images/cariri-capa-v3.jpg" : "",
       isFeatured: correction?.is_featured || Boolean(p.is_featured),
       imageAlt: correction?.title || p.title,
       originalUrl: "",
@@ -394,9 +398,75 @@ const collaboratorPosts = [
 function collaboratorHighlights() {
   return `<section class="page-title"><span>Garimpando Life</span><h1>Colaboradores</h1><p>Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.</p></section><div class="collaborator-layout"><section class="collaborator-highlights" aria-label="Colaboradores">${collaboratorPosts.map((post, index) => `<article><span>${index ? "TR" : "LG"}</span><div><small>COLABORADOR</small><h2><a href="#materia/${post.slug}">${post.title}</a></h2><p>${post.excerpt}</p><a class="more" href="#materia/${post.slug}">Leia mais →</a></div></article>`).join("")}</section>${sidebar()}</div>`;
 }
+function openPhotoViewer(image) {
+  let viewer = document.querySelector("#photoViewer");
+  if (!viewer) {
+    viewer = document.createElement("dialog");
+    viewer.id = "photoViewer";
+    viewer.className = "photo-viewer";
+    viewer.innerHTML =
+      '<button type="button" aria-label="Fechar foto">×</button><img alt="Foto ampliada">';
+    document.body.appendChild(viewer);
+    viewer.querySelector("button").onclick = () => viewer.close();
+    viewer.onclick = (event) => {
+      if (event.target === viewer) viewer.close();
+    };
+  }
+  viewer.querySelector("img").src = image.src;
+  viewer.querySelector("img").alt = image.alt || "Foto ampliada";
+  viewer.showModal();
+}
+function initArticleGalleries() {
+  document.querySelectorAll(".article-gallery").forEach((gallery) => {
+    if (gallery.dataset.carouselReady) return;
+    gallery.dataset.carouselReady = "true";
+    const images = [...gallery.querySelectorAll("img")];
+    if (!images.length) return;
+    const track = document.createElement("div");
+    track.className = "gallery-track";
+    images.forEach((image) => track.appendChild(image));
+    gallery.appendChild(track);
+    images.forEach((image) => {
+      image.tabIndex = 0;
+      image.title = "Clique para ampliar";
+      image.onclick = () => openPhotoViewer(image);
+      image.onkeydown = (event) => {
+        if (event.key === "Enter" || event.key === " ") openPhotoViewer(image);
+      };
+    });
+    if (images.length < 2) return;
+    const previous = document.createElement("button");
+    const next = document.createElement("button");
+    previous.type = next.type = "button";
+    previous.className = "gallery-arrow gallery-previous";
+    next.className = "gallery-arrow gallery-next";
+    previous.setAttribute("aria-label", "Foto anterior");
+    next.setAttribute("aria-label", "Próxima foto");
+    previous.textContent = "‹";
+    next.textContent = "›";
+    gallery.append(previous, next);
+    let current = 0;
+    const show = (index) => {
+      current = (index + images.length) % images.length;
+      track.scrollTo({ left: current * track.clientWidth, behavior: "smooth" });
+    };
+    track.addEventListener("scroll", () => {
+      if (track.clientWidth) current = Math.round(track.scrollLeft / track.clientWidth);
+    });
+    previous.onclick = () => show(current - 1);
+    next.onclick = () => show(current + 1);
+    let timer = setInterval(() => show(current + 1), 4500);
+    gallery.addEventListener("pointerenter", () => clearInterval(timer));
+    gallery.addEventListener("pointerleave", () => {
+      clearInterval(timer);
+      timer = setInterval(() => show(current + 1), 4500);
+    });
+  });
+}
 function article(p) {
   const c = categoryForPost(p);
-  const coverClass = p.image?.includes("cariri-capa")
+  const articleImage = p.articleImage || p.image || "";
+  const coverClass = articleImage.includes("cariri-capa")
     ? "article-cover article-cover-full"
     : "article-cover";
   app.innerHTML =
@@ -407,9 +477,9 @@ function article(p) {
     "</h1><p>" +
     date(p.date) +
     '</p></section><div class="article-layout"><article class="article-body">' +
-    (p.image
+    (articleImage
       ? '<img class="' + coverClass + '" src="' +
-        esc(p.image) +
+        esc(articleImage) +
         '" alt="' +
         esc(p.imageAlt || p.title) +
         '">'
@@ -419,6 +489,7 @@ function article(p) {
     '</div><a class="button" href="#inicio">Voltar ao início</a></article>' +
     sidebar() +
     "</div>";
+  initArticleGalleries();
 }
 function publicPage(p) {
   app.innerHTML =

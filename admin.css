@@ -212,6 +212,31 @@ textarea {
   min-height: 300px;
   line-height: 1.7;
 }
+.rich-editor {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+  border: 1px solid var(--line);
+  border-radius: 0 0 9px 9px;
+  padding: 16px;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+  outline: none;
+  overflow-y: auto;
+  white-space: normal;
+}
+.rich-editor:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px #d2842018;
+}
+.rich-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+  pointer-events: none;
+}
+.rich-editor p, .rich-editor div { margin: 0 0 12px; }
+.rich-editor a { color: #b56516; text-decoration: underline; }
 .wide > small {
   display: block;
   text-align: right;
