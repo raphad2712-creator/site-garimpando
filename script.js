@@ -413,8 +413,19 @@ function archive(title, items, intro) {
   });
 }
 function home() {
+  const hiddenHomeTitles = [
+      "a-comida-do-sertao",
+      "o-turismo-local-e-focado",
+      "na-regiao-do-cariri-a-vida-cotidiana",
+    ],
+    isHiddenFromHome = (post) => {
+      const title = normalizeSlug(post.title || "");
+      return hiddenHomeTitles.some((start) => title.startsWith(start));
+    };
   const featured = posts.find((post) => post.isFeatured),
-    latest = posts.filter((post) => post !== featured && !post.isFeatured).slice(0, 4),
+    latest = posts
+      .filter((post) => post !== featured && !post.isFeatured && !isHiddenFromHome(post))
+      .slice(0, 4),
     intro = "As quatro publicações mais recentes do Garimpando Life.",
     featuredCategory = featured ? categoryForPost(featured) : null,
     heroImage = featured?.image || "images/hero.png",
