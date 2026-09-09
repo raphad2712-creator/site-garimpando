@@ -343,29 +343,23 @@ function initCompanyCarousels() {
       clearInterval(timer);
       timer = setInterval(() => next.click(), 4200);
     });
-    carousel.querySelectorAll(".company-card[data-brand-logo]").forEach((card) => {
-      const open = (event) => {
-        event.preventDefault();
-        openBrandViewer(card);
-      };
-      card.addEventListener("click", open);
-      card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") open(event);
-      });
-    });
   });
 }
 function openBrandViewer(card) {
   let viewer = document.querySelector("#brand-viewer");
   if (!viewer) {
-    viewer = document.createElement("dialog");
+    viewer = document.createElement("div");
     viewer.id = "brand-viewer";
     viewer.className = "brand-viewer";
-    viewer.innerHTML = '<button class="brand-viewer-close" type="button" aria-label="Fechar ampliação">×</button><img alt=""><h3></h3><a class="brand-site-link" target="_blank" rel="noopener">Visitar site</a>';
+    viewer.hidden = true;
+    viewer.setAttribute("role", "dialog");
+    viewer.setAttribute("aria-modal", "true");
+    viewer.setAttribute("aria-label", "Logo ampliada");
+    viewer.innerHTML = '<div class="brand-viewer-panel"><button class="brand-viewer-close" type="button" aria-label="Fechar ampliação">×</button><img alt=""><h3></h3><a class="brand-site-link" target="_blank" rel="noopener">Visitar site</a></div>';
     document.body.appendChild(viewer);
-    viewer.querySelector(".brand-viewer-close").addEventListener("click", () => viewer.close());
+    viewer.querySelector(".brand-viewer-close").addEventListener("click", () => closeBrandViewer());
     viewer.addEventListener("click", (event) => {
-      if (event.target === viewer) viewer.close();
+      if (event.target === viewer) closeBrandViewer();
     });
   }
   const name = card.dataset.brandName || "Marca parceira";
@@ -380,7 +374,31 @@ function openBrandViewer(card) {
   } else {
     siteLink.hidden = true;
   }
-  viewer.showModal();
+  viewer.hidden = false;
+  document.body.classList.add("brand-viewer-open");
+  viewer.querySelector(".brand-viewer-close").focus();
+}
+function closeBrandViewer() {
+  const viewer = document.querySelector("#brand-viewer");
+  if (!viewer) return;
+  viewer.hidden = true;
+  document.body.classList.remove("brand-viewer-open");
+}
+function initBrandViewerInteraction() {
+  document.addEventListener("click", (event) => {
+    const card = event.target.closest?.(".company-card[data-brand-logo]");
+    if (!card) return;
+    event.preventDefault();
+    openBrandViewer(card);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeBrandViewer();
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const card = event.target.closest?.(".company-card[data-brand-logo]");
+    if (!card) return;
+    event.preventDefault();
+    openBrandViewer(card);
+  });
 }
 function initPartnerCarousels() {
   document.querySelectorAll(".partners-carousel").forEach((carousel) => {
@@ -754,4 +772,5 @@ async function startSite() {
   renderCategoryMenu();
   route();
 }
+initBrandViewerInteraction();
 startSite();

@@ -283,12 +283,14 @@ aside .ad {
 .company-next { right: 0; }
 .home-partners { width: min(1160px, 92vw); margin-top: -35px; }
 .home-partners .company-card { flex-basis: calc((100% - 44px) / 3); }
-.brand-viewer { width: min(760px, 92vw); max-width: none; margin: auto; padding: 28px; overflow: visible; border: 0; border-radius: 18px; background: #fff; color: var(--green); text-align: center; box-shadow: 0 28px 80px #0005; }
-.brand-viewer::backdrop { background: #000b; backdrop-filter: blur(4px); }
+.brand-viewer { position: fixed; z-index: 10000; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; background: #000b; backdrop-filter: blur(4px); color: var(--green); text-align: center; }
+.brand-viewer[hidden] { display: none; }
+.brand-viewer-panel { position: relative; width: min(760px, 92vw); padding: 28px; overflow: visible; border-radius: 18px; background: #fff; box-shadow: 0 28px 80px #0005; }
 .brand-viewer img { display: block; width: 100%; height: min(55vh, 460px); object-fit: contain; }
 .brand-viewer h3 { margin: 20px 50px 16px; font: 700 25px/1.25 Georgia, serif; }
 .brand-viewer-close { position: absolute; z-index: 2; top: 12px; right: 12px; width: 42px; height: 42px; border: 0; border-radius: 50%; background: var(--green); color: #fff; font-size: 30px; line-height: 1; cursor: pointer; }
 .brand-site-link { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: 11px 22px; border-radius: 999px; background: var(--orange); color: #fff; text-decoration: none; font-weight: 800; }
+.brand-viewer-open { overflow: hidden; }
 .columns {
   display: grid;
   gap: 8px;
@@ -712,7 +714,8 @@ footer p {
   .companies-track { gap: 14px; padding-bottom: 18px; }
   .company-card { flex-basis: calc(100vw - 100px); min-height: 200px; padding: 18px; }
   .company-card .partner-logo { height: 110px; max-width: 190px; }
-  .brand-viewer { width: 94vw; padding: 18px; border-radius: 14px; }
+  .brand-viewer { padding: 12px; }
+  .brand-viewer-panel { width: 94vw; padding: 18px; border-radius: 14px; }
   .brand-viewer img { height: 45vh; }
   .brand-viewer h3 { margin: 16px 42px 14px; font-size: 21px; }
   .brand-viewer-close { top: 8px; right: 8px; }
