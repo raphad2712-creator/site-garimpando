@@ -275,9 +275,9 @@ function sidebar() {
     })
     .join("");
   return (
-    '<aside><h3>Para Você</h3><a class="ad" href="https://www.pedrasdopatacho.com.br/" target="_blank"><img src="images/sobre.jpg"><span>Experiências especiais</span></a><h3>Marcas Parceiras</h3><div class="partners">' +
+    '<aside><h3>Para Você</h3><a class="ad" href="https://www.pedrasdopatacho.com.br/" target="_blank"><img src="images/sobre.jpg"><span>Experiências especiais</span></a><h3>Marcas Parceiras</h3><div class="partners-carousel"><button class="partners-arrow partners-previous" type="button" aria-label="Marca anterior">‹</button><div class="partners">' +
     partnersHtml +
-    '</div><h3>Categorias</h3><ul>' +
+    '</div><button class="partners-arrow partners-next" type="button" aria-label="Próxima marca">›</button></div><h3>Categorias</h3><ul>' +
     categories
       .filter((c) => isVisibleCategory(c) && categoryCount(c) > 0 && c.slug !== "destaques")
       .map(
@@ -327,6 +327,28 @@ function companiesPage() {
   track.addEventListener("pointerleave", () => {
     clearInterval(timer);
     timer = setInterval(() => next.click(), 4500);
+  });
+}
+function initPartnerCarousels() {
+  document.querySelectorAll(".partners-carousel").forEach((carousel) => {
+    const track = carousel.querySelector(".partners"),
+      previous = carousel.querySelector(".partners-previous"),
+      next = carousel.querySelector(".partners-next"),
+      cards = [...track.children];
+    if (!cards.length) return;
+    let current = 0;
+    const show = (index) => {
+      current = (index + cards.length) % cards.length;
+      track.scrollTo({ left: current * track.clientWidth, behavior: "smooth" });
+    };
+    previous.onclick = () => show(current - 1);
+    next.onclick = () => show(current + 1);
+    let timer = setInterval(() => show(current + 1), 4000);
+    carousel.addEventListener("pointerenter", () => clearInterval(timer));
+    carousel.addEventListener("pointerleave", () => {
+      clearInterval(timer);
+      timer = setInterval(() => show(current + 1), 4000);
+    });
   });
 }
 function cards(items) {
@@ -651,6 +673,7 @@ function route() {
     p ? publicPage(p) : home();
   }
   protectImages();
+  initPartnerCarousels();
   window.scrollTo({ top: 0, behavior: "smooth" });
   requestAnimationFrame(animatePage);
 }
