@@ -260,24 +260,8 @@ document
     a.addEventListener("click", () => menu.classList.remove("show")),
   );
 function sidebar() {
-  const partnersHtml = partnerBrands
-    .map((brand) => {
-      const logo = brand.image || (brand.domain
-        ? `https://www.google.com/s2/favicons?domain_url=https://${brand.domain}&sz=256`
-        : "");
-      const visual = logo
-        ? `<img class="partner-logo" src="${logo}" alt="Logo ${esc(brand.name)}" onerror="this.style.display='none'">`
-        : `<span class="partner-monogram" aria-hidden="true">${esc(brand.initials)}</span>`;
-      const content = `${visual}<span class="partner-name">${esc(brand.name)}</span>`;
-      return brand.url
-        ? `<a href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
-        : `<div class="partner-card">${content}</div>`;
-    })
-    .join("");
   return (
-    '<aside><h3>Para Você</h3><a class="ad" href="https://www.pedrasdopatacho.com.br/" target="_blank"><img src="images/sobre.jpg"><span>Experiências especiais</span></a><h3>Marcas Parceiras</h3><div class="partners-carousel"><button class="partners-arrow partners-previous" type="button" aria-label="Marca anterior">‹</button><div class="partners">' +
-    partnersHtml +
-    '</div><button class="partners-arrow partners-next" type="button" aria-label="Próxima marca">›</button></div><h3>Categorias</h3><ul>' +
+    '<aside><h3>Para Você</h3><a class="ad" href="https://www.pedrasdopatacho.com.br/" target="_blank"><img src="images/sobre.jpg"><span>Experiências especiais</span></a><h3>Categorias</h3><ul>' +
     categories
       .filter((c) => isVisibleCategory(c) && categoryCount(c) > 0 && c.slug !== "destaques")
       .map(
@@ -307,26 +291,35 @@ function partnerLogo(brand, large = false) {
     ? `<a${className} href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
     : `<div${className}>${content}</div>`;
 }
+function brandsCarousel(className = "") {
+  return (
+    `<section class="companies-carousel ${className}" aria-label="Marcas parceiras"><div class="companies-heading"><span>Garimpando Life</span><h2>Marcas parceiras</h2></div><button class="company-arrow company-previous" type="button" aria-label="Marcas anteriores">‹</button><div class="companies-track">` +
+    partnerBrands.map((brand) => partnerLogo(brand, true)).join("") +
+    '</div><button class="company-arrow company-next" type="button" aria-label="Próximas marcas">›</button></section>'
+  );
+}
 function companiesPage() {
   app.innerHTML =
     '<section class="page-title"><span>Garimpando Life</span><h1>Empresas garimpeiras</h1><p>Conheça as marcas parceiras do Garimpando Life.</p></section>' +
-    '<section class="companies-carousel" aria-label="Marcas parceiras"><button class="company-arrow company-previous" type="button" aria-label="Marcas anteriores">‹</button><div class="companies-track">' +
-    partnerBrands.map((brand) => partnerLogo(brand, true)).join("") +
-    '</div><button class="company-arrow company-next" type="button" aria-label="Próximas marcas">›</button></section>';
-  const track = document.querySelector(".companies-track"),
-    previous = document.querySelector(".company-previous"),
-    next = document.querySelector(".company-next"),
-    move = (direction) => track.scrollBy({ left: direction * Math.max(track.clientWidth * .8, 280), behavior: "smooth" });
-  previous.onclick = () => move(-1);
-  next.onclick = () => move(1);
-  let timer = setInterval(() => {
-    const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
-    track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + Math.max(track.clientWidth * .8, 280), behavior: "smooth" });
-  }, 4500);
-  track.addEventListener("pointerenter", () => clearInterval(timer));
-  track.addEventListener("pointerleave", () => {
-    clearInterval(timer);
-    timer = setInterval(() => next.click(), 4500);
+    brandsCarousel();
+}
+function initCompanyCarousels() {
+  document.querySelectorAll(".companies-carousel").forEach((carousel) => {
+    const track = carousel.querySelector(".companies-track"),
+      previous = carousel.querySelector(".company-previous"),
+      next = carousel.querySelector(".company-next"),
+      move = (direction) => track.scrollBy({ left: direction * Math.max(track.clientWidth * .82, 250), behavior: "smooth" });
+    previous.onclick = () => move(-1);
+    next.onclick = () => move(1);
+    let timer = setInterval(() => {
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
+      track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + Math.max(track.clientWidth * .82, 250), behavior: "smooth" });
+    }, 4200);
+    carousel.addEventListener("pointerenter", () => clearInterval(timer));
+    carousel.addEventListener("pointerleave", () => {
+      clearInterval(timer);
+      timer = setInterval(() => next.click(), 4200);
+    });
   });
 }
 function initPartnerCarousels() {
@@ -430,10 +423,11 @@ function home() {
     heroCategory = featuredCategory?.name || "Viagens",
     heroClass = heroImage.includes("cariri-capa") ? "hero hero-collage" : "hero";
   archive("Últimas matérias", latest, intro);
+  app.querySelector(".layout")?.classList.add("home-layout");
   const built = app.innerHTML;
   app.innerHTML =
     `<section class="${heroClass}"><a class="hero-link" href="${heroLink}"><img src="${esc(heroImage)}" alt="${esc(heroTitle)}"><div><h1>${esc(heroTitle)}</h1><p><span>${esc(heroCategory)}</span></p></div></a></section><section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>` +
-    built;
+    built + brandsCarousel("home-partners");
   bindArchive("Últimas matérias", latest, intro);
 }
 function bindArchive(title, items, intro) {
@@ -674,6 +668,7 @@ function route() {
   }
   protectImages();
   initPartnerCarousels();
+  initCompanyCarousels();
   window.scrollTo({ top: 0, behavior: "smooth" });
   requestAnimationFrame(animatePage);
 }
