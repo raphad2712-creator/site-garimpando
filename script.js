@@ -17,6 +17,12 @@ const data = window.GARIMPANDO_CONTENT || {
     ? window.supabase.createClient(cfg.url, cfg.anonKey)
     : null;
 const editorialCorrections = window.GARIMPANDO_EDITORIAL_CORRECTIONS || {};
+const removedPostSlugs = new Set([
+  "uma-viagem-pela-alma-meu-roteiro-espiritual-pela-italia",
+  "aeromexico-celebra-seus-90-anos-com-coquetel-em-sao-paulo-no-hilton-morumbi",
+  "paz-e-bem-estar",
+  "sergipe-cultura-educacao-e-muita-tradicao",
+]);
 const hiddenCategorySlugs = new Set([
   "pedro-mariano",
   "adolfo-stulman",
@@ -98,7 +104,10 @@ async function loadOnlinePosts() {
       console.warn("Configuração das marcas inválida", error);
     }
   }
-  online.filter((p) => p.slug !== "config-marcas-parceiras").reverse().forEach((p) => {
+  online
+    .filter((p) => p.slug !== "config-marcas-parceiras" && !removedPostSlugs.has(normalizeSlug(p.slug)))
+    .reverse()
+    .forEach((p) => {
     const correction = editorialCorrections[p.slug] || null;
     const isCaririMain =
       normalizeSlug(correction?.title || p.title) ===
@@ -196,6 +205,7 @@ function removeRepeatedPosts() {
     const slug = normalizeSlug(post.slug);
     const title = normalizeSlug(post.title);
     const repeated =
+      removedPostSlugs.has(slug) ||
       (id && usedIds.has(id)) ||
       (slug && usedSlugs.has(slug)) ||
       (title && usedTitles.has(title));
@@ -627,9 +637,15 @@ function initArticleGalleries() {
 function article(p) {
   const c = categoryForPost(p);
   const articleImage = p.articleImage || p.image || "";
-  const coverClass = articleImage.includes("cariri-capa")
+  const isCaririCover = articleImage.includes("cariri-capa");
+  const coverClass = isCaririCover
     ? "article-cover article-cover-full"
     : "article-cover";
+  const coverMarkup = articleImage
+    ? isCaririCover
+      ? '<div class="article-cover-middle"><img src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '"></div>'
+      : '<img class="' + coverClass + '" src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '">'
+    : "";
   app.innerHTML =
     '<section class="page-title"><span>' +
     esc(c?.name || "Garimpando Life") +
@@ -638,13 +654,7 @@ function article(p) {
     "</h1><p>" +
     date(p.date) +
     '</p></section><div class="article-layout"><article class="article-body">' +
-    (articleImage
-      ? '<img class="' + coverClass + '" src="' +
-        esc(articleImage) +
-        '" alt="' +
-        esc(p.imageAlt || p.title) +
-        '">'
-      : "") +
+    coverMarkup +
     "<div>" +
     p.content +
     '</div><a class="button" href="#inicio">Voltar ao início</a></article>' +

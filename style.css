@@ -774,6 +774,8 @@ footer p {
   margin-bottom: 36px;
 }
 .article-cover[src*="cariri-capa"], .article-cover-full { max-height: none; height: auto; object-fit: contain; }
+.article-cover-middle { width: min(683px, 100%); aspect-ratio: 683 / 859; margin: 0 auto 36px; overflow: hidden; }
+.article-cover-middle img { display: block; width: 268.23%; max-width: none; height: 100%; object-fit: fill; transform: translateX(-29.42%); }
 .article-gallery { position: relative; margin: 34px 0; overflow: hidden; border-radius: 10px; background: #f4f1eb; }
 .gallery-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .gallery-track::-webkit-scrollbar { display: none; }
