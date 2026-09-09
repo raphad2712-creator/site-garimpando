@@ -374,6 +374,16 @@ textarea {
 .item-actions .delete {
   color: #a02727;
 }
+.brand-intro { color: #687169; line-height: 1.6; margin: -10px 0 26px; }
+.brand-items { display: grid; gap: 10px; margin-top: 30px; }
+.brand-item { display: grid; grid-template-columns: 70px 1fr auto; gap: 15px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 11px; }
+.brand-item img { width: 70px; height: 58px; object-fit: contain; background: #fff; }
+.brand-item b, .brand-item small { display: block; }
+.brand-item small { color: #777; margin-top: 5px; word-break: break-all; }
+.brand-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.brand-actions button { border: 1px solid var(--line); background: #fff; padding: 8px; border-radius: 7px; cursor: pointer; }
+.brand-actions .delete { color: #a02727; }
+.save-brands { width: 100%; border: 0; border-radius: 9px; background: var(--green); color: #fff; padding: 15px; margin-top: 22px; font-weight: 800; cursor: pointer; }
 dialog {
   width: min(850px, 92vw);
   max-height: 90vh;
@@ -497,6 +507,9 @@ dialog small {
     grid-column: 1/-1;
     justify-content: flex-end;
   }
+  .brand-item { grid-template-columns: 58px 1fr; }
+  .brand-item img { width: 58px; height: 50px; }
+  .brand-actions { grid-column: 1 / -1; }
   .heading {
     align-items: flex-start;
     flex-direction: column;

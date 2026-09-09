@@ -17,6 +17,33 @@ const data = window.GARIMPANDO_CONTENT || {
     ? window.supabase.createClient(cfg.url, cfg.anonKey)
     : null;
 const editorialCorrections = window.GARIMPANDO_EDITORIAL_CORRECTIONS || {};
+const hiddenCategorySlugs = new Set([
+  "pedro-mariano",
+  "adolfo-stulman",
+  "prosperidade-por-marcelo-e-cesario",
+  "joka-finardi",
+  "laura-wie",
+  "silvia-percussi",
+  "gabi-goulart",
+]);
+const defaultPartnerBrands = [
+  { name: "Beeva Brazil", image: "images/parceiro-beeva.png", url: "https://www.beevabrazil.com/" },
+  { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
+  { name: "Oceanic", image: "images/parceiro-oceanic.jpg", url: "https://www.oceanic.com.br/" },
+  { name: "Entreposto", image: "images/parceiro-entreposto.jpg", url: "https://www.entreposto.com.br/" },
+  { name: "Dona Deôla", domain: "donadeola.com.br", url: "https://www.donadeola.com.br/" },
+  { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
+  { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
+  { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
+  { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
+  { name: "UNIT", domain: "unit.br", url: "https://www.unit.br/" },
+  { name: "GNC Suécia Salvador", domain: "gncsuecia.com.br", url: "https://www.gncsuecia.com.br/" },
+  { name: "Sais Beach Hotel Maceió", domain: "saishotel.com.br", url: "https://www.saishotel.com.br/" },
+  { name: "Ricardo Almeida", image: "images/logo-ricardo-almeida.png", url: "https://www.ricardoalmeida.com.br/" },
+  { name: "Sococo", domain: "sococo.com.br", url: "https://www.sococo.com.br/" },
+  { name: "Jacques Janine Granja Viana", domain: "jacquesjanine.com.br", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
+];
+let partnerBrands = [...defaultPartnerBrands];
 const localCoverBySlug = {
   "uma-viagem-pela-alma-meu-roteiro-espiritual-pela-italia": "images/italia.jpg",
   "aeromexico-celebra-seus-90-anos-com-coquetel-em-sao-paulo-no-hilton-morumbi": "images/aeromexico.jpg",
@@ -42,7 +69,16 @@ async function loadOnlinePosts() {
     console.warn("Banco do blog indisponível", error.message);
     return;
   }
-  online.reverse().forEach((p) => {
+  const brandSettings = online.find((p) => p.slug === "config-marcas-parceiras");
+  if (brandSettings) {
+    try {
+      const savedBrands = JSON.parse(brandSettings.content || "[]");
+      if (Array.isArray(savedBrands)) partnerBrands = savedBrands;
+    } catch (error) {
+      console.warn("Configuração das marcas inválida", error);
+    }
+  }
+  online.filter((p) => p.slug !== "config-marcas-parceiras").reverse().forEach((p) => {
     const correction = editorialCorrections[p.slug] || null;
     const isCaririMain =
       normalizeSlug(correction?.title || p.title) ===
@@ -114,12 +150,14 @@ const normalizeSlug = (value) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-const cat = (id) => categories.find((c) => c.id === id);
+const isVisibleCategory = (category) =>
+  category && !hiddenCategorySlugs.has(category.slug);
+const cat = (id) => categories.find((c) => c.id === id && isVisibleCategory(c));
 const categoryForPost = (post) =>
-  cat(post.categories?.[0]) ||
-  categories.find((c) => c.slug === post.categorySlug) ||
+  post.categories?.map(cat).find(Boolean) ||
+  categories.find((c) => c.slug === post.categorySlug && isVisibleCategory(c)) ||
   categories.find(
-    (c) => normalizeSlug(c.name) === normalizeSlug(post.categoryName),
+    (c) => isVisibleCategory(c) && normalizeSlug(c.name) === normalizeSlug(post.categoryName),
   );
 const belongsToCategory = (post, category) => {
   const resolved = categoryForPost(post);
@@ -155,7 +193,7 @@ const categoryCount = (category) =>
 function renderCategoryMenu() {
   const preferred = ["estilo-de-vida", "gastronomia", "turismo"],
     available = categories.filter(
-      (category) => categoryCount(category) > 0 && category.slug !== "destaques",
+      (category) => isVisibleCategory(category) && categoryCount(category) > 0 && category.slug !== "destaques",
     ),
     menuCategories = preferred
       .map((slug) => available.find((category) => category.slug === slug))
@@ -222,23 +260,6 @@ document
     a.addEventListener("click", () => menu.classList.remove("show")),
   );
 function sidebar() {
-  const partnerBrands = [
-    { name: "Beeva Brazil", image: "images/parceiro-beeva.png", url: "https://www.beevabrazil.com/" },
-    { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
-    { name: "Oceanic", image: "images/parceiro-oceanic.jpg", url: "https://www.oceanic.com.br/" },
-    { name: "Entreposto", image: "images/parceiro-entreposto.jpg", url: "https://www.entreposto.com.br/" },
-    { name: "Dona Deôla", domain: "donadeola.com.br", url: "https://www.donadeola.com.br/" },
-    { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
-    { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
-    { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
-    { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
-    { name: "UNIT", domain: "unit.br", url: "https://www.unit.br/" },
-    { name: "GNC Suécia Salvador", domain: "gncsuecia.com.br", url: "https://www.gncsuecia.com.br/" },
-    { name: "Sais Beach Hotel Maceió", domain: "saishotel.com.br", url: "https://www.saishotel.com.br/" },
-    { name: "Ricardo Almeida", image: "images/logo-ricardo-almeida.png", url: "https://www.ricardoalmeida.com.br/" },
-    { name: "Sococo", domain: "sococo.com.br", url: "https://www.sococo.com.br/" },
-    { name: "Jacques Janine Granja Viana", domain: "jacquesjanine.com.br", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
-  ];
   const partnersHtml = partnerBrands
     .map((brand) => {
       const logo = brand.image || (brand.domain
@@ -249,7 +270,7 @@ function sidebar() {
         : `<span class="partner-monogram" aria-hidden="true">${esc(brand.initials)}</span>`;
       const content = `${visual}<span class="partner-name">${esc(brand.name)}</span>`;
       return brand.url
-        ? `<a href="${brand.url}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
+        ? `<a href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
         : `<div class="partner-card">${content}</div>`;
     })
     .join("");
@@ -258,7 +279,7 @@ function sidebar() {
     partnersHtml +
     '</div><h3>Categorias</h3><ul>' +
     categories
-      .filter((c) => categoryCount(c) > 0 && c.slug !== "destaques")
+      .filter((c) => isVisibleCategory(c) && categoryCount(c) > 0 && c.slug !== "destaques")
       .map(
         (c) =>
           '<li><a href="#categoria/' +
@@ -578,7 +599,7 @@ function route() {
       collaboratorPosts.find((x) => x.slug === parts.slice(1).join("/"));
     p ? article(p) : home();
   } else if (parts[0] === "categoria") {
-    const c = categories.find((x) => x.slug === parts.slice(1).join("/")),
+    const c = categories.find((x) => isVisibleCategory(x) && x.slug === parts.slice(1).join("/")),
       items = c ? posts.filter((p) => belongsToCategory(p, c)) : posts;
     archive(
       c?.name || "Categorias",

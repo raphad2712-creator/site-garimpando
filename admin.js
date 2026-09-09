@@ -13,7 +13,9 @@ const db = configured
 let selectedImage = null,
   selectedGalleryFiles = [],
   currentGalleryUrls = [],
-  currentImage = "";
+  currentImage = "",
+  brandItems = [],
+  brandSettingsId = null;
 const $ = (s) => document.querySelector(s),
   esc = (s) =>
     String(s || "").replace(
@@ -40,8 +42,34 @@ const toast = (message) => {
   el.classList.add("show");
   setTimeout(() => el.classList.remove("show"), 2800);
 };
+const hiddenCategorySlugs = new Set([
+  "pedro-mariano",
+  "adolfo-stulman",
+  "prosperidade-por-marcelo-e-cesario",
+  "joka-finardi",
+  "laura-wie",
+  "silvia-percussi",
+  "gabi-goulart",
+]);
+const defaultPartnerBrands = [
+  { name: "Beeva Brazil", image: "images/parceiro-beeva.png", url: "https://www.beevabrazil.com/" },
+  { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
+  { name: "Oceanic", image: "images/parceiro-oceanic.jpg", url: "https://www.oceanic.com.br/" },
+  { name: "Entreposto", image: "images/parceiro-entreposto.jpg", url: "https://www.entreposto.com.br/" },
+  { name: "Dona Deôla", image: "https://www.google.com/s2/favicons?domain_url=https://donadeola.com.br&sz=256", url: "https://www.donadeola.com.br/" },
+  { name: "Ótica Brasolin", image: "https://www.google.com/s2/favicons?domain_url=https://brasolin.com.br&sz=256", url: "https://www.brasolin.com.br/" },
+  { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
+  { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
+  { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
+  { name: "UNIT", image: "https://www.google.com/s2/favicons?domain_url=https://unit.br&sz=256", url: "https://www.unit.br/" },
+  { name: "GNC Suécia Salvador", image: "https://www.google.com/s2/favicons?domain_url=https://gncsuecia.com.br&sz=256", url: "https://www.gncsuecia.com.br/" },
+  { name: "Sais Beach Hotel Maceió", image: "https://www.google.com/s2/favicons?domain_url=https://saishotel.com.br&sz=256", url: "https://www.saishotel.com.br/" },
+  { name: "Ricardo Almeida", image: "images/logo-ricardo-almeida.png", url: "https://www.ricardoalmeida.com.br/" },
+  { name: "Sococo", image: "https://www.google.com/s2/favicons?domain_url=https://sococo.com.br&sz=256", url: "https://www.sococo.com.br/" },
+  { name: "Jacques Janine Granja Viana", image: "https://www.google.com/s2/favicons?domain_url=https://jacquesjanine.com.br&sz=256", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
+];
 const categories = (window.GARIMPANDO_CONTENT?.categories || []).filter(
-  (c) => c.count > 0 && c.slug !== "destaques",
+  (c) => c.count > 0 && c.slug !== "destaques" && !hiddenCategorySlugs.has(c.slug),
 );
 $("#category").innerHTML = categories
   .map((c) => `<option value="${c.id}">${c.name}</option>`)
@@ -118,6 +146,7 @@ function reset() {
   updateCategoryDestination();
   editor.classList.remove("hidden");
   list.classList.add("hidden");
+  $("#brandEditor").classList.add("hidden");
 }
 function previewImage(src) {
   currentImage = src || "";
@@ -325,10 +354,12 @@ form.addEventListener("submit", async (e) => {
 async function showList() {
   editor.classList.add("hidden");
   list.classList.remove("hidden");
+  $("#brandEditor").classList.add("hidden");
   $("#items").innerHTML = "<p>Carregando matérias...</p>";
   const { data, error } = await db
     .from("blog_posts")
     .select("*")
+    .neq("slug", "config-marcas-parceiras")
     .order("published_at", { ascending: false });
   if (error) {
     toast("Erro ao carregar matérias");
@@ -402,6 +433,117 @@ async function remove(id) {
 }
 $("#newPost").onclick = reset;
 $("#showPosts").onclick = () => configured && showList();
+
+function resetBrandForm() {
+  $("#brandForm").reset();
+  $("#brandIndex").value = "";
+  $("#brandForm").querySelector('[type="submit"]').textContent = "Adicionar marca";
+}
+function renderBrandItems() {
+  $("#brandItems").innerHTML = brandItems.length
+    ? brandItems.map((brand, index) => `<article class="brand-item"><img src="${esc(brand.image || "images/logo.png")}" alt="Logo ${esc(brand.name)}"><div><b>${esc(brand.name)}</b><small>${esc(brand.url || "Sem link")}</small></div><div class="brand-actions"><button type="button" data-brand-up="${index}" aria-label="Subir marca">↑</button><button type="button" data-brand-down="${index}" aria-label="Descer marca">↓</button><button type="button" data-brand-edit="${index}">Editar</button><button type="button" class="delete" data-brand-delete="${index}">Excluir</button></div></article>`).join("")
+    : "<p>Nenhuma marca cadastrada.</p>";
+  document.querySelectorAll("[data-brand-edit]").forEach((button) => button.onclick = () => {
+    const index = Number(button.dataset.brandEdit), brand = brandItems[index];
+    $("#brandIndex").value = index;
+    $("#brandName").value = brand.name || "";
+    $("#brandUrl").value = brand.url || "";
+    $("#brandLogoUrl").value = brand.image || "";
+    $("#brandForm").querySelector('[type="submit"]').textContent = "Atualizar marca";
+    $("#brandName").focus();
+  });
+  document.querySelectorAll("[data-brand-delete]").forEach((button) => button.onclick = () => {
+    const index = Number(button.dataset.brandDelete);
+    if (!confirm(`Excluir a marca ${brandItems[index].name}?`)) return;
+    brandItems.splice(index, 1);
+    renderBrandItems();
+  });
+  document.querySelectorAll("[data-brand-up]").forEach((button) => button.onclick = () => {
+    const index = Number(button.dataset.brandUp);
+    if (!index) return;
+    [brandItems[index - 1], brandItems[index]] = [brandItems[index], brandItems[index - 1]];
+    renderBrandItems();
+  });
+  document.querySelectorAll("[data-brand-down]").forEach((button) => button.onclick = () => {
+    const index = Number(button.dataset.brandDown);
+    if (index >= brandItems.length - 1) return;
+    [brandItems[index + 1], brandItems[index]] = [brandItems[index], brandItems[index + 1]];
+    renderBrandItems();
+  });
+}
+async function loadBrands() {
+  const { data, error } = await db.from("blog_posts").select("id,content").eq("slug", "config-marcas-parceiras").maybeSingle();
+  if (error) throw error;
+  brandSettingsId = data?.id || null;
+  try {
+    brandItems = data ? JSON.parse(data.content || "[]") : [...defaultPartnerBrands];
+    if (!Array.isArray(brandItems)) throw 0;
+  } catch (_) {
+    brandItems = [...defaultPartnerBrands];
+  }
+  renderBrandItems();
+}
+async function showBrands() {
+  editor.classList.add("hidden");
+  list.classList.add("hidden");
+  $("#brandEditor").classList.remove("hidden");
+  $("#brandItems").innerHTML = "<p>Carregando marcas...</p>";
+  try { await loadBrands(); } catch (error) { console.error(error); toast("Não foi possível carregar as marcas"); }
+}
+async function uploadBrandLogo(file) {
+  const { data: { user } } = await db.auth.getUser();
+  const safe = file.name.normalize("NFD").replace(/[^a-zA-Z0-9._-]/g, "-");
+  const path = `${user.id}/marcas/${Date.now()}-${safe}`;
+  const { error } = await db.storage.from("blog-images").upload(path, file, { cacheControl: "3600", upsert: false });
+  if (error) throw error;
+  return db.storage.from("blog-images").getPublicUrl(path).data.publicUrl;
+}
+$("#brandForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = event.submitter;
+  button.disabled = true;
+  try {
+    const file = $("#brandLogoFile").files[0];
+    const image = file ? await uploadBrandLogo(file) : $("#brandLogoUrl").value.trim();
+    if (!image) return toast("Escolha a logo da marca");
+    const brand = { name: $("#brandName").value.trim(), url: $("#brandUrl").value.trim(), image };
+    const index = $("#brandIndex").value;
+    if (index === "") brandItems.push(brand); else brandItems[Number(index)] = brand;
+    resetBrandForm();
+    renderBrandItems();
+    toast("Marca pronta. Agora toque em Salvar marcas no site.");
+  } catch (error) { console.error(error); toast("Não foi possível enviar a logo"); }
+  finally { button.disabled = false; }
+});
+$("#cancelBrand").onclick = resetBrandForm;
+$("#showBrands").onclick = () => configured && showBrands();
+$("#saveBrands").onclick = async () => {
+  const button = $("#saveBrands");
+  button.disabled = true;
+  button.textContent = "Salvando...";
+  const payload = {
+    title: "Configuração das marcas parceiras",
+    slug: "config-marcas-parceiras",
+    excerpt: "Configuração interna do site",
+    content: JSON.stringify(brandItems),
+    category_id: 0,
+    category_name: "Configuração",
+    image_url: null,
+    is_featured: false,
+    published: true,
+    published_at: new Date().toISOString(),
+  };
+  try {
+    const query = brandSettingsId
+      ? db.from("blog_posts").update(payload).eq("id", brandSettingsId).select("id").single()
+      : db.from("blog_posts").insert(payload).select("id").single();
+    const { data, error } = await query;
+    if (error) throw error;
+    brandSettingsId = data.id;
+    toast("Marcas salvas e atualizadas no site!");
+  } catch (error) { console.error(error); toast("Não foi possível salvar as marcas"); }
+  finally { button.disabled = false; button.textContent = "Salvar marcas no site"; }
+};
 $("#previewBtn").onclick = () => {
   const category = categories.find(
     (x) => x.id === Number($("#category").value),
