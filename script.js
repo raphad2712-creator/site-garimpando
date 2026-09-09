@@ -27,7 +27,7 @@ const hiddenCategorySlugs = new Set([
   "gabi-goulart",
 ]);
 const defaultPartnerBrands = [
-  { name: "Beeva Brazil", image: "images/parceiro-beeva.png", url: "https://www.beevabrazil.com/" },
+  { name: "Beeva Brazil", image: "images/parceiro-beeva-hq.jpeg", url: "https://www.beevabrazil.com/" },
   { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
   { name: "Oceanic", image: "images/parceiro-oceanic.jpg", url: "https://www.oceanic.com.br/" },
   { name: "Entreposto", image: "images/parceiro-entreposto-novo.jpeg", url: "https://www.entreposto.com.br/" },
@@ -35,22 +35,26 @@ const defaultPartnerBrands = [
   { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
   { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
   { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
-  { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
-  { name: "UNIT", image: "images/parceiro-unit.jpeg", url: "https://www.unit.br/" },
-  { name: "GNC Suécia Salvador", image: "images/parceiro-volvo.webp", url: "https://www.gncsuecia.com.br/" },
+  { name: "Mister Travel", image: "images/parceiro-mister-travel-hq.jpeg", url: "https://www.mistertravel.com.br/" },
+  { name: "UNIT", image: "images/parceiro-unit-hq.jpeg", url: "https://www.unit.br/" },
+  { name: "GNC Suécia Salvador", image: "images/parceiro-volvo-hq.jpeg", url: "https://www.gncsuecia.com.br/" },
   { name: "Sais Beach Hotel Maceió", domain: "saishotel.com.br", url: "https://www.saishotel.com.br/" },
   { name: "Ricardo Almeida", image: "images/parceiro-ricardo-almeida-novo.png", url: "https://www.ricardoalmeida.com.br/" },
   { name: "Sococo", image: "images/parceiro-sococo.png", url: "https://www.sococo.com.br/" },
-  { name: "Jacques Janine Granja Viana", image: "images/parceiro-jacques-janine.jpeg", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
+  { name: "Jacques Janine Granja Viana", image: "images/parceiro-jacques-janine-hq.png", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
 ];
 const forcedPartnerLogos = {
+  "beeva-brazil": "images/parceiro-beeva-hq.jpeg",
+  beeva: "images/parceiro-beeva-hq.jpeg",
   "dona-deola": "images/parceiro-dona-deola.png",
   entreposto: "images/parceiro-entreposto-novo.jpeg",
   "entreposto-das-feijoadas": "images/parceiro-entreposto-novo.jpeg",
-  "jacques-janine-granja-viana": "images/parceiro-jacques-janine.jpeg",
-  unit: "images/parceiro-unit.jpeg",
-  "gnc-suecia-salvador": "images/parceiro-volvo.webp",
-  volvo: "images/parceiro-volvo.webp",
+  "jacques-janine-granja-viana": "images/parceiro-jacques-janine-hq.png",
+  "jacques-janine": "images/parceiro-jacques-janine-hq.png",
+  "mister-travel": "images/parceiro-mister-travel-hq.jpeg",
+  unit: "images/parceiro-unit-hq.jpeg",
+  "gnc-suecia-salvador": "images/parceiro-volvo-hq.jpeg",
+  volvo: "images/parceiro-volvo-hq.jpeg",
   "ricardo-almeida": "images/parceiro-ricardo-almeida-novo.png",
   sococo: "images/parceiro-sococo.png",
 };
@@ -303,9 +307,12 @@ function partnerLogo(brand, large = false) {
     : `<span class="partner-monogram" aria-hidden="true">${esc(brand.initials || brand.name?.slice(0, 2) || "GL")}</span>`;
   const content = `${visual}<span class="partner-name">${esc(brand.name)}</span>`;
   const className = large ? ' class="company-card"' : "";
+  const viewerData = large && logo
+    ? ` data-brand-logo="${esc(logo)}" data-brand-name="${esc(brand.name)}" data-brand-url="${esc(brand.url || "")}"`
+    : "";
   return brand.url
-    ? `<a${className} href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
-    : `<div${className}>${content}</div>`;
+    ? `<a${className}${viewerData} href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="Ampliar logo ${esc(brand.name)}">${content}</a>`
+    : `<div${className}${viewerData}${large ? ' role="button" tabindex="0" aria-label="Ampliar logo ' + esc(brand.name) + '"' : ""}>${content}</div>`;
 }
 function brandsCarousel(className = "") {
   return (
@@ -336,7 +343,44 @@ function initCompanyCarousels() {
       clearInterval(timer);
       timer = setInterval(() => next.click(), 4200);
     });
+    carousel.querySelectorAll(".company-card[data-brand-logo]").forEach((card) => {
+      const open = (event) => {
+        event.preventDefault();
+        openBrandViewer(card);
+      };
+      card.addEventListener("click", open);
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") open(event);
+      });
+    });
   });
+}
+function openBrandViewer(card) {
+  let viewer = document.querySelector("#brand-viewer");
+  if (!viewer) {
+    viewer = document.createElement("dialog");
+    viewer.id = "brand-viewer";
+    viewer.className = "brand-viewer";
+    viewer.innerHTML = '<button class="brand-viewer-close" type="button" aria-label="Fechar ampliação">×</button><img alt=""><h3></h3><a class="brand-site-link" target="_blank" rel="noopener">Visitar site</a>';
+    document.body.appendChild(viewer);
+    viewer.querySelector(".brand-viewer-close").addEventListener("click", () => viewer.close());
+    viewer.addEventListener("click", (event) => {
+      if (event.target === viewer) viewer.close();
+    });
+  }
+  const name = card.dataset.brandName || "Marca parceira";
+  const image = viewer.querySelector("img");
+  const siteLink = viewer.querySelector(".brand-site-link");
+  image.src = card.dataset.brandLogo;
+  image.alt = `Logo ${name}`;
+  viewer.querySelector("h3").textContent = name;
+  if (card.dataset.brandUrl) {
+    siteLink.href = card.dataset.brandUrl;
+    siteLink.hidden = false;
+  } else {
+    siteLink.hidden = true;
+  }
+  viewer.showModal();
 }
 function initPartnerCarousels() {
   document.querySelectorAll(".partners-carousel").forEach((carousel) => {
