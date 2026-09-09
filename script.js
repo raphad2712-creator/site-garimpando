@@ -216,7 +216,7 @@ function renderMegaPosts(category) {
     ? selectedPosts
         .map(
           (post) =>
-            `<a class="mega-card" href="#materia/${post.slug}"><img src="${esc(post.image || "images/hero.png")}" alt="${esc(post.title)}"><strong>${esc(post.title)}</strong></a>`,
+            `<a class="mega-card" href="#materia/${post.slug}"><img src="${esc(post.image || "images/hero.png")}" alt="${esc(post.title)}" onerror="this.onerror=null;this.src='images/hero.png'"><strong>${esc(post.title)}</strong></a>`,
         )
         .join("")
     : `<a class="mega-empty" href="#categoria/${category.slug}">Ver matérias de ${esc(category.name)}</a>`;
