@@ -8,11 +8,15 @@
 }
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 body {
   margin: 0;
   color: #222;
   font-family: Arial, sans-serif;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 a {
   color: inherit;
@@ -597,16 +601,47 @@ footer p {
   }
   .layout {
     width: calc(100% - 32px);
+    min-width: 0;
+    gap: 38px;
   }
   .post-list article {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: 112px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    padding-bottom: 22px;
+    margin-bottom: 22px;
   }
-  .photo {
-    height: 250px;
+  .post-list,
+  .post-list article,
+  .post-list article > div {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .post-list .photo {
+    width: 112px;
+    height: 112px;
+    min-width: 0;
+  }
+  .post-list .photo img {
+    display: block;
+    max-width: 100%;
+    object-position: center;
   }
   .post-list h2 {
-    font-size: 27px;
+    margin: 4px 0 6px;
+    font-size: 19px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .post-list small,
+  .post-list .category,
+  .post-list .more {
+    font-size: 9px;
+  }
+  .post-list p {
+    margin: 6px 0;
+    font-size: 12px;
+    line-height: 1.45;
   }
   .footer-banners {
     width: calc(100% - 32px);
@@ -621,8 +656,14 @@ footer p {
     height: 390px;
   }
   .page-title {
-    padding: 55px 18px;
-    margin-bottom: 50px;
+    width: 100%;
+    max-width: 100%;
+    padding: 42px 18px;
+    margin-bottom: 34px;
+  }
+  .page-title h1 {
+    font-size: 40px;
+    line-height: 1.05;
   }
   .detail {
     gap: 25px;
@@ -777,7 +818,7 @@ footer p {
   .collaborator-highlights article { padding: 20px; gap: 16px; }
   .collaborator-highlights article > span { flex-basis: 58px; height: 58px; font-size: 18px; }
   .collaborator-highlights h2 { font-size: 23px; }
-  .partners > a, .partners > .partner-card { min-height: 105px; }
+  .partners > a, .partners > .partner-card { min-height: 190px; }
   .article-gallery img { height: 360px; padding: 6px; }
   .gallery-arrow { flex-basis: 40px; width: 40px; height: 40px; font-size: 29px; }
 }
