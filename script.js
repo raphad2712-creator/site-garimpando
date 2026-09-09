@@ -565,19 +565,18 @@ function animatePage() {
 }
 function protectImages() {
   document.querySelectorAll("img").forEach((image) => {
-    image.addEventListener(
-      "error",
-      () => {
-        if (image.closest(".article-body > div")) {
-          image.style.display = "none";
-          return;
-        }
-        if (!image.src.endsWith("/images/hero.png")) {
-          image.src = "images/hero.png";
-        }
-      },
-      { once: true },
-    );
+    const replaceBrokenImage = () => {
+      if (image.closest(".article-body > div")) {
+        image.style.display = "none";
+        return;
+      }
+      if (!image.src.endsWith("/images/hero.png")) {
+        image.onerror = null;
+        image.src = "images/hero.png";
+      }
+    };
+    image.addEventListener("error", replaceBrokenImage, { once: true });
+    if (image.complete && image.naturalWidth === 0) replaceBrokenImage();
   });
 }
 function route() {
