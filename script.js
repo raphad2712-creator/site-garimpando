@@ -294,6 +294,41 @@ function sidebar() {
     "</ul></aside>"
   );
 }
+function partnerLogo(brand, large = false) {
+  const logo = brand.image || (brand.domain
+    ? `https://www.google.com/s2/favicons?domain_url=https://${brand.domain}&sz=256`
+    : "");
+  const visual = logo
+    ? `<img class="partner-logo" src="${esc(logo)}" alt="Logo ${esc(brand.name)}" onerror="this.style.display='none'">`
+    : `<span class="partner-monogram" aria-hidden="true">${esc(brand.initials || brand.name?.slice(0, 2) || "GL")}</span>`;
+  const content = `${visual}<span class="partner-name">${esc(brand.name)}</span>`;
+  const className = large ? ' class="company-card"' : "";
+  return brand.url
+    ? `<a${className} href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="${esc(brand.name)}">${content}</a>`
+    : `<div${className}>${content}</div>`;
+}
+function companiesPage() {
+  app.innerHTML =
+    '<section class="page-title"><span>Garimpando Life</span><h1>Empresas garimpeiras</h1><p>Conheça as marcas parceiras do Garimpando Life.</p></section>' +
+    '<section class="companies-carousel" aria-label="Marcas parceiras"><button class="company-arrow company-previous" type="button" aria-label="Marcas anteriores">‹</button><div class="companies-track">' +
+    partnerBrands.map((brand) => partnerLogo(brand, true)).join("") +
+    '</div><button class="company-arrow company-next" type="button" aria-label="Próximas marcas">›</button></section>';
+  const track = document.querySelector(".companies-track"),
+    previous = document.querySelector(".company-previous"),
+    next = document.querySelector(".company-next"),
+    move = (direction) => track.scrollBy({ left: direction * Math.max(track.clientWidth * .8, 280), behavior: "smooth" });
+  previous.onclick = () => move(-1);
+  next.onclick = () => move(1);
+  let timer = setInterval(() => {
+    const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
+    track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + Math.max(track.clientWidth * .8, 280), behavior: "smooth" });
+  }, 4500);
+  track.addEventListener("pointerenter", () => clearInterval(timer));
+  track.addEventListener("pointerleave", () => {
+    clearInterval(timer);
+    timer = setInterval(() => next.click(), 4500);
+  });
+}
 function cards(items) {
   return (
     '<section class="post-list">' +
@@ -363,9 +398,9 @@ function archive(title, items, intro) {
   });
 }
 function home() {
-  const latest = posts.slice(0, 12),
-    intro = "Uma seleção das publicações mais recentes do Garimpando Life.",
-    featured = posts.find((post) => post.isFeatured),
+  const featured = posts.find((post) => post.isFeatured),
+    latest = posts.filter((post) => post !== featured && !post.isFeatured).slice(0, 4),
+    intro = "As quatro publicações mais recentes do Garimpando Life.",
     featuredCategory = featured ? categoryForPost(featured) : null,
     heroImage = featured?.image || "images/hero.png",
     heroTitle = featured?.title || "Jordânia, Apaixonante Jordânia",
@@ -593,6 +628,8 @@ function route() {
   else if (hash === "contato") contact();
   else if (hash === "colaboradores") {
     app.innerHTML = collaboratorHighlights();
+  } else if (hash === "empresas") {
+    companiesPage();
   } else if (parts[0] === "materia") {
     const p = posts.find((x) => x.slug === parts.slice(1).join("/")) ||
       collaboratorPosts.find((x) => x.slug === parts.slice(1).join("/"));
