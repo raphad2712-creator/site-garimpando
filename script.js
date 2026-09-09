@@ -30,19 +30,30 @@ const defaultPartnerBrands = [
   { name: "Beeva Brazil", image: "images/parceiro-beeva.png", url: "https://www.beevabrazil.com/" },
   { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
   { name: "Oceanic", image: "images/parceiro-oceanic.jpg", url: "https://www.oceanic.com.br/" },
-  { name: "Entreposto", image: "images/parceiro-entreposto.jpg", url: "https://www.entreposto.com.br/" },
-  { name: "Dona Deôla", domain: "donadeola.com.br", url: "https://www.donadeola.com.br/" },
+  { name: "Entreposto", image: "images/parceiro-entreposto-novo.jpeg", url: "https://www.entreposto.com.br/" },
+  { name: "Dona Deôla", image: "images/parceiro-dona-deola.png", url: "https://www.donadeola.com.br/" },
   { name: "Ótica Brasolin", domain: "brasolin.com.br", url: "https://www.brasolin.com.br/" },
   { name: "Diasi Massas Artesanais", image: "images/logo-diasi.png", url: "https://diasimassasartesanais.com.br/" },
   { name: "Kangaroo Brasil", image: "images/logo-kangaroo.png", url: "https://www.kangaroo.com.br/" },
   { name: "Mister Travel", image: "images/logo-mister-travel.png", url: "https://www.mistertravel.com.br/" },
-  { name: "UNIT", domain: "unit.br", url: "https://www.unit.br/" },
-  { name: "GNC Suécia Salvador", domain: "gncsuecia.com.br", url: "https://www.gncsuecia.com.br/" },
+  { name: "UNIT", image: "images/parceiro-unit.jpeg", url: "https://www.unit.br/" },
+  { name: "GNC Suécia Salvador", image: "images/parceiro-volvo.webp", url: "https://www.gncsuecia.com.br/" },
   { name: "Sais Beach Hotel Maceió", domain: "saishotel.com.br", url: "https://www.saishotel.com.br/" },
-  { name: "Ricardo Almeida", image: "images/logo-ricardo-almeida.png", url: "https://www.ricardoalmeida.com.br/" },
-  { name: "Sococo", domain: "sococo.com.br", url: "https://www.sococo.com.br/" },
-  { name: "Jacques Janine Granja Viana", domain: "jacquesjanine.com.br", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
+  { name: "Ricardo Almeida", image: "images/parceiro-ricardo-almeida-novo.png", url: "https://www.ricardoalmeida.com.br/" },
+  { name: "Sococo", image: "images/parceiro-sococo.png", url: "https://www.sococo.com.br/" },
+  { name: "Jacques Janine Granja Viana", image: "images/parceiro-jacques-janine.jpeg", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
 ];
+const forcedPartnerLogos = {
+  "dona-deola": "images/parceiro-dona-deola.png",
+  entreposto: "images/parceiro-entreposto-novo.jpeg",
+  "entreposto-das-feijoadas": "images/parceiro-entreposto-novo.jpeg",
+  "jacques-janine-granja-viana": "images/parceiro-jacques-janine.jpeg",
+  unit: "images/parceiro-unit.jpeg",
+  "gnc-suecia-salvador": "images/parceiro-volvo.webp",
+  volvo: "images/parceiro-volvo.webp",
+  "ricardo-almeida": "images/parceiro-ricardo-almeida-novo.png",
+  sococo: "images/parceiro-sococo.png",
+};
 let partnerBrands = [...defaultPartnerBrands];
 const localCoverBySlug = {
   "uma-viagem-pela-alma-meu-roteiro-espiritual-pela-italia": "images/italia.jpg",
@@ -73,7 +84,12 @@ async function loadOnlinePosts() {
   if (brandSettings) {
     try {
       const savedBrands = JSON.parse(brandSettings.content || "[]");
-      if (Array.isArray(savedBrands)) partnerBrands = savedBrands;
+      if (Array.isArray(savedBrands)) {
+        partnerBrands = savedBrands.map((brand) => ({
+          ...brand,
+          image: forcedPartnerLogos[normalizeSlug(brand.name || "")] || brand.image,
+        }));
+      }
     } catch (error) {
       console.warn("Configuração das marcas inválida", error);
     }
