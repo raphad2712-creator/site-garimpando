@@ -534,7 +534,30 @@ footer p {
     top: 28px;
   }
   .layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .layout > *,
+  .post-list,
+  aside,
+  .partners-carousel,
+  .partners {
+    min-width: 0;
+    max-width: 100%;
+  }
+  aside {
+    width: 100%;
+    overflow: hidden;
+  }
+  .partners-carousel {
+    width: 100%;
+  }
+  .partners {
+    width: 100%;
+  }
+  .partners > a,
+  .partners > .partner-card {
+    width: 100%;
+    min-width: 0;
   }
   .footer-banners {
     grid-template-columns: 1fr;
@@ -642,6 +665,7 @@ footer p {
     margin: 6px 0;
     font-size: 12px;
     line-height: 1.45;
+    -webkit-line-clamp: 2;
   }
   .footer-banners {
     width: calc(100% - 32px);
