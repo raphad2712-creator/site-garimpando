@@ -119,8 +119,35 @@ const travelCoverBySlug = {
   "suica-sofisticada-e-saborosa": "https://admin.europaturism.ro/Files/Pictures/Images/elvetia-9918.jpg",
   "china-o-imenso-pais-dourado": "https://images.rawpixel.com/image_800/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B4NzU5MzMzLWltYWdlLWt3dnY1N2J1LmpwZw.jpg",
 };
+const partyCoverBySlug = {
+  "viva-santo-antonio-sao-pedro-sao-joao": drivePhoto("1h51N464CtAR_O9G_WIdw6S-gmuc2XHGe"),
+  "15-anos-do-filhao-em-casa": drivePhoto("1FXr5uz39zBXeH5Zpv8-O7MsjLzcSkCjB"),
+  "recebendo-com-amor": drivePhoto("1T-OwOoZWL0U1CAOCo59iuML3MC8w3yq9"),
+  "clash-change-the-game": drivePhoto("1lrn_rgb6Sxl5ySHQ8kKOi8U197VwrkdS"),
+  "100-anos-de-muito-amor-e-dedicacao": drivePhoto("1XCr9L_eXk5dVF9v_FzHyoHqxkfDcbh-5"),
+  "comemorando-em-casa": drivePhoto("1geY4bK-Ghavu7GY5FeDkQFqhrKZZH1ra"),
+  "uma-autentica-festa-de-casamento-na-india": drivePhoto("1I3kZYzXW5FEAvkkgdtUt2ImEod22E34x"),
+  "bodas-de-prata-em-familia": drivePhoto("1kUIu-OO4PfLQtBw2QQhZIZvIDh-CAiXT"),
+  "sunset-party-aos-50": drivePhoto("1pXrbvsJkWncoftKIHMA2tbThFUr5Vfss"),
+  "aeromexico-festejando-20-anos-de-brasi": "images/aeromexico.jpg",
+  "80-anos-com-um-gigante-coracao": drivePhoto("1XD5S0eu-_q3aBq-xBiDsF39EbohvjHpN"),
+  "festa-antonela": drivePhoto("1jLvrL-NheQC3RmZQIsRCPj7CTXcHHOCd"),
+  "glamour-do-fundo-do-mar": drivePhoto("16cdKpk2GmRG97CrkbeQe3eQJCSDkP2JI"),
+  "moderna-e-inesquecive": drivePhoto("1zR5A-vSUq91gRyEGlubvp6czAW_1sB49"),
+  "afro-festa-sofisticada": drivePhoto("1MpnV1xkWFMnSZ4uUj1RrFeeeJonwjIsH"),
+  "01-aninho-bem-do-interior": drivePhoto("1nzgOxZ8QAe_POjnpdL-xli9cP3qhHiqC"),
+  "receber-em-casa": drivePhoto("1O56PdgbP_jSqTVgBtbWVF6fuN08CgSdj"),
+  "festa-hype-do-vinho": drivePhoto("1fxdg9W-eQkKbDnQ1xwggUuCboGx3Torc"),
+  "festas-no-interior": drivePhoto("1TvRJrvi7eTWFdJSFb-bpsh9BtOHgiGnk"),
+  "casamento-em-casa-de-familia": drivePhoto("1oVnNFFm3JqVhJH3vdY05y06v6EkBjQVv"),
+  "moulin-rouge-noite-da-seducao": drivePhoto("1WPLgKLKvFfsqzSq5gokZFB-QgSNgJOC7"),
+  "15-anos-pop": drivePhoto("1rMgIP3t5QVlU5AZi4tzvC8tN8-G9cmv8"),
+  "o-oriente-dentro-de-casa": drivePhoto("1pHLOv5mRe9eG8wzj-te4u9u2lXKxuQXa"),
+  "festa-gotica": drivePhoto("1oRuoGEjZ88h-ZeVl8Ilp5JM5hkTSbRVq"),
+};
 posts.forEach((post) => {
-  if (travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
+  if (partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
+  else if (travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
   else if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
 });
 const savedArticlePhotos = (html) =>
@@ -176,7 +203,7 @@ async function loadOnlinePosts() {
       categoryName: p.category_name || resolvedCategory?.name || "Blog",
       categorySlug:
         resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
-      image: travelCoverBySlug[p.slug] || correction?.image || p.image_url || "",
+      image: partyCoverBySlug[p.slug] || travelCoverBySlug[p.slug] || correction?.image || p.image_url || "",
       articleImage: isCaririMain ? "images/cariri-capa-v3.jpg" : "",
       isFeatured: correction?.is_featured || Boolean(p.is_featured),
       imageAlt: correction?.title || p.title,
