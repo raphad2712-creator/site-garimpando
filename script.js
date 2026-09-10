@@ -78,8 +78,50 @@ const localCoverBySlug = {
   "paes-jordanianos": "images/paes-jordanianos-original.jpg",
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
 };
+const drivePhoto = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+const travelCoverBySlug = {
+  "jordania-apaixonante-jordania": "images/jerash-original.png",
+  "petra-magnifica": "images/petra-original.png",
+  "colombia-colorida-e-magica": drivePhoto("1JP8dCylBrbudrEem_Kxa6tC2T1hGFfRQ"),
+  "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
+  "chapada-diamantina-um-encontro-com-a-mais-poetica-das-regioes-brasileiras": drivePhoto("1Z_GCAZgxKBu77jJULV0RPb-xVFJeR7Cg"),
+  "lindo-e-delicioso-hotel-de-lencois": drivePhoto("14AZxU777gWWFNIfgFNzlb_E2simnElvX"),
+  "uvva-orgullho-baiano-da-chapada-diamantina": drivePhoto("1yxtAZxwQqHCbIEq8mfIRy_WjtNxTa43k"),
+  "refugio-na-serra-surpreende-em-todos-os-cantos": drivePhoto("1610cyEP6lYFP1cQCYl4m__c1ee7vlnL9"),
+  "sabores-especiais-de-lencois": drivePhoto("1J3ELEfnLpFRPzJK70VyOkI9XTU65OD8X"),
+  "um-icone-gastronomico-em-olinda": drivePhoto("1UpE74WBIxLXGfR-gAkZIvOYfmVKbbc9Y"),
+  "meus-preferidos-restaurantes-de-recife": drivePhoto("1Qha4g-oK6evu8yWHpLMJwYlzskJBUU3y"),
+  "pernambuco-destino-de-luz-arte-e-gastronomia": drivePhoto("1Ef_7RKci2Kp-CB0zyPZ21dz3t9_e-SxI"),
+  "alagoas-caribe-brasileiro": drivePhoto("1X0T17Kqk_ukE3vlO4VufQ0pcwl-Gm7PY"),
+  "russia-exuberante-e-encantadora": "https://cdn.tripster.ru/photos/44177688-78bd-4a0d-92f6-06ffd497b3f6.jpg",
+  "sao-francisco-cultura-e-diversao": drivePhoto("1D3-aCET2VyGNA8fiJKAkYjPzgQ8krad9"),
+  "o-paraiso-alter-do-chao-para": "https://uploads.diariodopara.com.br/2025/10/WhatsApp-Image-2025-10-16-at-16.27.18-984x553.jpeg",
+  "o-melhor-do-verao-em-portugal": "https://famango.de/assets/img/camp/1046/urlaub-mit-kindern-europa-strand-portugal.jpg",
+  "roma-em-familia": drivePhoto("1mnK1i6tsvZHfInkBG24FahYK_-tMzIiE"),
+  "de-barco-no-coracao-da-amazonia": "https://artprintcave.hu/images/tapet/ft-nw-40954972/2/l/fototapeta-amazonas-folyó-dzsungel-fak.jpg",
+  "a-magia-de-rapa-nui-em-familia": "https://i0.wp.com/www.toonsarah-travels.blog/wp-content/uploads/2020/10/12-59-Rapa-Nui-2016-Tongariki-for-feature.jpg?fit=1166%2C812&ssl=1",
+  "mexico-entre-o-ceu-e-o-mar": drivePhoto("1Ws1UJrinnWnK5F7z9hxOM-1bexeQsEa3"),
+  "india-um-novo-olhar-sobre-o-mundo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Taj_Mahal%2C_Agra%2C_India_edit2.jpg/1280px-Taj_Mahal%2C_Agra%2C_India_edit2.jpg",
+  "peru-experiencias-sem-fim": drivePhoto("18oSvGVPKVaCCrjJoLgqxwvM9z3vBMC82"),
+  "peru-um-mistico-encanto": drivePhoto("1WKHnmg91gPFBrsrft-VQZCGVyITHezC6"),
+  "canada-o-pais-que-sorri-para-todos": "https://www.yonder.fr/sites/default/files/contenu/news/visuel-voyage-au-canada-5-activites-a-decouvrir-en-famille.jpg",
+  "guatemala-seus-misterios-e-sua-historia": "https://ssl.tzoo-img.com/images/tzoo.103677.0.1346888.LakeAtitlan_Guatemala_iStock-870585478.jpg?width=1080",
+  "no-coracao-da-amazonia": "https://img.rezdy.com/PRODUCT_IMAGE/149616/Amazon_clipper_lg.jpg",
+  "a-historia-e-o-sol-de-uma-jamaica": drivePhoto("1ZJMnCq_d2pQkJWnLO2t4oayj06TIbUE3"),
+  "marrocos-o-pais-das-mil-e-uma-noites": drivePhoto("113IGPFmbS5lGHI3X4s4cCf00ns9udW_m"),
+  "africa-do-sul-e-mauritius-em-familia": "https://img.wiki.ac.mu/images/2026/04/family-enjoying-a-peaceful-walk-along-a-mauritius-beach-at-sunset.jpg",
+  "japao-elegante-pais-do-sol-nascente": "https://images.moneycontrol.com/static-mcnews/2023/09/Mount-Fuji-is-covered-in-snow-half-the-year-Photo-Credit-Hannes-via-Wikimedia-Commons.jpg?height=900&impolicy=website&width=1600",
+  "a-eterna-e-bela-sicilia": drivePhoto("1Plf1MGV5xiJIiSLDkTJJGUYMfuaQc9xp"),
+  "parana-uma-terra-de-tradicoes": drivePhoto("1MFmmqHQH5us29QFCYowSs8inA_-v0tCO"),
+  "bahia-de-charme-parte-2": drivePhoto("1MI-6NGngIITKITaegxYBY0FI2s9RLmbo"),
+  "bahia-de-charme-parte-1": drivePhoto("1BRojQz52ezldB9bjtFCRvOCCarLIOyq9"),
+  "sol-de-santa": "https://cdn-clubecandeias.s3.sa-east-1.amazonaws.com/uploads/images/praias-para-familia-santa-catarina-clube-candeias-florianopolis.jpeg",
+  "suica-sofisticada-e-saborosa": "https://admin.europaturism.ro/Files/Pictures/Images/elvetia-9918.jpg",
+  "china-o-imenso-pais-dourado": "https://images.rawpixel.com/image_800/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B4NzU5MzMzLWltYWdlLWt3dnY1N2J1LmpwZw.jpg",
+};
 posts.forEach((post) => {
-  if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
+  if (travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
+  else if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
 });
 const savedArticlePhotos = (html) =>
   (String(html || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
@@ -134,7 +176,7 @@ async function loadOnlinePosts() {
       categoryName: p.category_name || resolvedCategory?.name || "Blog",
       categorySlug:
         resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
-      image: correction?.image || p.image_url || "",
+      image: travelCoverBySlug[p.slug] || correction?.image || p.image_url || "",
       articleImage: isCaririMain ? "images/cariri-capa-v3.jpg" : "",
       isFeatured: correction?.is_featured || Boolean(p.is_featured),
       imageAlt: correction?.title || p.title,
@@ -184,6 +226,38 @@ const normalizeSlug = (value) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+const firstArticleImage = (post) => {
+  const match = String(post?.content || "").match(/<img[^>]+src=["']([^"']+)["']/i);
+  return match?.[1]?.replace(/^http:\/\//i, "https://") || "";
+};
+const postCover = (post) =>
+  String(post?.image || firstArticleImage(post) || "").replace(/^http:\/\//i, "https://");
+function postCoverPlaceholder(title = "Garimpando Life", category = "MATÉRIA") {
+  const label = String(title || "Garimpando Life").trim().slice(0, 72);
+  const eyebrow = String(category || "MATÉRIA").trim().toUpperCase().slice(0, 28);
+  let seed = 0;
+  for (const character of label) seed = (seed * 31 + character.charCodeAt(0)) >>> 0;
+  const hue = seed % 42 + 18;
+  const safe = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;",
+  })[character]);
+  const words = label.split(/\s+/);
+  const lines = [""];
+  words.forEach((word) => {
+    const current = lines[lines.length - 1];
+    if ((current + " " + word).trim().length > 24 && lines.length < 3) lines.push(word);
+    else lines[lines.length - 1] = (current + " " + word).trim();
+  });
+  const text = lines.map((line, index) =>
+    `<text x="50%" y="${47 + index * 11}%" text-anchor="middle">${safe(line)}</text>`,
+  ).join("");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="680" viewBox="0 0 900 680"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="hsl(${hue} 72% 36%)"/><stop offset="1" stop-color="hsl(${(hue + 38) % 360} 55% 18%)"/></linearGradient></defs><rect width="900" height="680" fill="url(#g)"/><circle cx="760" cy="100" r="180" fill="white" opacity=".07"/><circle cx="100" cy="650" r="260" fill="white" opacity=".05"/><text x="50%" y="25%" text-anchor="middle" fill="#efb45b" font-family="Arial,sans-serif" font-size="25" font-weight="700" letter-spacing="5">${safe(eyebrow)}</text><g fill="white" font-family="Georgia,serif" font-size="48" font-weight="700">${text}</g><path d="M340 570h220" stroke="#efb45b" stroke-width="5"/><text x="50%" y="91%" text-anchor="middle" fill="white" opacity=".8" font-family="Arial,sans-serif" font-size="20" letter-spacing="4">GARIMPANDO LIFE</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+function replacePostCover(image) {
+  image.onerror = null;
+  image.src = postCoverPlaceholder(image.dataset.coverTitle, image.dataset.coverCategory);
+}
 const isVisibleCategory = (category) =>
   category && !hiddenCategorySlugs.has(category.slug);
 const cat = (id) => categories.find((c) => c.id === id && isVisibleCategory(c));
@@ -251,7 +325,7 @@ function renderMegaPosts(category) {
     ? selectedPosts
         .map(
           (post) =>
-            `<a class="mega-card" href="#materia/${post.slug}"><img src="${esc(post.image || "images/hero.png")}" alt="${esc(post.title)}" onerror="this.onerror=null;this.src='images/hero.png'"><strong>${esc(post.title)}</strong></a>`,
+            `<a class="mega-card" href="#materia/${post.slug}"><img src="${esc(postCover(post) || postCoverPlaceholder(post.title, category.name))}" data-cover-title="${esc(post.title)}" data-cover-category="${esc(category.name)}" alt="${esc(post.title)}" onerror="replacePostCover(this)"><strong>${esc(post.title)}</strong></a>`,
         )
         .join("")
     : `<a class="mega-empty" href="#categoria/${category.slug}">Ver matérias de ${esc(category.name)}</a>`;
@@ -447,10 +521,14 @@ function cards(items) {
           '<article><a class="photo" href="#materia/' +
           p.slug +
           '"><img loading="lazy" src="' +
-          esc(p.image || "images/hero.png") +
+          esc(postCover(p) || postCoverPlaceholder(p.title, c?.name)) +
           '" alt="' +
           esc(p.imageAlt || p.title) +
-          '"></a><div>' +
+          '" data-cover-title="' +
+          esc(p.title) +
+          '" data-cover-category="' +
+          esc(c?.name || "Matéria") +
+          '" onerror="replacePostCover(this)"></a><div>' +
           (c
             ? '<a class="category" href="#categoria/' +
               c.slug +
@@ -701,7 +779,8 @@ function protectImages() {
         image.style.display = "none";
         return;
       }
-      if (!image.src.endsWith("/images/hero.png")) {
+      if (image.dataset.coverTitle) replacePostCover(image);
+      else if (!image.src.endsWith("/images/hero.png")) {
         image.onerror = null;
         image.src = "images/hero.png";
       }
