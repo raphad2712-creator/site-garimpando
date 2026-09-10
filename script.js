@@ -72,6 +72,10 @@ const localCoverBySlug = {
   "sergipe-cultura-educacao-e-muita-tradicao": "images/sergipe.jpeg",
   "comidinhas-de-inverno": "images/comidinhas.jpg",
   "bem-estar-bem-viver": "images/unique.jpg",
+  "o-espetacular-monte-nebo": "images/monte-nebo-original.png",
+  "a-historica-jerash": "images/jerash-original.png",
+  "a-deslumbrante-petra": "images/petra-original.png",
+  "paes-jordanianos": "images/paes-jordanianos-original.jpg",
 };
 posts.forEach((post) => {
   if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
@@ -501,33 +505,9 @@ function archive(title, items, intro) {
   });
 }
 function home() {
-  const hiddenHomeTitles = [
-      "a-comida-do-sertao",
-      "o-turismo-local-e-focado",
-      "na-regiao-do-cariri-a-vida-cotidiana",
-    ],
-    isHiddenFromHome = (post) => {
-      const title = normalizeSlug(post.title || "");
-      return hiddenHomeTitles.some((start) => title.startsWith(start));
-    };
-  const featured = posts.find((post) => post.isFeatured),
-    latest = posts
-      .filter((post) => post !== featured && !post.isFeatured && !isHiddenFromHome(post))
-      .slice(0, 4),
-    intro = "As quatro publicações mais recentes do Garimpando Life.",
-    featuredCategory = featured ? categoryForPost(featured) : null,
-    heroImage = featured?.image || "images/hero.png",
-    heroTitle = featured?.title || "Jordânia, Apaixonante Jordânia",
-    heroLink = featured ? `#materia/${featured.slug}` : "#categoria/viagem",
-    heroCategory = featuredCategory?.name || "Viagens",
-    heroClass = heroImage.includes("cariri-capa") ? "hero hero-collage" : "hero";
-  archive("Últimas matérias", latest, intro);
-  app.querySelector(".layout")?.classList.add("home-layout");
-  const built = app.innerHTML;
   app.innerHTML =
-    `<section class="${heroClass}"><a class="hero-link" href="${heroLink}"><img src="${esc(heroImage)}" alt="${esc(heroTitle)}"><div><h1>${esc(heroTitle)}</h1><p><span>${esc(heroCategory)}</span></p></div></a></section><section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>` +
-    built + brandsCarousel("home-partners");
-  bindArchive("Últimas matérias", latest, intro);
+    '<section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>' +
+    brandsCarousel();
 }
 function bindArchive(title, items, intro) {
   document.querySelector("#search")?.addEventListener("input", (e) => {
