@@ -75,7 +75,7 @@ const localCoverBySlug = {
   "o-espetacular-monte-nebo": "images/monte-nebo-original.png",
   "a-historica-jerash": "images/jerash-original.png",
   "a-deslumbrante-petra": "images/petra-original.png",
-  "paes-jordanianos": "images/paes-jordanianos-original.jpg",
+  "paes-jordanianos": "images/paes-jordanianos.jpg",
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
   "wadi-rum-um-deserto-de-tirar-o-folego": "images/wadi-rum.jpg",
   "a-melhor-comida-caseira-jordaniana": "images/comida-jordaniana.jpg",
