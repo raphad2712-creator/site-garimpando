@@ -76,6 +76,7 @@ const localCoverBySlug = {
   "a-historica-jerash": "images/jerash-original.png",
   "a-deslumbrante-petra": "images/petra-original.png",
   "paes-jordanianos": "images/paes-jordanianos-original.jpg",
+  "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
 };
 posts.forEach((post) => {
   if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
