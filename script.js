@@ -613,6 +613,8 @@ const collaboratorPosts = [
     categories: [314],
     image: "",
     imageAlt: "Let’s Go",
+    logo: "images/logo-lets-go-bahia.png",
+    url: "https://letsgobahia.com.br/",
   },
   {
     slug: "tudo-em-revista",
@@ -623,10 +625,12 @@ const collaboratorPosts = [
     categories: [314],
     image: "",
     imageAlt: "Tudo em Revista",
+    logo: "images/logo-revista-tudo.png",
+    url: "https://revistatudo.com.br/",
   },
 ];
 function collaboratorHighlights() {
-  return `<section class="page-title"><span>Garimpando Life</span><h1>Colaboradores</h1><p>Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.</p></section><div class="collaborator-layout"><section class="collaborator-highlights" aria-label="Colaboradores">${collaboratorPosts.map((post, index) => `<article><span>${index ? "TR" : "LG"}</span><div><small>COLABORADOR</small><h2><a href="#materia/${post.slug}">${post.title}</a></h2><p>${post.excerpt}</p><a class="more" href="#materia/${post.slug}">Leia mais →</a></div></article>`).join("")}</section>${sidebar()}</div>`;
+  return `<section class="page-title"><span>Garimpando Life</span><h1>Colaboradores</h1><p>Histórias, experiências e diferentes olhares de quem faz parte do Garimpando Life.</p></section><div class="collaborator-layout"><section class="collaborator-highlights" aria-label="Colaboradores">${collaboratorPosts.map((post) => `<article><a class="collaborator-logo" href="${post.url}" target="_blank" rel="noopener" aria-label="Acessar ${post.title}"><img src="${post.logo}" alt="Logo ${post.title}"></a><div><small>COLABORADOR</small><h2><a href="${post.url}" target="_blank" rel="noopener">${post.title}</a></h2><p>${post.excerpt}</p><a class="more" href="${post.url}" target="_blank" rel="noopener">Visitar site →</a></div></article>`).join("")}</section>${sidebar()}</div>`;
 }
 function openPhotoViewer(image) {
   let viewer = document.querySelector("#photoViewer");
@@ -735,7 +739,7 @@ function publicPage(p) {
 }
 function contact() {
   app.innerHTML =
-    '<section class="page-title"><span>Fale com a gente</span><h1>Contato</h1><p>Críticas, sugestões, parcerias e projetos especiais.</p></section><section class="contact contact-card"><div class="contact-info"><span>GARIMPANDO LIFE</span><h2>Vamos conversar?</h2><p>Empresas interessadas em ações de marketing e publicidade podem contar com nosso suporte para projetos personalizados.</p><a href="tel:+551146173434">+55 11 4617-3434</a><a href="https://wa.me/5511999791784" target="_blank">WhatsApp: +55 11 99979-1784</a><a href="mailto:editorial@marcelosampaio.com">editorial@marcelosampaio.com</a></div><form id="contactForm"><div class="contact-row"><label>Nome<input name="nome" placeholder="Seu nome" required></label><label>E-mail<input name="email" type="email" placeholder="voce@email.com" required></label></div><label>Assunto<input name="assunto" placeholder="Como podemos ajudar?" required></label><label>Mensagem<textarea name="mensagem" placeholder="Escreva sua mensagem..." required></textarea></label><button>Enviar mensagem</button></form></section>';
+    '<section class="page-title"><span>Fale com a gente</span><h1>Contato</h1><p>Críticas, sugestões, parcerias e projetos especiais.</p></section><section class="contact contact-card"><div class="contact-info"><span>GARIMPANDO LIFE</span><h2>Vamos conversar?</h2><p>Empresas interessadas em ações de marketing e publicidade podem contar com nosso suporte para projetos personalizados.</p><a href="https://wa.me/5511999791784" target="_blank">WhatsApp: +55 11 99979-1784</a><a href="mailto:editorial@marcelosampaio.com">editorial@marcelosampaio.com</a></div><form id="contactForm"><div class="contact-row"><label>Nome<input name="nome" placeholder="Seu nome" required></label><label>E-mail<input name="email" type="email" placeholder="voce@email.com" required></label></div><label>Assunto<input name="assunto" placeholder="Como podemos ajudar?" required></label><label>Mensagem<textarea name="mensagem" placeholder="Escreva sua mensagem..." required></textarea></label><button>Enviar mensagem</button></form></section>';
   document.querySelector("#contactForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const f = new FormData(e.target),
@@ -794,12 +798,6 @@ function route() {
   const hash = location.hash.slice(1) || "inicio",
     parts = hash.split("/");
   if (hash === "inicio") home();
-  else if (hash === "blog")
-    archive(
-      "Blog",
-      posts,
-      "Explore as " + posts.length + " matérias do Garimpando Life.",
-    );
   else if (hash === "contato") contact();
   else if (hash === "colaboradores") {
     app.innerHTML = collaboratorHighlights();
