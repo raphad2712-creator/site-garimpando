@@ -83,7 +83,7 @@ const localCoverBySlug = {
 const drivePhoto = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
 const travelCoverBySlug = {
   "jordania-apaixonante-jordania": "https://res.cloudinary.com/startup-grind/image/fetch/c_scale%2Cw_2560/c_crop%2Ch_650%2Cw_2560%2Cy_0.41_mul_h_sub_0.41_mul_650/c_crop%2Ch_650%2Cw_2560/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/https%3A/res.cloudinary.com/startup-grind/image/upload/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/v1/gcs/platform-data-startupgrind/chapter_banners/22861395_1623315001061887_8517170722413525260_o%2520%25281%2529_Hd5zIfa.jpg",
-  "petra-magnifica": "images/petra-magnifica.jpg",
+  "petra-magnifica": "images/petra-magnifica-v2.jpg",
   "colombia-colorida-e-magica": drivePhoto("1JP8dCylBrbudrEem_Kxa6tC2T1hGFfRQ"),
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
   "chapada-diamantina-um-encontro-com-a-mais-poetica-das-regioes-brasileiras": drivePhoto("1Z_GCAZgxKBu77jJULV0RPb-xVFJeR7Cg"),
