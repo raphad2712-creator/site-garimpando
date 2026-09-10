@@ -77,6 +77,8 @@ const localCoverBySlug = {
   "a-deslumbrante-petra": "images/petra-original.png",
   "paes-jordanianos": "images/paes-jordanianos-original.jpg",
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
+  "wadi-rum-um-deserto-de-tirar-o-folego": "images/wadi-rum.jpg",
+  "a-melhor-comida-caseira-jordaniana": "images/comida-jordaniana.jpg",
 };
 const drivePhoto = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
 const travelCoverBySlug = {
@@ -203,7 +205,7 @@ async function loadOnlinePosts() {
       categoryName: p.category_name || resolvedCategory?.name || "Blog",
       categorySlug:
         resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
-      image: partyCoverBySlug[p.slug] || travelCoverBySlug[p.slug] || correction?.image || p.image_url || "",
+      image: partyCoverBySlug[p.slug] || travelCoverBySlug[p.slug] || localCoverBySlug[p.slug] || correction?.image || p.image_url || "",
       articleImage: isCaririMain ? "images/cariri-capa-v3.jpg" : "",
       isFeatured: correction?.is_featured || Boolean(p.is_featured),
       imageAlt: correction?.title || p.title,
@@ -611,8 +613,17 @@ function archive(title, items, intro) {
   });
 }
 function home() {
+  const latestPosts = [...posts]
+    .sort((first, second) => new Date(second.date) - new Date(first.date))
+    .slice(0, 4);
   app.innerHTML =
     '<section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>' +
+    '<section class="home-latest"><div class="home-section-title"><span>Novidades</span><h2>Últimas matérias</h2><p>Confira os conteúdos mais recentes do Garimpando Life.</p></div><div class="latest-grid">' +
+    latestPosts.map((post) => {
+      const category = categoryForPost(post);
+      return `<article><a class="latest-photo" href="#materia/${post.slug}"><img loading="lazy" src="${esc(postCover(post) || postCoverPlaceholder(post.title, category?.name))}" data-cover-title="${esc(post.title)}" data-cover-category="${esc(category?.name || "Matéria")}" alt="${esc(post.imageAlt || post.title)}" onerror="replacePostCover(this)"></a><div><a class="category" href="#categoria/${category?.slug || "ultimos-garimpos"}">${esc(category?.name || "Garimpando Life")}</a><h3><a href="#materia/${post.slug}">${esc(post.title)}</a></h3><small>${date(post.date)}</small><a class="more" href="#materia/${post.slug}">Leia mais →</a></div></article>`;
+    }).join("") +
+    '</div></section>' +
     brandsCarousel();
 }
 function bindArchive(title, items, intro) {
