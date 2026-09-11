@@ -901,8 +901,6 @@ footer p {
   margin-bottom: 36px;
 }
 .article-cover[src*="cariri-capa"], .article-cover-full { max-height: none; height: auto; object-fit: contain; }
-.article-cover-duo { width: 100%; aspect-ratio: 1296 / 859; margin: 0 auto 28px; overflow: hidden; background: #fff; }
-.article-cover-duo img { display: block; width: 141.36%; max-width: none; height: 100%; object-fit: fill; transform: translateX(-29.26%); }
 .article-gallery { position: relative; margin: 34px 0; overflow: hidden; border-radius: 10px; background: #f4f1eb; }
 .gallery-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .gallery-track::-webkit-scrollbar { display: none; }
@@ -974,7 +972,6 @@ footer p {
   .article-body h2 {
     font-size: 28px;
   }
-  .article-cover-duo { width: 100%; margin-bottom: 22px; }
   .post-list p {
     display: -webkit-box;
     -webkit-line-clamp: 4;

@@ -225,7 +225,7 @@ async function loadOnlinePosts() {
       categorySlug:
         resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
       image: partyCoverBySlug[p.slug] || travelCoverBySlug[p.slug] || localCoverBySlug[p.slug] || correction?.image || p.image_url || "",
-      articleImage: isCaririMain ? "images/cariri-capa-v3.jpg" : "",
+      articleImage: isCaririMain ? "images/cariri-capa-single.jpg" : "",
       isFeatured: correction?.is_featured || Boolean(p.is_featured),
       imageAlt: correction?.title || p.title,
       originalUrl: "",
@@ -781,9 +781,7 @@ function article(p) {
     ? "article-cover article-cover-full"
     : "article-cover";
   const coverMarkup = articleImage
-    ? isCaririCover
-      ? '<div class="article-cover-duo"><img src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '"></div>'
-      : '<img class="' + coverClass + '" src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '">'
+    ? '<img class="' + coverClass + '" src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '">'
     : "";
   app.innerHTML =
     '<section class="page-title"><span>' +
