@@ -782,7 +782,7 @@ function article(p) {
     : "article-cover";
   const coverMarkup = articleImage
     ? isCaririCover
-      ? '<div class="article-cover-middle"><img src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '"></div>'
+      ? '<div class="article-cover-duo"><img src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '"></div>'
       : '<img class="' + coverClass + '" src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '">'
     : "";
   app.innerHTML =
