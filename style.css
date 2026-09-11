@@ -101,7 +101,7 @@ a {
 .nav .mega-categories button:hover, .nav .mega-categories button.active { color: var(--orange); padding-left: 7px; }
 .mega-posts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
 .nav .mega-card { display: block; padding: 0; text-align: center; }
-.mega-card img { width: 100%; height: 260px; object-fit: contain; background: #f5f2ec; transition: transform .4s ease, filter .4s ease; }
+.mega-card img { width: 100%; height: 260px; object-fit: cover; object-position: center; transition: transform .4s ease, filter .4s ease; }
 .mega-card:hover img { transform: translateY(-4px); filter: saturate(1.08); }
 .mega-card strong { display: block; padding: 16px 8px 0; color: #2d2d2d; font: 700 21px/1.05 Arial, sans-serif; text-transform: none; letter-spacing: 0; }
 .mega-empty { grid-column: 1/-1; padding: 80px 20px !important; text-align: center; color: var(--orange); }
@@ -220,7 +220,8 @@ a {
 .photo img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   transition: 0.5s;
 }
 .photo:hover img {
@@ -338,7 +339,7 @@ aside .ad {
 .latest-grid article { min-width: 0; background: #fff; border: 1px solid var(--line); box-shadow: 0 15px 35px #26392d0d; transition: transform .25s ease, box-shadow .25s ease; }
 .latest-grid article:hover { transform: translateY(-5px); box-shadow: 0 20px 44px #26392d18; }
 .latest-photo { display: block; height: 210px; overflow: hidden; background: #f2efe9; }
-.latest-photo img { width: 100%; height: 100%; object-fit: contain; transition: transform .45s ease; }
+.latest-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform .45s ease; }
 .latest-grid article:hover .latest-photo img { transform: scale(1.04); }
 .latest-grid article > div { padding: 20px; }
 .latest-grid h3 { margin: 9px 0 10px; font: 700 21px/1.2 Georgia, serif; }
@@ -717,7 +718,7 @@ footer p {
     display: block;
     max-width: 100%;
     object-position: center;
-    object-fit: contain;
+    object-fit: cover;
   }
   .post-list h2 {
     margin: 4px 0 6px;
