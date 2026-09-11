@@ -616,15 +616,16 @@ function home() {
   const latestPosts = [...posts]
     .sort((first, second) => new Date(second.date) - new Date(first.date))
     .slice(0, 4);
-  const featuredPost =
-    latestPosts.find(
-      (post) => normalizeSlug(post.slug || post.title) === "cariri-arte-e-cultura-do-ceara",
-    ) || latestPosts[0];
+  const isCaririMatter = (post) => {
+    const expectedSlug = "cariri-arte-e-cultura-do-ceara";
+    return (
+      normalizeSlug(post.slug || "").startsWith(expectedSlug) ||
+      normalizeSlug(post.title || "") === expectedSlug
+    );
+  };
+  const featuredPost = posts.find(isCaririMatter) || latestPosts[0];
   const featuredCategory = featuredPost ? categoryForPost(featuredPost) : null;
-  const isCaririFeatured =
-    featuredPost &&
-    normalizeSlug(featuredPost.slug || featuredPost.title) ===
-      "cariri-arte-e-cultura-do-ceara";
+  const isCaririFeatured = featuredPost && isCaririMatter(featuredPost);
   const featuredImage = isCaririFeatured
     ? "images/cariri-capa-single.jpg"
     : featuredPost
