@@ -94,6 +94,19 @@ const localCoverBySlug = {
   "a-melhor-comida-caseira-jordaniana": "images/comida-jordaniana.jpg",
 };
 const drivePhoto = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+const garimpoCoverBySlug = {
+  "sunset-a-beira-mar": "images/garimpos-restauradas/sunset-a-beira-mar.jpg",
+  "fasano-um-dos-100-melhores-destinos-do-mundo-pela-time": drivePhoto("1610cyEP6lYFP1cQCYl4m__c1ee7vlnL9"),
+  "as-excelentes-acoes-do-turismo": "images/produto-viagem.jpg",
+  "as-criativas-vitrines-de-luxo-no-mundo-hype": drivePhoto("1UpE74WBIxLXGfR-gAkZIvOYfmVKbbc9Y"),
+  "farmers-market-e-the-groove-amei-em-los-angeles": "images/comidinhas.jpg",
+  "o-velho-oeste-americano-autentico-na-rota-66": "images/wadi-rum.jpg",
+  "prime-vacation-novo-conceito-em-turismo-familiar": "images/bemestar.jpg",
+  "fadas-gigantes-universo-encantado": drivePhoto("16cdKpk2GmRG97CrkbeQe3eQJCSDkP2JI"),
+  "village-barra-um-hotel-encantador-para-a-familia": "images/garimpos-restauradas/village-barra.png",
+  "o-seguro-e-potente-volvo-s60": drivePhoto("1D3-aCET2VyGNA8fiJKAkYjPzgQ8krad9"),
+  "nara-e-essencia-do-budismo": "https://images.moneycontrol.com/static-mcnews/2023/09/Mount-Fuji-is-covered-in-snow-half-the-year-Photo-Credit-Hannes-via-Wikimedia-Commons.jpg?height=900&impolicy=website&width=1600",
+};
 const travelCoverBySlug = {
   "jordania-apaixonante-jordania": "https://res.cloudinary.com/startup-grind/image/fetch/c_scale%2Cw_2560/c_crop%2Ch_650%2Cw_2560%2Cy_0.41_mul_h_sub_0.41_mul_650/c_crop%2Ch_650%2Cw_2560/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/https%3A/res.cloudinary.com/startup-grind/image/upload/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/v1/gcs/platform-data-startupgrind/chapter_banners/22861395_1623315001061887_8517170722413525260_o%2520%25281%2529_Hd5zIfa.jpg",
   "petra-magnifica": "images/petra-magnifica-v3.jpg",
@@ -163,6 +176,7 @@ const partyCoverBySlug = {
 posts.forEach((post) => {
   if (partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
   else if (travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
+  else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
   else if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
 });
 const savedArticlePhotos = (html) =>
