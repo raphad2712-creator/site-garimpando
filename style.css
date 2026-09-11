@@ -812,19 +812,38 @@ footer p {
     font-size: 40px;
     line-height: 1.05;
   }
-  .companies-carousel { padding: 0 34px; }
-  .companies-heading { margin-bottom: 18px; }
-  .companies-heading h2 { font-size: 30px; }
-  .companies-track { gap: 14px; padding-bottom: 18px; }
-  .company-card { flex-basis: calc(100vw - 100px); min-height: 200px; padding: 18px; }
-  .company-card .partner-logo { height: 110px; max-width: 190px; }
+  .companies-carousel {
+    width: 100%;
+    padding: 0 48px;
+    margin-bottom: 78px;
+  }
+  .companies-heading { margin-bottom: 16px; padding: 0 4px; }
+  .companies-heading h2 { font-size: clamp(29px, 8.5vw, 36px); }
+  .companies-track { gap: 12px; padding: 8px 0 20px; }
+  .company-card {
+    flex: 0 0 100%;
+    min-height: 190px;
+    gap: 12px;
+    padding: 20px 16px;
+    border-radius: 10px;
+    scroll-snap-align: center;
+  }
+  .company-card .partner-logo {
+    width: min(100%, 210px);
+    height: 115px;
+    max-width: 210px;
+  }
+  .company-card .partner-name { font-size: 14px; line-height: 1.25; }
+  .company-arrow { top: 58%; width: 38px; height: 38px; transform: translateY(-50%); }
+  .company-previous { left: 5px; }
+  .company-next { right: 5px; }
   .brand-viewer { padding: 12px; }
   .brand-viewer-panel { width: 94vw; padding: 18px; border-radius: 14px; }
   .brand-viewer img { height: 45vh; }
   .brand-viewer h3 { margin: 16px 42px 14px; font-size: 21px; }
   .brand-viewer-close { top: 8px; right: 8px; }
-  .home-partners { width: 100%; margin-top: -12px; }
-  .home-partners .company-card { flex-basis: calc(100vw - 100px); }
+  .home-partners { width: 100%; margin-top: 0; }
+  .home-partners .company-card { flex-basis: 100%; }
   .detail {
     gap: 25px;
   }

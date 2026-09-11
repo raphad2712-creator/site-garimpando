@@ -35,7 +35,7 @@ const hiddenCategorySlugs = new Set([
 const collaboratorPartnerBrands = [
   {
     name: "Let's Go Bahia",
-    image: "images/logo-lets-go-bahia.png",
+    image: "images/logo-lets-go-bahia-oficial.png",
     url: "https://letsgobahia.com.br/",
   },
   {
@@ -689,7 +689,7 @@ const collaboratorPosts = [
     categories: [314],
     image: "",
     imageAlt: "Let’s Go",
-    logo: "images/logo-lets-go-bahia.png",
+    logo: "images/logo-lets-go-bahia-oficial.png",
     url: "https://letsgobahia.com.br/",
   },
   {
