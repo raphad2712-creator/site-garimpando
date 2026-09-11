@@ -32,6 +32,18 @@ const hiddenCategorySlugs = new Set([
   "silvia-percussi",
   "gabi-goulart",
 ]);
+const collaboratorPartnerBrands = [
+  {
+    name: "Let's Go Bahia",
+    image: "images/logo-lets-go-bahia.png",
+    url: "https://letsgobahia.com.br/",
+  },
+  {
+    name: "Revista Tudo",
+    image: "images/logo-revista-tudo.png",
+    url: "https://revistatudo.com.br/",
+  },
+];
 const defaultPartnerBrands = [
   { name: "Beeva Brazil", image: "images/parceiro-beeva-hq.jpeg", url: "https://www.beevabrazil.com/" },
   { name: "Pedras do Patacho", image: "images/parceiro-pedras.png", url: "https://www.pedrasdopatacho.com.br/" },
@@ -48,6 +60,7 @@ const defaultPartnerBrands = [
   { name: "Ricardo Almeida", image: "images/parceiro-ricardo-almeida-novo.png", url: "https://www.ricardoalmeida.com.br/" },
   { name: "Sococo", image: "images/parceiro-sococo.png", url: "https://www.sococo.com.br/" },
   { name: "Jacques Janine Granja Viana", image: "images/parceiro-jacques-janine-hq.png", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
+  ...collaboratorPartnerBrands,
 ];
 const forcedPartnerLogos = {
   "beeva-brazil": "images/parceiro-beeva-hq.jpeg",
@@ -180,6 +193,12 @@ async function loadOnlinePosts() {
       console.warn("Configuração das marcas inválida", error);
     }
   }
+  collaboratorPartnerBrands.forEach((collaborator) => {
+    const alreadyListed = partnerBrands.some(
+      (brand) => normalizeSlug(brand.name || "") === normalizeSlug(collaborator.name),
+    );
+    if (!alreadyListed) partnerBrands.push(collaborator);
+  });
   online
     .filter((p) => p.slug !== "config-marcas-parceiras" && !removedPostSlugs.has(normalizeSlug(p.slug)))
     .reverse()
