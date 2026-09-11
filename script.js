@@ -616,7 +616,17 @@ function home() {
   const latestPosts = [...posts]
     .sort((first, second) => new Date(second.date) - new Date(first.date))
     .slice(0, 4);
+  const featuredPost =
+    latestPosts.find((post) => !String(postCover(post) || "").includes("cariri-capa")) ||
+    latestPosts[0];
+  const featuredCategory = featuredPost ? categoryForPost(featuredPost) : null;
+  const featuredImage = featuredPost
+    ? postCover(featuredPost) || postCoverPlaceholder(featuredPost.title, featuredCategory?.name)
+    : "images/hero.png";
   app.innerHTML =
+    (featuredPost
+      ? `<section class="hero"><a class="hero-link" href="#materia/${featuredPost.slug}"><img src="${esc(featuredImage)}" data-cover-title="${esc(featuredPost.title)}" data-cover-category="${esc(featuredCategory?.name || "Matéria")}" alt="${esc(featuredPost.imageAlt || featuredPost.title)}" onerror="replacePostCover(this)"><div><h1>${esc(featuredPost.title)}</h1><p><span>${esc(featuredCategory?.name || "Garimpando Life")}</span></p></div></a></section>`
+      : "") +
     '<section class="icons" aria-label="Áreas do site"><a href="#categoria/viagem"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m43 22-16-9V5c0-2-1-4-3-4s-3 2-3 4v8L5 22v5l16-5v11l-6 4v4l9-3 9 3v-4l-6-4V22l16 5v-5Z"/></svg></b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 17 16 7h16l7 10-15 23L9 17Z"/><path d="m9 17 15 23 15-23M16 7l8 33 8-33M9 17h30"/></svg></b><span>Garimpos</span></a><a href="#colaboradores"><b><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="16" r="7"/><circle cx="34" cy="18" r="5"/><path d="M5 40c0-8 5-13 13-13s13 5 13 13M29 29c2-2 4-3 7-3 5 0 8 4 8 10"/></svg></b><span>Colaboradores</span></a><a href="#produtos"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 17 24 7l17 10-17 10L7 17Z"/><path d="M7 17v18l17 10 17-10V17M24 27v18"/></svg></b><span>Produtos</span></a></section>' +
     '<section class="home-latest"><div class="home-section-title"><span>Novidades</span><h2>Últimas matérias</h2><p>Confira os conteúdos mais recentes do Garimpando Life.</p></div><div class="latest-grid">' +
     latestPosts.map((post) => {
