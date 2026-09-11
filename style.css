@@ -328,7 +328,7 @@ aside .ad {
 .companies-heading h2 { margin: 8px 0 0; color: var(--green); font: 700 38px/1.1 Georgia, serif; }
 .companies-track { display: flex; gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 12px 4px 28px; }
 .companies-track::-webkit-scrollbar { display: none; }
-.company-card { flex: 0 0 clamp(250px, 28vw, 340px); min-height: 270px; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 28px; border: 1px solid var(--line); background: #fff; box-shadow: 0 14px 35px #26392d0d; cursor: zoom-in; transition: transform .25s ease, box-shadow .25s ease; }
+.company-card { flex: 0 0 clamp(250px, 28vw, 340px); min-height: 270px; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 28px; border: 1px solid var(--line); background: #fff; box-shadow: 0 14px 35px #26392d0d; cursor: pointer; text-decoration: none; transition: transform .25s ease, box-shadow .25s ease; }
 .company-card:hover { transform: translateY(-5px); box-shadow: 0 20px 45px #26392d1a; }
 .company-card .partner-logo { width: 100%; max-width: 230px; height: 155px; object-fit: contain; transition: transform .3s ease; }
 .company-card:hover .partner-logo, .company-card:focus-visible .partner-logo { transform: scale(1.12); }

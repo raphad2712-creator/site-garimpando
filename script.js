@@ -458,12 +458,9 @@ function partnerLogo(brand, large = false) {
     : `<span class="partner-monogram" aria-hidden="true">${esc(brand.initials || brand.name?.slice(0, 2) || "GL")}</span>`;
   const content = `${visual}<span class="partner-name">${esc(brand.name)}</span>`;
   const className = large ? ' class="company-card"' : "";
-  const viewerData = large && logo
-    ? ` data-brand-logo="${esc(logo)}" data-brand-name="${esc(brand.name)}" data-brand-url="${esc(brand.url || "")}"`
-    : "";
   return brand.url
-    ? `<a${className}${viewerData} href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="Ampliar logo ${esc(brand.name)}">${content}</a>`
-    : `<div${className}${viewerData}${large ? ' role="button" tabindex="0" aria-label="Ampliar logo ' + esc(brand.name) + '"' : ""}>${content}</div>`;
+    ? `<a${className} href="${esc(brand.url)}" target="_blank" rel="noopener" aria-label="Visitar site ou Instagram de ${esc(brand.name)}">${content}</a>`
+    : `<div${className}>${content}</div>`;
 }
 function brandsCarousel(className = "") {
   return (
@@ -534,22 +531,6 @@ function closeBrandViewer() {
   if (!viewer) return;
   viewer.hidden = true;
   document.body.classList.remove("brand-viewer-open");
-}
-function initBrandViewerInteraction() {
-  document.addEventListener("click", (event) => {
-    const card = event.target.closest?.(".company-card[data-brand-logo]");
-    if (!card) return;
-    event.preventDefault();
-    openBrandViewer(card);
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeBrandViewer();
-    if (event.key !== "Enter" && event.key !== " ") return;
-    const card = event.target.closest?.(".company-card[data-brand-logo]");
-    if (!card) return;
-    event.preventDefault();
-    openBrandViewer(card);
-  });
 }
 function initPartnerCarousels() {
   document.querySelectorAll(".partners-carousel").forEach((carousel) => {
@@ -787,6 +768,34 @@ function initArticleGalleries() {
     });
   });
 }
+function positionArticleGalleryBelowText() {
+  const content = document.querySelector(".article-body > div");
+  const gallery = content?.querySelector(".article-gallery");
+  if (!content || !gallery) return;
+
+  const sectionLabel = [...content.querySelectorAll("strong, b")].find((label) => {
+    const text = normalizeSlug(label.textContent || "");
+    return text === "estilo-de-vida" || text === "turismo" || text === "gastronomia";
+  });
+  const linksBlock = sectionLabel?.closest("p, div");
+  if (
+    !linksBlock ||
+    !(linksBlock.compareDocumentPosition(gallery) & Node.DOCUMENT_POSITION_FOLLOWING)
+  ) return;
+
+  // No texto do Cariri, a introdução e os links das áreas foram salvos no
+  // mesmo parágrafo. Separa os dois para o carrossel ficar exatamente entre
+  // o texto principal e os links de Estilo de Vida, Turismo e Gastronomia.
+  if (linksBlock.contains(sectionLabel) && linksBlock.firstChild !== sectionLabel) {
+    const intro = linksBlock.cloneNode(false);
+    while (linksBlock.firstChild && linksBlock.firstChild !== sectionLabel) {
+      intro.appendChild(linksBlock.firstChild);
+    }
+    while (intro.lastChild?.nodeName === "BR") intro.lastChild.remove();
+    if (intro.textContent.trim()) content.insertBefore(intro, linksBlock);
+  }
+  content.insertBefore(gallery, linksBlock);
+}
 function article(p) {
   const c = categoryForPost(p);
   const articleImage = p.articleImage || p.image || "";
@@ -811,6 +820,7 @@ function article(p) {
     '</div><a class="button" href="#inicio">Voltar ao início</a></article>' +
     sidebar() +
     "</div>";
+  positionArticleGalleryBelowText();
   initArticleGalleries();
 }
 function publicPage(p) {
@@ -928,5 +938,4 @@ async function startSite() {
   renderCategoryMenu();
   route();
 }
-initBrandViewerInteraction();
 startSite();
