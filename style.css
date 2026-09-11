@@ -452,6 +452,9 @@ footer p {
   font-size: 11px;
   color: #888;
 }
+.footer-credit { margin-top: 8px; }
+.footer-credit a { color: var(--green); font-weight: 800; text-decoration: none; }
+.footer-credit a:hover, .footer-credit a:focus-visible { color: var(--orange); text-decoration: underline; }
 .page-title {
   text-align: center;
   background: #f7f5f1;
