@@ -75,7 +75,7 @@ const localCoverBySlug = {
   "o-espetacular-monte-nebo": "images/monte-nebo-original.png",
   "a-historica-jerash": "images/jerash-original.png",
   "a-deslumbrante-petra": "images/petra-original.png",
-  "paes-jordanianos": "images/paes-jordanianos.jpg",
+  "paes-jordanianos": "images/paes-jordanianos-v2.jpg",
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
   "wadi-rum-um-deserto-de-tirar-o-folego": "images/wadi-rum.jpg",
   "a-melhor-comida-caseira-jordaniana": "images/comida-jordaniana.jpg",
@@ -83,7 +83,7 @@ const localCoverBySlug = {
 const drivePhoto = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
 const travelCoverBySlug = {
   "jordania-apaixonante-jordania": "https://res.cloudinary.com/startup-grind/image/fetch/c_scale%2Cw_2560/c_crop%2Ch_650%2Cw_2560%2Cy_0.41_mul_h_sub_0.41_mul_650/c_crop%2Ch_650%2Cw_2560/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/https%3A/res.cloudinary.com/startup-grind/image/upload/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/v1/gcs/platform-data-startupgrind/chapter_banners/22861395_1623315001061887_8517170722413525260_o%2520%25281%2529_Hd5zIfa.jpg",
-  "petra-magnifica": "images/petra-magnifica-v2.jpg",
+  "petra-magnifica": "images/petra-magnifica-v3.jpg",
   "colombia-colorida-e-magica": drivePhoto("1JP8dCylBrbudrEem_Kxa6tC2T1hGFfRQ"),
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
   "chapada-diamantina-um-encontro-com-a-mais-poetica-das-regioes-brasileiras": drivePhoto("1Z_GCAZgxKBu77jJULV0RPb-xVFJeR7Cg"),
@@ -617,7 +617,7 @@ function home() {
     .sort((first, second) => new Date(second.date) - new Date(first.date))
     .slice(0, 4);
   app.innerHTML =
-    '<section class="icons"><a href="#categoria/viagem"><b>✈</b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b>◇</b><span>Garimpos</span></a><a href="#colaboradores"><b>✦</b><span>Colaboradores</span></a><a href="#produtos"><b>◈</b><span>Produtos</span></a></section>' +
+    '<section class="icons" aria-label="Áreas do site"><a href="#categoria/viagem"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m43 22-16-9V5c0-2-1-4-3-4s-3 2-3 4v8L5 22v5l16-5v11l-6 4v4l9-3 9 3v-4l-6-4V22l16 5v-5Z"/></svg></b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 17 16 7h16l7 10-15 23L9 17Z"/><path d="m9 17 15 23 15-23M16 7l8 33 8-33M9 17h30"/></svg></b><span>Garimpos</span></a><a href="#colaboradores"><b><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="16" r="7"/><circle cx="34" cy="18" r="5"/><path d="M5 40c0-8 5-13 13-13s13 5 13 13M29 29c2-2 4-3 7-3 5 0 8 4 8 10"/></svg></b><span>Colaboradores</span></a><a href="#produtos"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 17 24 7l17 10-17 10L7 17Z"/><path d="M7 17v18l17 10 17-10V17M24 27v18"/></svg></b><span>Produtos</span></a></section>' +
     '<section class="home-latest"><div class="home-section-title"><span>Novidades</span><h2>Últimas matérias</h2><p>Confira os conteúdos mais recentes do Garimpando Life.</p></div><div class="latest-grid">' +
     latestPosts.map((post) => {
       const category = categoryForPost(post);

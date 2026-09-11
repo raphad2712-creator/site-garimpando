@@ -18,6 +18,10 @@ body {
   max-width: 100%;
   overflow-x: hidden;
 }
+img {
+  display: block;
+  max-width: 100%;
+}
 a {
   color: inherit;
   text-decoration: none;
@@ -48,7 +52,17 @@ a {
   place-items: center;
   border-radius: 50%;
   font-weight: bold;
+  color: #252525;
+  transition: color .2s ease, border-color .2s ease, transform .2s ease, background .2s ease;
 }
+.social svg { width: 17px; height: 17px; fill: currentColor; }
+.social .instagram svg { fill: none; stroke: currentColor; stroke-width: 1.9; }
+.social .instagram .solid { fill: currentColor; stroke: none; }
+.social .youtube .play { fill: #fff; }
+.social a:hover { color: #fff; border-color: transparent; transform: translateY(-2px); }
+.social .facebook:hover { background: #1877f2; }
+.social .instagram:hover { background: #d62976; }
+.social .youtube:hover { background: #ff0000; }
 .nav {
   min-height: 58px;
   border-block: 1px solid var(--line);
@@ -87,7 +101,7 @@ a {
 .nav .mega-categories button:hover, .nav .mega-categories button.active { color: var(--orange); padding-left: 7px; }
 .mega-posts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
 .nav .mega-card { display: block; padding: 0; text-align: center; }
-.mega-card img { width: 100%; height: 260px; object-fit: cover; transition: transform .4s ease, filter .4s ease; }
+.mega-card img { width: 100%; height: 260px; object-fit: contain; background: #f5f2ec; transition: transform .4s ease, filter .4s ease; }
 .mega-card:hover img { transform: translateY(-4px); filter: saturate(1.08); }
 .mega-card strong { display: block; padding: 16px 8px 0; color: #2d2d2d; font: 700 21px/1.05 Arial, sans-serif; text-transform: none; letter-spacing: 0; }
 .mega-empty { grid-column: 1/-1; padding: 80px 20px !important; text-align: center; color: var(--orange); }
@@ -166,10 +180,15 @@ a {
   color: var(--orange);
 }
 .icons b {
-  font-size: 35px;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
   color: var(--orange);
   margin-bottom: 13px;
 }
+.icons svg { width: 38px; height: 38px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.icons a:first-child svg { fill: currentColor; stroke: none; }
 .icons span {
   font:
     700 18px Georgia,
@@ -194,11 +213,14 @@ a {
 .photo {
   height: 300px;
   overflow: hidden;
+  background: #f5f2ec;
+  display: grid;
+  place-items: center;
 }
 .photo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: 0.5s;
 }
 .photo:hover img {
@@ -316,7 +338,7 @@ aside .ad {
 .latest-grid article { min-width: 0; background: #fff; border: 1px solid var(--line); box-shadow: 0 15px 35px #26392d0d; transition: transform .25s ease, box-shadow .25s ease; }
 .latest-grid article:hover { transform: translateY(-5px); box-shadow: 0 20px 44px #26392d18; }
 .latest-photo { display: block; height: 210px; overflow: hidden; background: #f2efe9; }
-.latest-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease; }
+.latest-photo img { width: 100%; height: 100%; object-fit: contain; transition: transform .45s ease; }
 .latest-grid article:hover .latest-photo img { transform: scale(1.04); }
 .latest-grid article > div { padding: 20px; }
 .latest-grid h3 { margin: 9px 0 10px; font: 700 21px/1.2 Georgia, serif; }
@@ -364,7 +386,8 @@ aside li {
 .footer-banners img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #f5f2ec;
   transition: 0.5s;
 }
 .footer-banners a:hover img {
@@ -431,7 +454,8 @@ footer p {
 .product-grid img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #f5f2ec;
   transition: 0.5s;
 }
 .product-grid article:hover img {
@@ -457,7 +481,7 @@ footer p {
 .detail > img {
   width: 100%;
   max-height: 570px;
-  object-fit: cover;
+  object-fit: contain;
 }
 .detail h2,
 .contact h2 {
@@ -569,6 +593,7 @@ footer p {
   }
   .layout {
     grid-template-columns: minmax(0, 1fr);
+    gap: 46px;
   }
   .layout > *,
   .post-list,
@@ -662,6 +687,9 @@ footer p {
     min-height: 120px;
     border-bottom: 1px solid var(--line);
   }
+  .icons a:nth-child(2) { border-right: 0; }
+  .icons b { width: 40px; height: 40px; }
+  .icons svg { width: 33px; height: 33px; }
   .layout {
     width: calc(100% - 32px);
     min-width: 0;
@@ -689,6 +717,7 @@ footer p {
     display: block;
     max-width: 100%;
     object-position: center;
+    object-fit: contain;
   }
   .post-list h2 {
     margin: 4px 0 6px;
@@ -717,7 +746,8 @@ footer p {
     grid-template-columns: 1fr;
   }
   .product-grid article > a {
-    height: 390px;
+    height: auto;
+    aspect-ratio: 4 / 3;
   }
   .page-title {
     width: 100%;
@@ -791,7 +821,8 @@ footer p {
 .article-cover {
   width: 100%;
   max-height: 620px;
-  object-fit: cover;
+  object-fit: contain;
+  background: #f5f2ec;
   margin-bottom: 36px;
 }
 .article-cover[src*="cariri-capa"], .article-cover-full { max-height: none; height: auto; object-fit: contain; }
