@@ -94,6 +94,9 @@ const localCoverBySlug = {
   "a-melhor-comida-caseira-jordaniana": "images/comida-jordaniana.jpg",
 };
 const drivePhoto = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+const archiveGarimpoCoverBySlug = Object.fromEntries(
+  Object.entries(window.GARIMPANDO_DRIVE_COVERS || {}).map(([slug, id]) => [slug, drivePhoto(id)]),
+);
 const garimpoCoverBySlug = {
   "sunset-a-beira-mar": "images/garimpos-restauradas/sunset-a-beira-mar.jpg",
   "fasano-um-dos-100-melhores-destinos-do-mundo-pela-time": drivePhoto("1610cyEP6lYFP1cQCYl4m__c1ee7vlnL9"),
@@ -174,7 +177,8 @@ const partyCoverBySlug = {
   "festa-gotica": drivePhoto("1oRuoGEjZ88h-ZeVl8Ilp5JM5hkTSbRVq"),
 };
 posts.forEach((post) => {
-  if (partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
+  if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
+  else if (partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
   else if (travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
   else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
   else if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
