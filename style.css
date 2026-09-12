@@ -859,7 +859,7 @@ footer p {
     font-size: 32px;
   }
 }
-@media (max-width: 900px) {
+@media (max-width: 900px), (pointer: coarse) {
   .companies-track {
     gap: 0;
     scroll-snap-type: x mandatory;

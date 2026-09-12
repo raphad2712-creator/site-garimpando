@@ -530,7 +530,7 @@ function initCompanyCarousels() {
       next = carousel.querySelector(".company-next"),
       cards = [...track.querySelectorAll(".company-card")];
     if (!cards.length) return;
-    if (window.matchMedia("(max-width: 900px)").matches) {
+    if (window.matchMedia("(max-width: 900px), (pointer: coarse)").matches) {
       carousel.classList.add("companies-carousel-single");
       let mobileCurrent = 0;
       let mobileTimer;
