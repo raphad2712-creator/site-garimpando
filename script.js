@@ -530,6 +530,49 @@ function initCompanyCarousels() {
       next = carousel.querySelector(".company-next"),
       cards = [...track.querySelectorAll(".company-card")];
     if (!cards.length) return;
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      carousel.classList.add("companies-carousel-single");
+      let mobileCurrent = 0;
+      let mobileTimer;
+      let touchStartX = 0;
+      const showMobile = (index) => {
+        mobileCurrent = (index + cards.length) % cards.length;
+        cards.forEach((card, cardIndex) => {
+          const active = cardIndex === mobileCurrent;
+          card.classList.toggle("company-active", active);
+          card.setAttribute("aria-hidden", String(!active));
+          if (active) card.removeAttribute("tabindex");
+          else card.tabIndex = -1;
+        });
+      };
+      const stopMobileTimer = () => clearInterval(mobileTimer);
+      const startMobileTimer = () => {
+        stopMobileTimer();
+        mobileTimer = setInterval(() => showMobile(mobileCurrent + 1), 4200);
+      };
+      previous.onclick = () => {
+        showMobile(mobileCurrent - 1);
+        startMobileTimer();
+      };
+      next.onclick = () => {
+        showMobile(mobileCurrent + 1);
+        startMobileTimer();
+      };
+      track.addEventListener("touchstart", (event) => {
+        touchStartX = event.changedTouches[0]?.clientX || 0;
+        stopMobileTimer();
+      }, { passive: true });
+      track.addEventListener("touchend", (event) => {
+        const distance = (event.changedTouches[0]?.clientX || touchStartX) - touchStartX;
+        if (Math.abs(distance) > 35) showMobile(mobileCurrent + (distance < 0 ? 1 : -1));
+        startMobileTimer();
+      }, { passive: true });
+      carousel.addEventListener("pointerenter", stopMobileTimer);
+      carousel.addEventListener("pointerleave", startMobileTimer);
+      showMobile(0);
+      startMobileTimer();
+      return;
+    }
     let current = 0;
     const nearestCard = () => {
       const center = track.scrollLeft + track.clientWidth / 2;
