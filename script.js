@@ -528,17 +528,30 @@ function initCompanyCarousels() {
     const track = carousel.querySelector(".companies-track"),
       previous = carousel.querySelector(".company-previous"),
       next = carousel.querySelector(".company-next"),
-      move = (direction) => track.scrollBy({ left: direction * Math.max(track.clientWidth * .82, 250), behavior: "smooth" });
-    previous.onclick = () => move(-1);
-    next.onclick = () => move(1);
-    let timer = setInterval(() => {
-      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
-      track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + Math.max(track.clientWidth * .82, 250), behavior: "smooth" });
-    }, 4200);
+      cards = [...track.querySelectorAll(".company-card")];
+    if (!cards.length) return;
+    let current = 0;
+    const nearestCard = () => {
+      const center = track.scrollLeft + track.clientWidth / 2;
+      return cards.reduce((best, card, index) => {
+        const distance = Math.abs(card.offsetLeft + card.offsetWidth / 2 - center);
+        return distance < best.distance ? { index, distance } : best;
+      }, { index: 0, distance: Infinity }).index;
+    };
+    const show = (index) => {
+      current = (index + cards.length) % cards.length;
+      const card = cards[current];
+      const centered = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
+      const limit = Math.max(0, track.scrollWidth - track.clientWidth);
+      track.scrollTo({ left: Math.max(0, Math.min(centered, limit)), behavior: "smooth" });
+    };
+    previous.onclick = () => show(nearestCard() - 1);
+    next.onclick = () => show(nearestCard() + 1);
+    let timer = setInterval(() => show(nearestCard() + 1), 4200);
     carousel.addEventListener("pointerenter", () => clearInterval(timer));
     carousel.addEventListener("pointerleave", () => {
       clearInterval(timer);
-      timer = setInterval(() => next.click(), 4200);
+      timer = setInterval(() => show(nearestCard() + 1), 4200);
     });
   });
 }
