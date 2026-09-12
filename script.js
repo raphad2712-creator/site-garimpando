@@ -534,25 +534,49 @@ function initCompanyCarousels() {
     const nearestCard = () => {
       const center = track.scrollLeft + track.clientWidth / 2;
       return cards.reduce((best, card, index) => {
-        const distance = Math.abs(card.offsetLeft + card.offsetWidth / 2 - center);
+        const cardCenter = card.offsetLeft - track.offsetLeft + card.offsetWidth / 2;
+        const distance = Math.abs(cardCenter - center);
         return distance < best.distance ? { index, distance } : best;
       }, { index: 0, distance: Infinity }).index;
     };
-    const show = (index) => {
-      current = (index + cards.length) % cards.length;
-      const card = cards[current];
+    const positionFor = (index) => {
+      const card = cards[index];
       const centered = card.offsetLeft - track.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
       const limit = Math.max(0, track.scrollWidth - track.clientWidth);
-      track.scrollTo({ left: Math.max(0, Math.min(centered, limit)), behavior: "smooth" });
+      return Math.max(0, Math.min(centered, limit));
+    };
+    const show = (index, behavior = "smooth") => {
+      current = (index + cards.length) % cards.length;
+      track.scrollTo({ left: positionFor(current), behavior });
     };
     previous.onclick = () => show(nearestCard() - 1);
     next.onclick = () => show(nearestCard() + 1);
-    let timer = setInterval(() => show(nearestCard() + 1), 4200);
-    carousel.addEventListener("pointerenter", () => clearInterval(timer));
-    carousel.addEventListener("pointerleave", () => {
+    let timer;
+    let settleTimer;
+    const stopTimer = () => clearInterval(timer);
+    const startTimer = () => {
       clearInterval(timer);
       timer = setInterval(() => show(nearestCard() + 1), 4200);
-    });
+    };
+    const settleOnCard = () => {
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        const nearest = nearestCard();
+        current = nearest;
+        if (Math.abs(track.scrollLeft - positionFor(nearest)) > 1) show(nearest);
+      }, 160);
+    };
+    track.addEventListener("scroll", settleOnCard, { passive: true });
+    track.addEventListener("pointerdown", stopTimer, { passive: true });
+    track.addEventListener("pointerup", () => {
+      settleOnCard();
+      startTimer();
+    }, { passive: true });
+    track.addEventListener("touchend", settleOnCard, { passive: true });
+    carousel.addEventListener("pointerenter", stopTimer);
+    carousel.addEventListener("pointerleave", startTimer);
+    window.addEventListener("resize", () => show(nearestCard(), "auto"), { passive: true });
+    startTimer();
   });
 }
 function openBrandViewer(card) {

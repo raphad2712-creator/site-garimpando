@@ -859,6 +859,22 @@ footer p {
     font-size: 32px;
   }
 }
+@media (max-width: 900px) {
+  .companies-track {
+    gap: 0;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+  }
+  .companies-track .company-card,
+  .home-partners .company-card {
+    flex: 0 0 100% !important;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+}
 .search {
   width: min(560px, 92vw);
   height: 50px;
