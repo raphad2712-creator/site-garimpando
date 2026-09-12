@@ -773,11 +773,14 @@ function positionArticleGalleryBelowText() {
   const gallery = content?.querySelector(".article-gallery");
   if (!content || !gallery) return;
 
-  const sectionLabel = [...content.querySelectorAll("strong, b")].find((label) => {
-    const text = normalizeSlug(label.textContent || "");
-    return text === "estilo-de-vida" || text === "turismo" || text === "gastronomia";
-  });
-  const linksBlock = sectionLabel?.closest("p, div");
+  const areaLabels = new Set(["estilo-de-vida", "turismo", "gastronomia"]);
+  const formattedLabel = [...content.querySelectorAll("strong, b")].find((label) =>
+    areaLabels.has(normalizeSlug(label.textContent || "")),
+  );
+  const plainLabelBlock = [...content.children].find((block) =>
+    block !== gallery && areaLabels.has(normalizeSlug(block.textContent || "")),
+  );
+  const linksBlock = formattedLabel?.closest("p, div") || plainLabelBlock;
   if (
     !linksBlock ||
     !(linksBlock.compareDocumentPosition(gallery) & Node.DOCUMENT_POSITION_FOLLOWING)
@@ -786,9 +789,13 @@ function positionArticleGalleryBelowText() {
   // No texto do Cariri, a introdução e os links das áreas foram salvos no
   // mesmo parágrafo. Separa os dois para o carrossel ficar exatamente entre
   // o texto principal e os links de Estilo de Vida, Turismo e Gastronomia.
-  if (linksBlock.contains(sectionLabel) && linksBlock.firstChild !== sectionLabel) {
+  if (
+    formattedLabel &&
+    linksBlock.contains(formattedLabel) &&
+    linksBlock.firstChild !== formattedLabel
+  ) {
     const intro = linksBlock.cloneNode(false);
-    while (linksBlock.firstChild && linksBlock.firstChild !== sectionLabel) {
+    while (linksBlock.firstChild && linksBlock.firstChild !== formattedLabel) {
       intro.appendChild(linksBlock.firstChild);
     }
     while (intro.lastChild?.nodeName === "BR") intro.lastChild.remove();
