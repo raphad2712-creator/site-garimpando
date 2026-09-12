@@ -93,7 +93,52 @@ const localCoverBySlug = {
   "wadi-rum-um-deserto-de-tirar-o-folego": "images/wadi-rum.jpg",
   "a-melhor-comida-caseira-jordaniana": "images/comida-jordaniana.jpg",
 };
-const drivePhoto = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+const drivePhoto = (id) => `https://lh3.googleusercontent.com/d/${id}=w1600`;
+const archiveImageByPath = window.GARIMPANDO_ARCHIVE_IMAGES || {};
+function archiveImageKey(url) {
+  let decoded = String(url || "");
+  try { decoded = decodeURIComponent(decoded); } catch (error) { /* mantém a URL original */ }
+  const match = decoded.match(/\/wp-content\/uploads\/((?:\d{4}\/\d{2}|ngg_featured)\/[^\"'?#<>\s]+)/i);
+  return match?.[1]?.normalize("NFC").toLowerCase() || "";
+}
+function optimizedRemoteImage(url) {
+  const value = String(url || "").replace(/^http:\/\//i, "https://");
+  if (value.includes(".supabase.co/storage/v1/object/public/") && /\.(?:jpe?g|png|webp)(?:[?#]|$)/i.test(value)) {
+    const separator = value.includes("?") ? "&" : "?";
+    return value.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/") + `${separator}width=1200&quality=78`;
+  }
+  return value;
+}
+function restoreImageUrl(url) {
+  const id = archiveImageByPath[archiveImageKey(url)];
+  return id ? drivePhoto(id) : optimizedRemoteImage(url);
+}
+function prepareArticleContent(html) {
+  const template = document.createElement("template");
+  template.innerHTML = String(html || "");
+  template.content.querySelectorAll("img").forEach((image) => {
+    const source = image.getAttribute("data-src") || image.getAttribute("src") || "";
+    if (source) image.setAttribute("src", restoreImageUrl(source));
+    image.removeAttribute("data-src");
+    image.removeAttribute("srcset");
+    image.removeAttribute("data-srcset");
+    image.loading = "lazy";
+    image.decoding = "async";
+  });
+  template.content.querySelectorAll(".article-gallery").forEach((gallery) => {
+    [...gallery.querySelectorAll("img")].forEach((image, index) => {
+      const source = image.getAttribute("src") || "";
+      if (index === 0) {
+        image.loading = "eager";
+        image.fetchPriority = "high";
+      } else if (source) {
+        image.dataset.src = source;
+        image.removeAttribute("src");
+      }
+    });
+  });
+  return template.innerHTML;
+}
 const archiveGarimpoCoverBySlug = Object.fromEntries(
   Object.entries(window.GARIMPANDO_DRIVE_COVERS || {}).map(([slug, id]) => [slug, drivePhoto(id)]),
 );
@@ -294,10 +339,10 @@ const normalizeSlug = (value) =>
     .replace(/^-|-$/g, "");
 const firstArticleImage = (post) => {
   const match = String(post?.content || "").match(/<img[^>]+src=["']([^"']+)["']/i);
-  return match?.[1]?.replace(/^http:\/\//i, "https://") || "";
+  return restoreImageUrl(match?.[1] || "");
 };
 const postCover = (post) =>
-  String(post?.image || firstArticleImage(post) || "").replace(/^http:\/\//i, "https://");
+  restoreImageUrl(post?.image || firstArticleImage(post) || "");
 function postCoverPlaceholder(title = "Garimpando Life", category = "MATÉRIA") {
   const label = String(title || "Garimpando Life").trim().slice(0, 72);
   const eyebrow = String(category || "MATÉRIA").trim().toUpperCase().slice(0, 28);
@@ -725,12 +770,18 @@ function openPhotoViewer(image) {
   viewer.querySelector("img").alt = image.alt || "Foto ampliada";
   viewer.showModal();
 }
-function initArticleGalleries() {
+function initArticleGalleries(fallbackImage = "images/hero.png") {
   document.querySelectorAll(".article-gallery").forEach((gallery) => {
     if (gallery.dataset.carouselReady) return;
     gallery.dataset.carouselReady = "true";
     const images = [...gallery.querySelectorAll("img")];
     if (!images.length) return;
+    const loadImage = (image) => {
+      if (!image?.getAttribute("src") && image?.dataset.src) {
+        image.setAttribute("src", image.dataset.src);
+        image.removeAttribute("data-src");
+      }
+    };
     const track = document.createElement("div");
     track.className = "gallery-track";
     images.forEach((image) => track.appendChild(image));
@@ -743,6 +794,44 @@ function initArticleGalleries() {
         if (event.key === "Enter" || event.key === " ") openPhotoViewer(image);
       };
     });
+    let current = 0;
+    const availableIndex = (start, direction = 1) => {
+      for (let offset = 0; offset < images.length; offset += 1) {
+        const candidate = (start + offset * direction + images.length * 2) % images.length;
+        if (images[candidate].dataset.failed !== "true") return candidate;
+      }
+      return -1;
+    };
+    const showFallback = () => {
+      const image = images[0];
+      if (!fallbackImage || image.dataset.fallbackUsed) return;
+      image.dataset.failed = "false";
+      image.dataset.fallbackUsed = "true";
+      image.removeAttribute("data-src");
+      image.src = fallbackImage;
+      current = 0;
+      track.scrollTo({ left: 0, behavior: "auto" });
+    };
+    const show = (index, behavior = "smooth") => {
+      const direction = index < current ? -1 : 1;
+      const nextIndex = availableIndex((index + images.length) % images.length, direction);
+      if (nextIndex < 0) {
+        showFallback();
+        return;
+      }
+      current = nextIndex;
+      loadImage(images[current]);
+      track.scrollTo({ left: current * track.clientWidth, behavior });
+    };
+    images.forEach((image) => {
+      image.addEventListener("error", () => {
+        if (image.dataset.fallbackUsed) return;
+        image.dataset.failed = "true";
+        image.removeAttribute("src");
+        if (images[current] === image) show(current + 1, "auto");
+      });
+    });
+    show(0, "auto");
     if (images.length < 2) return;
     const previous = document.createElement("button");
     const next = document.createElement("button");
@@ -754,11 +843,6 @@ function initArticleGalleries() {
     previous.textContent = "‹";
     next.textContent = "›";
     gallery.append(previous, next);
-    let current = 0;
-    const show = (index) => {
-      current = (index + images.length) % images.length;
-      track.scrollTo({ left: current * track.clientWidth, behavior: "smooth" });
-    };
     track.addEventListener("scroll", () => {
       if (track.clientWidth) current = Math.round(track.scrollLeft / track.clientWidth);
     });
@@ -809,7 +893,7 @@ function positionArticleGalleryBelowText() {
 }
 function article(p) {
   const c = categoryForPost(p);
-  const articleImage = p.articleImage || p.image || "";
+  const articleImage = restoreImageUrl(p.articleImage || p.image || "");
   const isCaririCover = articleImage.includes("cariri-capa");
   const coverClass = isCaririCover
     ? "article-cover article-cover-full"
@@ -827,21 +911,21 @@ function article(p) {
     '</p></section><div class="article-layout"><article class="article-body">' +
     coverMarkup +
     "<div>" +
-    p.content +
+    prepareArticleContent(p.content) +
     '</div><a class="button" href="#inicio">Voltar ao início</a></article>' +
     sidebar() +
     "</div>";
   positionArticleGalleryBelowText();
-  initArticleGalleries();
+  initArticleGalleries(articleImage || "images/hero.png");
 }
 function publicPage(p) {
   app.innerHTML =
     '<section class="page-title"><span>Garimpando Life</span><h1>' +
     esc(p.title) +
     '</h1></section><div class="article-layout"><article class="article-body">' +
-    (p.image ? '<img class="article-cover" src="' + esc(p.image) + '">' : "") +
+    (p.image ? '<img class="article-cover" src="' + esc(restoreImageUrl(p.image)) + '">' : "") +
     "<div>" +
-    p.content +
+    prepareArticleContent(p.content) +
     "</div></article>" +
     sidebar() +
     "</div>";
