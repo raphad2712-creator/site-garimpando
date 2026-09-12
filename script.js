@@ -971,6 +971,7 @@ function animatePage() {
 }
 function protectImages() {
   document.querySelectorAll("img").forEach((image) => {
+    if (image.closest(".article-gallery")) return;
     const replaceBrokenImage = () => {
       if (image.closest(".article-body > div")) {
         image.style.display = "none";
