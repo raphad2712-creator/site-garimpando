@@ -541,7 +541,7 @@ function initCompanyCarousels() {
     const show = (index) => {
       current = (index + cards.length) % cards.length;
       const card = cards[current];
-      const centered = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
+      const centered = card.offsetLeft - track.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
       const limit = Math.max(0, track.scrollWidth - track.clientWidth);
       track.scrollTo({ left: Math.max(0, Math.min(centered, limit)), behavior: "smooth" });
     };
