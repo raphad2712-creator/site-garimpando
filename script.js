@@ -756,25 +756,16 @@ function archive(title, items, intro) {
   });
 }
 function home() {
-  const latestPosts = [...posts]
-    .sort((first, second) => new Date(second.date) - new Date(first.date))
-    .slice(0, 4);
-  const isCaririMatter = (post) => {
-    const expectedSlug = "cariri-arte-e-cultura-do-ceara";
-    return (
-      normalizeSlug(post.slug || "").startsWith(expectedSlug) ||
-      normalizeSlug(post.title || "") === expectedSlug
-    );
-  };
-  const featuredPost = posts.find(isCaririMatter) || latestPosts[0];
+  const sortedPosts = [...posts].sort(
+    (first, second) => new Date(second.date) - new Date(first.date),
+  );
+  const latestPosts = sortedPosts.slice(0, 4);
+  const featuredPost = sortedPosts.find((post) => post.isFeatured) || latestPosts[0];
   const featuredCategory = featuredPost ? categoryForPost(featuredPost) : null;
-  const isCaririFeatured = featuredPost && isCaririMatter(featuredPost);
-  const featuredImage = isCaririFeatured
-    ? "images/cariri-capa-single.jpg"
-    : featuredPost
-      ? postCover(featuredPost) ||
-        postCoverPlaceholder(featuredPost.title, featuredCategory?.name)
-      : "images/hero.png";
+  const featuredImage = featuredPost
+    ? postCover(featuredPost) ||
+      postCoverPlaceholder(featuredPost.title, featuredCategory?.name)
+    : "images/hero.png";
   app.innerHTML =
     (featuredPost
       ? `<section class="hero hero-single"><a class="hero-link" href="#materia/${featuredPost.slug}"><img src="${esc(featuredImage)}" data-cover-title="${esc(featuredPost.title)}" data-cover-category="${esc(featuredCategory?.name || "Matéria")}" alt="${esc(featuredPost.imageAlt || featuredPost.title)}" onerror="replacePostCover(this)"><div><p><span>${esc(featuredCategory?.name || "Garimpando Life")}</span></p><h1>${esc(featuredPost.title)}</h1></div></a></section>`
