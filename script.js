@@ -759,8 +759,10 @@ function home() {
   const sortedPosts = [...posts].sort(
     (first, second) => new Date(second.date) - new Date(first.date),
   );
-  const latestPosts = sortedPosts.slice(0, 4);
-  const featuredPost = sortedPosts.find((post) => post.isFeatured) || latestPosts[0];
+  const featuredPost = sortedPosts.find((post) => post.isFeatured) || sortedPosts[0];
+  const latestPosts = featuredPost
+    ? [featuredPost, ...sortedPosts.filter((post) => post !== featuredPost)].slice(0, 4)
+    : [];
   const featuredCategory = featuredPost ? categoryForPost(featuredPost) : null;
   const featuredImage = featuredPost
     ? postCover(featuredPost) ||
@@ -997,29 +999,6 @@ function positionArticleGalleryBelowText() {
   });
 
   if (!navigationBlocks.length) return;
-
-  navigationBlocks.forEach((block) => {
-    const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      node.textContent = String(node.textContent || "").replace(
-        /(^|\s)turismo(\s*:)/gi,
-        "$1Viagens$2",
-      );
-    }
-  });
-
-  const navigationPriority = (block) => {
-    const label = normalizeSlug(block.textContent || "");
-    if (label.includes("viagens") || label.includes("turismo")) return 0;
-    if (label.includes("gastronomia")) return 1;
-    if (label.includes("estilo-de-vida")) return 2;
-    return 3;
-  };
-
-  navigationBlocks.sort((first, second) => (
-    navigationPriority(first) - navigationPriority(second)
-  ));
 
   const insertionPoint = gallery.nextSibling;
   navigationBlocks.forEach((block) => content.insertBefore(block, insertionPoint));
