@@ -932,8 +932,8 @@ function positionArticleGalleryBelowText() {
   const gallery = content?.querySelector(".article-gallery");
   if (!content || !gallery) return;
 
-  const areaLabels = new Set(["estilo-de-vida", "turismo", "gastronomia"]);
-  const labelPattern = /(?:^|\s)(?:estilo\s+de\s+vida|turismo|gastronomia)\s*:/i;
+  const areaLabels = new Set(["viagens", "turismo", "gastronomia", "estilo-de-vida"]);
+  const labelPattern = /(?:^|\s)(?:viagens|turismo|gastronomia|estilo\s+de\s+vida)\s*:/i;
   const matterLinkSelector = 'a[href*="#materia/"]';
   const blocksBeforeGallery = [];
   for (let block = content.firstElementChild; block && block !== gallery; block = block.nextElementSibling) {
@@ -997,6 +997,19 @@ function positionArticleGalleryBelowText() {
   });
 
   if (!navigationBlocks.length) return;
+
+  const navigationPriority = (block) => {
+    const label = normalizeSlug(block.textContent || "");
+    if (label.includes("viagens") || label.includes("turismo")) return 0;
+    if (label.includes("gastronomia")) return 1;
+    if (label.includes("estilo-de-vida")) return 2;
+    return 3;
+  };
+
+  navigationBlocks.sort((first, second) => (
+    navigationPriority(first) - navigationPriority(second)
+  ));
+
   const insertionPoint = gallery.nextSibling;
   navigationBlocks.forEach((block) => content.insertBefore(block, insertionPoint));
 }
