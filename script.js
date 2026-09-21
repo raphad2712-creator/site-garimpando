@@ -775,7 +775,7 @@ function home() {
         (post) =>
           post !== featuredPost && belongsToCategory(post, garimposCategory),
       )
-      .slice(0, 3)
+      .slice(0, 4)
     : [];
   const featuredCategory = featuredPost ? categoryForPost(featuredPost) : null;
   const featuredImage = featuredPost
