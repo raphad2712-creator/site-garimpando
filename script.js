@@ -933,34 +933,72 @@ function positionArticleGalleryBelowText() {
   if (!content || !gallery) return;
 
   const areaLabels = new Set(["estilo-de-vida", "turismo", "gastronomia"]);
-  const formattedLabel = [...content.querySelectorAll("strong, b")].find((label) =>
-    areaLabels.has(normalizeSlug(label.textContent || "")),
-  );
-  const plainLabelBlock = [...content.children].find((block) =>
-    block !== gallery && areaLabels.has(normalizeSlug(block.textContent || "")),
-  );
-  const linksBlock = formattedLabel?.closest("p, div") || plainLabelBlock;
-  if (
-    !linksBlock ||
-    !(linksBlock.compareDocumentPosition(gallery) & Node.DOCUMENT_POSITION_FOLLOWING)
-  ) return;
-
-  // No texto do Cariri, a introdução e os links das áreas foram salvos no
-  // mesmo parágrafo. Separa os dois para o carrossel ficar exatamente entre
-  // o texto principal e os links de Estilo de Vida, Turismo e Gastronomia.
-  if (
-    formattedLabel &&
-    linksBlock.contains(formattedLabel) &&
-    linksBlock.firstChild !== formattedLabel
-  ) {
-    const intro = linksBlock.cloneNode(false);
-    while (linksBlock.firstChild && linksBlock.firstChild !== formattedLabel) {
-      intro.appendChild(linksBlock.firstChild);
-    }
-    while (intro.lastChild?.nodeName === "BR") intro.lastChild.remove();
-    if (intro.textContent.trim()) content.insertBefore(intro, linksBlock);
+  const labelPattern = /(?:^|\s)(?:estilo\s+de\s+vida|turismo|gastronomia)\s*:/i;
+  const matterLinkSelector = 'a[href*="#materia/"]';
+  const blocksBeforeGallery = [];
+  for (let block = content.firstElementChild; block && block !== gallery; block = block.nextElementSibling) {
+    blocksBeforeGallery.push(block);
   }
-  content.insertBefore(gallery, linksBlock);
+
+  const navigationBlocks = [];
+  const alreadyMoved = new Set();
+  blocksBeforeGallery.forEach((block) => {
+    const firstLink = block.querySelector(matterLinkSelector);
+    if (!firstLink || alreadyMoved.has(block)) return;
+
+    const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+    let labelNode = null;
+    let labelMatch = null;
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const match = String(node.textContent || "").match(labelPattern);
+      const linkComesAfter =
+        node === firstLink ||
+        Boolean(node.compareDocumentPosition(firstLink) & Node.DOCUMENT_POSITION_FOLLOWING);
+      if (match && linkComesAfter) {
+        labelNode = node;
+        labelMatch = match;
+        break;
+      }
+    }
+
+    if (labelNode && labelMatch) {
+      if (labelMatch.index > 0) labelNode = labelNode.splitText(labelMatch.index);
+      let startNode = labelNode;
+      const parent = labelNode.parentElement;
+      if (
+        parent?.matches("strong, b") &&
+        parent.textContent.trim() === labelNode.textContent.trim()
+      ) startNode = parent;
+
+      const navigation = block.cloneNode(false);
+      const range = document.createRange();
+      range.setStartBefore(startNode);
+      range.setEndAfter(block.lastChild);
+      navigation.appendChild(range.extractContents());
+      while (block.lastChild?.nodeName === "BR") block.lastChild.remove();
+      if (!block.textContent.trim() && !block.querySelector("img, video, iframe")) block.remove();
+      navigationBlocks.push(navigation);
+      return;
+    }
+
+    const previous = block.previousElementSibling;
+    if (
+      previous &&
+      previous !== gallery &&
+      !alreadyMoved.has(previous) &&
+      areaLabels.has(normalizeSlug(previous.textContent || ""))
+    ) {
+      alreadyMoved.add(previous);
+      navigationBlocks.push(previous);
+    }
+    alreadyMoved.add(block);
+    navigationBlocks.push(block);
+  });
+
+  if (!navigationBlocks.length) return;
+  const insertionPoint = gallery.nextSibling;
+  navigationBlocks.forEach((block) => content.insertBefore(block, insertionPoint));
 }
 function article(p) {
   const c = categoryForPost(p);
