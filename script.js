@@ -998,6 +998,17 @@ function positionArticleGalleryBelowText() {
 
   if (!navigationBlocks.length) return;
 
+  navigationBlocks.forEach((block) => {
+    const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      node.textContent = String(node.textContent || "").replace(
+        /(^|\s)turismo(\s*:)/gi,
+        "$1Viagens$2",
+      );
+    }
+  });
+
   const navigationPriority = (block) => {
     const label = normalizeSlug(block.textContent || "");
     if (label.includes("viagens") || label.includes("turismo")) return 0;
