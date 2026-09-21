@@ -759,7 +759,13 @@ function home() {
   const sortedPosts = [...posts].sort(
     (first, second) => new Date(second.date) - new Date(first.date),
   );
-  const featuredPost = sortedPosts.find((post) => post.isFeatured) || sortedPosts[0];
+  const latestTravelPost = sortedPosts.find(
+    (post) => categoryForPost(post)?.slug === "viagem",
+  );
+  const featuredPost =
+    latestTravelPost ||
+    sortedPosts.find((post) => post.isFeatured) ||
+    sortedPosts[0];
   const latestPosts = featuredPost
     ? [featuredPost, ...sortedPosts.filter((post) => post !== featuredPost)].slice(0, 4)
     : [];
