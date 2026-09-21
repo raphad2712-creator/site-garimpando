@@ -766,9 +766,9 @@ function home() {
     latestTravelPost ||
     sortedPosts.find((post) => post.isFeatured) ||
     sortedPosts[0];
-  const latestPosts = featuredPost
-    ? [featuredPost, ...sortedPosts.filter((post) => post !== featuredPost)].slice(0, 4)
-    : [];
+  const latestPosts = sortedPosts
+    .filter((post) => post !== featuredPost)
+    .slice(0, 3);
   const featuredCategory = featuredPost ? categoryForPost(featuredPost) : null;
   const featuredImage = featuredPost
     ? postCover(featuredPost) ||
