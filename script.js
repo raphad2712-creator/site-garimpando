@@ -1134,13 +1134,15 @@ function animatePage() {
 function protectImages() {
   document.querySelectorAll("img").forEach((image) => {
     if (image.closest(".article-gallery")) return;
+    // Capas já têm onerror próprio. Registrar outro handler aqui fazia a foto
+    // local ser trocada pela arte com texto antes de terminar de carregar.
+    if (image.dataset.coverTitle) return;
     const replaceBrokenImage = () => {
       if (image.closest(".article-body > div")) {
         image.style.display = "none";
         return;
       }
-      if (image.dataset.coverTitle) replacePostCover(image);
-      else if (!image.src.endsWith("/images/hero.png")) {
+      if (!image.src.endsWith("/images/hero.png")) {
         image.onerror = null;
         image.src = "images/hero.png";
       }
