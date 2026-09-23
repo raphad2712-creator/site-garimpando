@@ -350,18 +350,66 @@ const localCoverPools = {
   312: ["images/norma-teatro.jpg", "images/sobre.jpg", "images/hero.png"],
   313: ["images/petra-magnifica-v3.jpg", "images/sergipe.jpeg", "images/wadi-rum.jpg"],
   330: [
-    "images/comidinhas.jpg",
-    "images/taboula-gastronomia.jpg",
-    "images/bemestar.jpg",
-    "images/norma-teatro.jpg",
-    "images/sergipe.jpeg",
-    "images/petra-magnifica-v3.jpg",
-    "images/wadi-rum.jpg",
-    "images/sobre.jpg",
+    "images/comidinhas.jpg", "images/taboula-gastronomia.jpg", "images/comida-jordaniana.jpg",
+    "images/paes-jordanianos.jpg", "images/bemestar.jpg", "images/norma-teatro.jpg",
+    "images/sergipe.jpeg", "images/petra-magnifica-v3.jpg", "images/wadi-rum.jpg",
+    "images/sobre.jpg", "images/unique.jpg", "images/produto-viagem.jpg",
+    "images/garimpos-restauradas/village-barra.png", "images/garimpos-restauradas/sunset-a-beira-mar.jpg",
+    "images/grecia-destino-original.jpg", "images/italia.jpg", "images/cariri-capa-single.jpg",
+    "images/aeromexico.jpg", "images/produto-arquitetura.jpeg", "images/parceiro-mister-travel-hq.jpeg",
   ],
 };
+const garimpoTopicPhotos = {
+  food: ["images/taboula-gastronomia.jpg", "images/comidinhas.jpg", "images/comida-jordaniana.jpg", "images/paes-jordanianos.jpg"],
+  hotel: ["images/unique.jpg", "images/garimpos-restauradas/village-barra.png", "images/produto-viagem.jpg", "images/garimpos-restauradas/sunset-a-beira-mar.jpg", "images/grecia-destino-original.jpg", "images/italia.jpg", "images/sergipe.jpeg", "images/petra-magnifica-v3.jpg", "images/cariri-capa-single.jpg", "images/wadi-rum.jpg", "images/parceiro-mister-travel-hq.jpeg"],
+  culture: ["images/norma-teatro.jpg", "images/cariri-capa-single.jpg", "images/sergipe.jpeg"],
+};
+let assignedGarimpoCovers;
+let assignedGarimpoCount = -1;
+let assignedGarimpoFirst = "";
+function garimpoFallbacks() {
+  // A ordem editorial define as escolhas: a mesma matéria mantém sua capa em todas as telas.
+  if (assignedGarimpoCovers && assignedGarimpoCount === posts.length && assignedGarimpoFirst === posts[0]?.slug) {
+    return assignedGarimpoCovers;
+  }
+  const assignments = new Map();
+  const lastUsed = new Map();
+  const garimpos = posts.filter((item) => item.categories?.includes(330));
+  const fixedPhoto = (item) => localCoverBySlug[item.slug] ||
+    (String(item.image || "").startsWith("images/") ? item.image : "");
+  garimpos.forEach((item, position) => {
+    const fixed = fixedPhoto(item);
+    if (fixed) {
+      assignments.set(item.slug, fixed);
+      lastUsed.set(fixed, position);
+      return;
+    }
+    const topic = `${item.slug || ""} ${item.title || ""}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const preferred = /tempero|comida|cozinha|restaurante|gastronomia|sabor|culinaria|prato|vinho/.test(topic)
+      ? garimpoTopicPhotos.food
+      : /hotel|resort|radisson|intercontinental|palacio tangara|live aqua|coral beach|hospedagem|pousada|cancun/.test(topic)
+        ? garimpoTopicPhotos.hotel
+        : /teatro|espetaculo|musical|show|concerto|festival/.test(topic)
+          ? garimpoTopicPhotos.culture : [];
+    const candidates = [...preferred, ...localCoverPools[330].filter((image) => !preferred.includes(image))];
+    // Se a seleção temática já foi usada recentemente, prefere uma foto diferente.
+    const upcoming = new Set(garimpos.slice(position + 1, position + 13).map(fixedPhoto).filter(Boolean));
+    const available = candidates.filter((image) => position - (lastUsed.get(image) ?? -999) > 12 && !upcoming.has(image));
+    const thematicAvailable = preferred.filter((image) => available.includes(image));
+    const chosen = (available.length ? available : candidates)
+      .filter((image) => !thematicAvailable.length || thematicAvailable.includes(image))
+      .reduce((best, image) => (lastUsed.get(image) ?? -999) < (lastUsed.get(best) ?? -999) ? image : best);
+    assignments.set(item.slug, chosen);
+    lastUsed.set(chosen, position);
+  });
+  assignedGarimpoCovers = assignments;
+  assignedGarimpoCount = posts.length;
+  assignedGarimpoFirst = posts[0]?.slug;
+  return assignments;
+}
 function postCoverFallback(post) {
   if (localCoverBySlug[post?.slug]) return localCoverBySlug[post.slug];
+  if (post?.categories?.includes(330)) return garimpoFallbacks().get(post.slug) || localCoverPools[330][0];
   const topic = `${post?.slug || ""} ${post?.title || ""}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   if (/tempero|comida|cozinha|restaurante|gastronomia|sabor|culinaria|prato|vinho/.test(topic)) {
     return "images/taboula-gastronomia.jpg";
