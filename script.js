@@ -370,8 +370,15 @@ function postCoverFallback(post) {
   );
   return pool[seed % pool.length];
 }
-const postCover = (post) =>
-  restoreImageUrl(post?.image || firstArticleImage(post) || "") || postCoverFallback(post);
+function postCover(post) {
+  const source = restoreImageUrl(post?.image || firstArticleImage(post) || "");
+  // O arquivo histórico aponta para imagens do WordPress antigo ou Drive privado.
+  // Nas listagens de Garimpos, exibe imediatamente uma foto hospedada no site.
+  if (post?.categories?.includes(330) && /^(?:https?:\/\/)?(?:lh3\.googleusercontent\.com\/d\/|(?:www\.)?garimpandolife\.com\.br\/wp-content\/uploads\/)/i.test(source)) {
+    return postCoverFallback(post);
+  }
+  return source || postCoverFallback(post);
+}
 function postCoverPlaceholder(title = "Garimpando Life", category = "MATÉRIA") {
   const label = String(title || "Garimpando Life").trim().slice(0, 72);
   const eyebrow = String(category || "MATÉRIA").trim().toUpperCase().slice(0, 28);
