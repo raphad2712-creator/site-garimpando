@@ -362,6 +362,16 @@ const localCoverPools = {
 };
 function postCoverFallback(post) {
   if (localCoverBySlug[post?.slug]) return localCoverBySlug[post.slug];
+  const topic = `${post?.slug || ""} ${post?.title || ""}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (/tempero|comida|cozinha|restaurante|gastronomia|sabor|culinaria|prato|vinho/.test(topic)) {
+    return "images/taboula-gastronomia.jpg";
+  }
+  if (/hotel|resort|radisson|intercontinental|palacio tangara|live aqua|coral beach|hospedagem|pousada|cancun/.test(topic)) {
+    return "images/unique.jpg";
+  }
+  if (/teatro|espetaculo|musical|show|concerto|festival/.test(topic)) {
+    return "images/norma-teatro.jpg";
+  }
   const categoryId = [311, 313, 309, 310, 312, 330].find((id) => post?.categories?.includes(id)) || 330;
   const pool = localCoverPools[categoryId];
   const seed = String(post?.slug || post?.title || "garimpando").split("").reduce(
