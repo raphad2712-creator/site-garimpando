@@ -85,6 +85,8 @@ const localCoverBySlug = {
   "sergipe-cultura-educacao-e-muita-tradicao": "images/sergipe.jpeg",
   "comidinhas-de-inverno": "images/comidinhas.jpg",
   "bem-estar-bem-viver": "images/unique.jpg",
+  "norma": "images/norma-teatro.jpg",
+  "taboula-charme-e-gastronomia-especial": "images/taboula-gastronomia.jpg",
   "o-espetacular-monte-nebo": "images/monte-nebo-original.png",
   "a-historica-jerash": "images/jerash-original.png",
   "a-deslumbrante-petra": "images/petra-original.png",
@@ -222,11 +224,11 @@ const partyCoverBySlug = {
   "festa-gotica": drivePhoto("1oRuoGEjZ88h-ZeVl8Ilp5JM5hkTSbRVq"),
 };
 posts.forEach((post) => {
-  if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
+  if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
   else if (partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
   else if (travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
   else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
-  else if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
+  else if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
 });
 const savedArticlePhotos = (html) =>
   (String(html || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
