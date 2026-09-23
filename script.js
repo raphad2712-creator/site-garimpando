@@ -343,8 +343,35 @@ const firstArticleImage = (post) => {
   const match = String(post?.content || "").match(/<img[^>]+src=["']([^"']+)["']/i);
   return restoreImageUrl(match?.[1] || "");
 };
+const localCoverPools = {
+  309: ["images/sergipe.jpeg", "images/petra-magnifica-v3.jpg", "images/wadi-rum.jpg"],
+  310: ["images/bemestar.jpg", "images/norma-teatro.jpg", "images/sobre.jpg"],
+  311: ["images/comidinhas.jpg", "images/taboula-gastronomia.jpg", "images/comida-jordaniana.jpg"],
+  312: ["images/norma-teatro.jpg", "images/sobre.jpg", "images/hero.png"],
+  313: ["images/petra-magnifica-v3.jpg", "images/sergipe.jpeg", "images/wadi-rum.jpg"],
+  330: [
+    "images/comidinhas.jpg",
+    "images/taboula-gastronomia.jpg",
+    "images/bemestar.jpg",
+    "images/norma-teatro.jpg",
+    "images/sergipe.jpeg",
+    "images/petra-magnifica-v3.jpg",
+    "images/wadi-rum.jpg",
+    "images/sobre.jpg",
+  ],
+};
+function postCoverFallback(post) {
+  if (localCoverBySlug[post?.slug]) return localCoverBySlug[post.slug];
+  const categoryId = [311, 313, 309, 310, 312, 330].find((id) => post?.categories?.includes(id)) || 330;
+  const pool = localCoverPools[categoryId];
+  const seed = String(post?.slug || post?.title || "garimpando").split("").reduce(
+    (total, character) => (total * 31 + character.charCodeAt(0)) >>> 0,
+    0,
+  );
+  return pool[seed % pool.length];
+}
 const postCover = (post) =>
-  restoreImageUrl(post?.image || firstArticleImage(post) || "");
+  restoreImageUrl(post?.image || firstArticleImage(post) || "") || postCoverFallback(post);
 function postCoverPlaceholder(title = "Garimpando Life", category = "MATÉRIA") {
   const label = String(title || "Garimpando Life").trim().slice(0, 72);
   const eyebrow = String(category || "MATÉRIA").trim().toUpperCase().slice(0, 28);
@@ -368,6 +395,11 @@ function postCoverPlaceholder(title = "Garimpando Life", category = "MATÉRIA") 
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 function replacePostCover(image) {
+  if (image.dataset.coverFallback && image.dataset.localFallbackUsed !== "true") {
+    image.dataset.localFallbackUsed = "true";
+    image.src = image.dataset.coverFallback;
+    return;
+  }
   image.onerror = null;
   image.src = postCoverPlaceholder(image.dataset.coverTitle, image.dataset.coverCategory);
 }
@@ -438,7 +470,7 @@ function renderMegaPosts(category) {
     ? selectedPosts
         .map(
           (post) =>
-            `<a class="mega-card" href="#materia/${post.slug}"><img src="${esc(postCover(post) || postCoverPlaceholder(post.title, category.name))}" data-cover-title="${esc(post.title)}" data-cover-category="${esc(category.name)}" alt="${esc(post.title)}" onerror="replacePostCover(this)"><strong>${esc(post.title)}</strong></a>`,
+            `<a class="mega-card" href="#materia/${post.slug}"><img src="${esc(postCover(post) || postCoverPlaceholder(post.title, category.name))}" data-cover-fallback="${esc(postCoverFallback(post))}" data-cover-title="${esc(post.title)}" data-cover-category="${esc(category.name)}" alt="${esc(post.title)}" onerror="replacePostCover(this)"><strong>${esc(post.title)}</strong></a>`,
         )
         .join("")
     : `<a class="mega-empty" href="#categoria/${category.slug}">Ver matérias de ${esc(category.name)}</a>`;
@@ -700,6 +732,8 @@ function cards(items) {
           esc(p.imageAlt || p.title) +
           '" data-cover-title="' +
           esc(p.title) +
+          '" data-cover-fallback="' +
+          esc(postCoverFallback(p)) +
           '" data-cover-category="' +
           esc(c?.name || "Matéria") +
           '" onerror="replacePostCover(this)"></a><div>' +
@@ -786,13 +820,13 @@ function home() {
     : "images/hero.png";
   app.innerHTML =
     (featuredPost
-      ? `<section class="hero hero-single"><a class="hero-link" href="#materia/${featuredPost.slug}"><img src="${esc(featuredImage)}" data-cover-title="${esc(featuredPost.title)}" data-cover-category="${esc(featuredCategory?.name || "Matéria")}" alt="${esc(featuredPost.imageAlt || featuredPost.title)}" onerror="replacePostCover(this)"><div><p><span>${esc(featuredCategory?.name || "Garimpando Life")}</span></p><h1>${esc(featuredPost.title)}</h1></div></a></section>`
+      ? `<section class="hero hero-single"><a class="hero-link" href="#materia/${featuredPost.slug}"><img src="${esc(featuredImage)}" data-cover-fallback="${esc(postCoverFallback(featuredPost))}" data-cover-title="${esc(featuredPost.title)}" data-cover-category="${esc(featuredCategory?.name || "Matéria")}" alt="${esc(featuredPost.imageAlt || featuredPost.title)}" onerror="replacePostCover(this)"><div><p><span>${esc(featuredCategory?.name || "Garimpando Life")}</span></p><h1>${esc(featuredPost.title)}</h1></div></a></section>`
       : "") +
     '<section class="icons" aria-label="Áreas do site"><a href="#categoria/viagem"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m43 22-16-9V5c0-2-1-4-3-4s-3 2-3 4v8L5 22v5l16-5v11l-6 4v4l9-3 9 3v-4l-6-4V22l16 5v-5Z"/></svg></b><span>Viagens</span></a><a href="#categoria/ultimos-garimpos"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 17 16 7h16l7 10-15 23L9 17Z"/><path d="m9 17 15 23 15-23M16 7l8 33 8-33M9 17h30"/></svg></b><span>Garimpos</span></a><a href="#colaboradores"><b><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="16" r="7"/><circle cx="34" cy="18" r="5"/><path d="M5 40c0-8 5-13 13-13s13 5 13 13M29 29c2-2 4-3 7-3 5 0 8 4 8 10"/></svg></b><span>Colaboradores</span></a><a href="#produtos"><b><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 17 24 7l17 10-17 10L7 17Z"/><path d="M7 17v18l17 10 17-10V17M24 27v18"/></svg></b><span>Produtos</span></a></section>' +
     '<section class="home-latest"><div class="home-section-title"><span>Novidades</span><h2>Últimas matérias</h2><p>Confira os conteúdos mais recentes da categoria Garimpos.</p></div><div class="latest-grid">' +
     latestPosts.map((post) => {
       const category = garimposCategory || categoryForPost(post);
-      return `<article><a class="latest-photo" href="#materia/${post.slug}"><img loading="lazy" src="${esc(postCover(post) || postCoverPlaceholder(post.title, category?.name))}" data-cover-title="${esc(post.title)}" data-cover-category="${esc(category?.name || "Matéria")}" alt="${esc(post.imageAlt || post.title)}" onerror="replacePostCover(this)"></a><div><a class="category" href="#categoria/${category?.slug || "ultimos-garimpos"}">${esc(category?.name || "Garimpando Life")}</a><h3><a href="#materia/${post.slug}">${esc(post.title)}</a></h3><small>${date(post.date)}</small><a class="more" href="#materia/${post.slug}">Leia mais →</a></div></article>`;
+      return `<article><a class="latest-photo" href="#materia/${post.slug}"><img loading="lazy" src="${esc(postCover(post) || postCoverPlaceholder(post.title, category?.name))}" data-cover-fallback="${esc(postCoverFallback(post))}" data-cover-title="${esc(post.title)}" data-cover-category="${esc(category?.name || "Matéria")}" alt="${esc(post.imageAlt || post.title)}" onerror="replacePostCover(this)"></a><div><a class="category" href="#categoria/${category?.slug || "ultimos-garimpos"}">${esc(category?.name || "Garimpando Life")}</a><h3><a href="#materia/${post.slug}">${esc(post.title)}</a></h3><small>${date(post.date)}</small><a class="more" href="#materia/${post.slug}">Leia mais →</a></div></article>`;
     }).join("") +
     '</div></section>' +
     brandsCarousel();
