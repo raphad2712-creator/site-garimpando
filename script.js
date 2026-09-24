@@ -79,21 +79,22 @@ const forcedPartnerLogos = {
 };
 let partnerBrands = [...defaultPartnerBrands];
 const localCoverBySlug = {
+  "golden-night-by-palacio-tangara": "images/arquivo-original/palacio-tangara.jpg",
   "uma-viagem-pela-alma-meu-roteiro-espiritual-pela-italia": "images/italia.jpg",
   "aeromexico-celebra-seus-90-anos-com-coquetel-em-sao-paulo-no-hilton-morumbi": "images/aeromexico.jpg",
-  "paz-e-bem-estar": "images/bemestar.jpg",
+  "paz-e-bem-estar": "images/arquivo-original/paz-e-bem-estar.jpg",
   "sergipe-cultura-educacao-e-muita-tradicao": "images/sergipe.jpeg",
-  "comidinhas-de-inverno": "images/comidinhas.jpg",
+  "comidinhas-de-inverno": "images/arquivo-original/comidinhas.jpg",
   "bem-estar-bem-viver": "images/unique.jpg",
-  "norma": "images/norma-teatro.jpg",
-  "taboula-charme-e-gastronomia-especial": "images/taboula-gastronomia.jpg",
+  "norma": "images/arquivo-original/norma.jpg",
+  "taboula-charme-e-gastronomia-especial": "images/arquivo-original/taboula.jpg",
   "o-espetacular-monte-nebo": "images/monte-nebo-original.png",
   "a-historica-jerash": "images/jerash-original.png",
   "a-deslumbrante-petra": "images/petra-original.png",
-  "paes-jordanianos": "images/paes-jordanianos-v2.jpg",
+  "paes-jordanianos": "images/arquivo-original/paes-jordanianos.jpg",
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
-  "wadi-rum-um-deserto-de-tirar-o-folego": "images/wadi-rum.jpg",
-  "a-melhor-comida-caseira-jordaniana": "images/comida-jordaniana.jpg",
+  "wadi-rum-um-deserto-de-tirar-o-folego": "images/arquivo-original/wadi-rum.jpg",
+  "a-melhor-comida-caseira-jordaniana": "images/arquivo-original/comida-jordaniana.jpg",
 };
 const drivePhoto = (id) => `https://lh3.googleusercontent.com/d/${id}=w1600`;
 const archiveImageByPath = window.GARIMPANDO_ARCHIVE_IMAGES || {};
