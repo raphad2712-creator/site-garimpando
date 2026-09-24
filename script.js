@@ -88,13 +88,15 @@ const localCoverBySlug = {
   "bem-estar-bem-viver": "images/unique.jpg",
   "norma": "images/arquivo-original/norma.jpg",
   "taboula-charme-e-gastronomia-especial": "images/arquivo-original/taboula.jpg",
-  "o-espetacular-monte-nebo": "images/monte-nebo-original.png",
-  "a-historica-jerash": "images/jerash-original.png",
-  "a-deslumbrante-petra": "images/petra-original.png",
+  "o-espetacular-monte-nebo": "images/arquivo-original/wadi-rum.jpg",
+  "a-historica-jerash": "images/arquivo-original/wadi-rum.jpg",
+  "a-deslumbrante-petra": "images/petra-magnifica-v3.jpg",
   "paes-jordanianos": "images/arquivo-original/paes-jordanianos.jpg",
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
   "wadi-rum-um-deserto-de-tirar-o-folego": "images/arquivo-original/wadi-rum.jpg",
   "a-melhor-comida-caseira-jordaniana": "images/arquivo-original/comida-jordaniana.jpg",
+  "casa-grande-resort-e-spa-um-classico-hype-do-guaruja": "images/unique.jpg",
+  "comida-mediterranea-apaixonante-no-morumbi-sao-paulo": "images/arquivo-original/taboula.jpg",
 };
 const drivePhoto = (id) => `https://lh3.googleusercontent.com/d/${id}=w1600`;
 const archiveImageByPath = window.GARIMPANDO_ARCHIVE_IMAGES || {};
@@ -347,22 +349,22 @@ const firstArticleImage = (post) => {
 const localCoverPools = {
   309: ["images/sergipe.jpeg", "images/petra-magnifica-v3.jpg", "images/wadi-rum.jpg"],
   310: ["images/bemestar.jpg", "images/norma-teatro.jpg", "images/sobre.jpg"],
-  311: ["images/comidinhas.jpg", "images/taboula-gastronomia.jpg", "images/comida-jordaniana.jpg"],
+  311: ["images/arquivo-original/comidinhas.jpg", "images/arquivo-original/taboula.jpg", "images/arquivo-original/comida-jordaniana.jpg"],
   312: ["images/norma-teatro.jpg", "images/sobre.jpg", "images/hero.png"],
   313: ["images/petra-magnifica-v3.jpg", "images/sergipe.jpeg", "images/wadi-rum.jpg"],
   330: [
-    "images/comidinhas.jpg", "images/taboula-gastronomia.jpg", "images/comida-jordaniana.jpg",
-    "images/paes-jordanianos.jpg", "images/bemestar.jpg", "images/norma-teatro.jpg",
+    "images/arquivo-original/comidinhas.jpg", "images/arquivo-original/taboula.jpg", "images/arquivo-original/comida-jordaniana.jpg",
+    "images/arquivo-original/paes-jordanianos.jpg", "images/bemestar.jpg", "images/norma-teatro.jpg",
     "images/sergipe.jpeg", "images/petra-magnifica-v3.jpg", "images/wadi-rum.jpg",
-    "images/sobre.jpg", "images/unique.jpg", "images/produto-viagem.jpg",
+    "images/sobre.jpg", "images/unique.jpg", "images/arquivo-original/palacio-tangara.jpg",
     "images/garimpos-restauradas/village-barra.png", "images/garimpos-restauradas/sunset-a-beira-mar.jpg",
     "images/grecia-destino-original.jpg", "images/italia.jpg", "images/cariri-capa-single.jpg",
-    "images/aeromexico.jpg", "images/produto-arquitetura.jpeg", "images/parceiro-mister-travel-hq.jpeg",
+    "images/aeromexico.jpg", "images/arquivo-original/paz-e-bem-estar.jpg",
   ],
 };
 const garimpoTopicPhotos = {
-  food: ["images/taboula-gastronomia.jpg", "images/comidinhas.jpg", "images/comida-jordaniana.jpg", "images/paes-jordanianos.jpg"],
-  hotel: ["images/unique.jpg", "images/garimpos-restauradas/village-barra.png", "images/produto-viagem.jpg", "images/garimpos-restauradas/sunset-a-beira-mar.jpg", "images/grecia-destino-original.jpg", "images/italia.jpg", "images/sergipe.jpeg", "images/petra-magnifica-v3.jpg", "images/cariri-capa-single.jpg", "images/wadi-rum.jpg", "images/parceiro-mister-travel-hq.jpeg"],
+  food: ["images/arquivo-original/taboula.jpg", "images/arquivo-original/comidinhas.jpg", "images/arquivo-original/comida-jordaniana.jpg", "images/arquivo-original/paes-jordanianos.jpg", "images/garimpos-restauradas/village-barra.png"],
+  hotel: ["images/unique.jpg", "images/arquivo-original/palacio-tangara.jpg", "images/arquivo-original/paz-e-bem-estar.jpg"],
   culture: ["images/norma-teatro.jpg", "images/cariri-capa-single.jpg", "images/sergipe.jpeg"],
 };
 let assignedGarimpoCovers;
@@ -392,7 +394,7 @@ function garimpoFallbacks() {
         ? garimpoTopicPhotos.hotel
         : /teatro|espetaculo|musical|show|concerto|festival/.test(topic)
           ? garimpoTopicPhotos.culture : [];
-    const candidates = [...preferred, ...localCoverPools[330].filter((image) => !preferred.includes(image))];
+    const candidates = preferred.length ? preferred : localCoverPools[330];
     // Se a seleção temática já foi usada recentemente, prefere uma foto diferente.
     const upcoming = new Set(garimpos.slice(position + 1, position + 13).map(fixedPhoto).filter(Boolean));
     const available = candidates.filter((image) => position - (lastUsed.get(image) ?? -999) > 12 && !upcoming.has(image));
