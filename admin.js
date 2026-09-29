@@ -268,9 +268,7 @@ function htmlContent(newImages = []) {
 async function uploadImage() {
   if (!selectedImage)
     return $("#imageUrl").value.trim() || currentImage || null;
-  const {
-      data: { user },
-    } = await db.auth.getUser(),
+  const user = await authenticatedUser(),
     safe = selectedImage.name.normalize("NFD").replace(/[^a-zA-Z0-9._-]/g, "-"),
     path = `${user.id}/${Date.now()}-${safe}`;
   const { error } = await db.storage
@@ -281,9 +279,7 @@ async function uploadImage() {
 }
 async function uploadGalleryImages() {
   if (!selectedGalleryFiles.length) return [];
-  const {
-    data: { user },
-  } = await db.auth.getUser();
+  const user = await authenticatedUser();
   return Promise.all(selectedGalleryFiles.map(async (item, index) => {
     const safe = item.file.name.normalize("NFD").replace(/[^a-zA-Z0-9._-]/g, "-"),
       path = `${user.id}/${Date.now()}-${index}-${safe}`,
@@ -295,6 +291,33 @@ async function uploadGalleryImages() {
     return { token: item.token, url: db.storage.from("blog-images").getPublicUrl(path).data.publicUrl };
   }));
 }
+async function authenticatedUser() {
+  const { data, error } = await db.auth.getUser();
+  if (error || !data?.user) {
+    const sessionError = new Error("Sua sessão expirou. Entre novamente no painel.");
+    sessionError.code = "SESSION_EXPIRED";
+    throw sessionError;
+  }
+  return data.user;
+}
+function publishErrorMessage(error) {
+  const message = String(error?.message || "").trim();
+  if (error?.code === "SESSION_EXPIRED" || /jwt|session|not authenticated/i.test(message)) {
+    return "Sua sessão expirou. Entre novamente e publique a matéria.";
+  }
+  if (/row-level security|permission|policy/i.test(message)) {
+    return "O Supabase bloqueou a gravação. Verifique as permissões do administrador.";
+  }
+  if (/bucket|storage|object/i.test(message)) {
+    return "Não foi possível enviar uma das imagens ao Supabase.";
+  }
+  if (/fetch|network|offline|timeout/i.test(message)) {
+    return "Falha de conexão com o Supabase. Verifique a internet e tente novamente.";
+  }
+  return message
+    ? `Não foi possível publicar: ${message.slice(0, 140)}`
+    : "Não foi possível publicar. Tente novamente.";
+}
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!$("#body").textContent.trim()) {
@@ -305,6 +328,7 @@ form.addEventListener("submit", async (e) => {
   const button = e.submitter;
   button.disabled = true;
   button.textContent = "Publicando...";
+  let savedPost = null;
   try {
     const image_url = await uploadImage(),
       inlineImages = await uploadGalleryImages(),
@@ -338,17 +362,28 @@ form.addEventListener("submit", async (e) => {
         : db.from("blog_posts").insert(payload).select("*").single(),
       { data, error } = await query;
     if (error) throw error;
-    selectedImage = null;
-    selectedGalleryFiles.forEach((item) => URL.revokeObjectURL(item.preview));
-    selectedGalleryFiles = [];
-    await edit(data.id);
-    toast(id ? "Alterações e fotos salvas!" : "Matéria publicada para todos!");
+    savedPost = data;
   } catch (error) {
     console.error(error);
-    toast("Não foi possível publicar. Confira o Supabase.");
+    toast(publishErrorMessage(error));
+    if (error?.code === "SESSION_EXPIRED") lock();
+    return;
   } finally {
     button.disabled = false;
     button.textContent = "Publicar matéria";
+  }
+
+  try {
+    selectedImage = null;
+    selectedGalleryFiles.forEach((item) => URL.revokeObjectURL(item.preview));
+    selectedGalleryFiles = [];
+    toast(id ? "Alterações e fotos salvas!" : "Matéria publicada para todos!");
+    await edit(savedPost.id);
+  } catch (error) {
+    console.error(error);
+    // A matéria já foi salva. Uma falha ao recarregar o editor não deve
+    // ser apresentada como erro de publicação nem incentivar duplicações.
+    $("#saveState").textContent = "Salva online";
   }
 });
 async function showList() {
