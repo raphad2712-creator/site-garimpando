@@ -197,7 +197,7 @@ function prepareArticleContent(html, currentPost = null) {
         gallery.appendChild(image);
       });
       template.content.appendChild(gallery);
-      [...template.content.querySelectorAll("figure, p, td, tr, tbody, table")].reverse().forEach((element) => {
+      [...template.content.querySelectorAll("figure, li, ul, ol, p, td, tr, tbody, table")].reverse().forEach((element) => {
         if (!element.textContent.trim() && !element.querySelector("img, video, iframe")) element.remove();
       });
     }
