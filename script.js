@@ -806,6 +806,8 @@ function cards(items) {
           esc(postCover(p) || postCoverPlaceholder(p.title, c?.name)) +
           '" alt="' +
           esc(p.imageAlt || p.title) +
+          '" data-cover-slug="' +
+          esc(p.slug) +
           '" data-cover-title="' +
           esc(p.title) +
           '" data-cover-fallback="' +
