@@ -103,6 +103,8 @@ const localCoverBySlug = {
   "na-cidade-2": "https://lh3.googleusercontent.com/d/1ITOOZ0Mcz6khBq9XLIcyKfcP3aSuCzsA=w1600",
   "nos-campos-vales-e-montanhas": "https://lh3.googleusercontent.com/d/1OvTVpVi6gb9d7I1gD_56EZZl4n79djqI=w1600",
   "comidas-nas-cidades": "https://lh3.googleusercontent.com/d/19RGuWEd7FINqc_OTgVZhMWlMCgf1_F5j=w1600",
+  "mexico-entre-o-ceu-e-o-mar": "https://lh3.googleusercontent.com/d/1fy0kqGxST-0oSvX0Pmtd1D5ewg5Klyxa=w1600",
+  "a-eterna-e-bela-sicilia": "https://lh3.googleusercontent.com/d/1J1IWhzvU-GIqcn7MNPCAyfAseUcPid-F=w1600",
 };
 const drivePhoto = (id) => `https://lh3.googleusercontent.com/d/${id}=w1600`;
 const archiveImageByPath = window.GARIMPANDO_ARCHIVE_IMAGES || {};
