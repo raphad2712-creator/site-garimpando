@@ -223,7 +223,13 @@ const partyCoverBySlug = {
   "festa-gotica": drivePhoto("1oRuoGEjZ88h-ZeVl8Ilp5JM5hkTSbRVq"),
 };
 posts.forEach((post) => {
+  const isTravel = post.categories?.includes(313);
+  const isParty = post.categories?.includes(312);
   if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
+  // Viagens e Festas possuem capas revisadas matéria por matéria. Elas devem
+  // vir antes do arquivo genérico para não trocar um destino/evento por outro.
+  else if (isTravel && travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
+  else if (isParty && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
   else if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
   else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
   else if (!post.image && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
@@ -288,7 +294,17 @@ async function loadOnlinePosts() {
       categoryName: p.category_name || resolvedCategory?.name || "Blog",
       categorySlug:
         resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
-      image: correction?.image || p.image_url || localCoverBySlug[p.slug] || archiveGarimpoCoverBySlug[p.slug] || garimpoCoverBySlug[p.slug] || partyCoverBySlug[p.slug] || travelCoverBySlug[p.slug] || "",
+      image:
+        correction?.image ||
+        localCoverBySlug[p.slug] ||
+        (resolvedCategory?.slug === "viagem" ? travelCoverBySlug[p.slug] : "") ||
+        (resolvedCategory?.slug === "festas" ? partyCoverBySlug[p.slug] : "") ||
+        p.image_url ||
+        archiveGarimpoCoverBySlug[p.slug] ||
+        garimpoCoverBySlug[p.slug] ||
+        partyCoverBySlug[p.slug] ||
+        travelCoverBySlug[p.slug] ||
+        "",
       articleImage: isCaririMain ? "images/cariri-capa-single.jpg" : "",
       isFeatured: correction?.is_featured || Boolean(p.is_featured),
       imageAlt: correction?.title || p.title,
@@ -1103,14 +1119,19 @@ function positionArticleGalleryBelowText() {
 }
 function article(p) {
   const c = categoryForPost(p);
-  const articleImage = restoreImageUrl(p.articleImage || p.image || "");
+  const articleImage = p.articleImage
+    ? restoreImageUrl(p.articleImage)
+    : postCover(p);
   const isCaririCover = articleImage.includes("cariri-capa");
   const coverClass = isCaririCover
     ? "article-cover article-cover-full"
     : "article-cover";
-  const coverMarkup = articleImage
-    ? '<img class="' + coverClass + '" src="' + esc(articleImage) + '" alt="' + esc(p.imageAlt || p.title) + '">'
-    : "";
+  const coverMarkup =
+    '<img class="' + coverClass + '" src="' + esc(articleImage || postCoverFallback(p)) +
+    '" data-cover-fallback="' + esc(postCoverFallback(p)) +
+    '" data-cover-title="' + esc(p.title) +
+    '" data-cover-category="' + esc(c?.name || "Matéria") +
+    '" alt="' + esc(p.imageAlt || p.title) + '" onerror="replacePostCover(this)">';
   app.innerHTML =
     '<section class="page-title"><span>' +
     esc(c?.name || "Garimpando Life") +
