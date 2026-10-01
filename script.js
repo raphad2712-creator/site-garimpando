@@ -85,18 +85,14 @@ const localCoverBySlug = {
   "paz-e-bem-estar": "images/arquivo-original/paz-e-bem-estar.jpg",
   "sergipe-cultura-educacao-e-muita-tradicao": "images/sergipe.jpeg",
   "comidinhas-de-inverno": "images/arquivo-original/comidinhas.jpg",
-  "bem-estar-bem-viver": "images/unique.jpg",
   "norma": "images/arquivo-original/norma.jpg",
   "taboula-charme-e-gastronomia-especial": "images/arquivo-original/taboula.jpg",
-  "o-espetacular-monte-nebo": "images/arquivo-original/wadi-rum.jpg",
-  "a-historica-jerash": "images/arquivo-original/wadi-rum.jpg",
-  "a-deslumbrante-petra": "images/petra-magnifica-v3.jpg",
   "paes-jordanianos": "images/arquivo-original/paes-jordanianos.jpg",
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
+  "hotelaria-em-mikonos": "https://lh3.googleusercontent.com/d/1h4VuiOou--vcDx3CNh-0HvclFhH7wJuT=w1600",
+  "hotelaria-em-santorini": "https://lh3.googleusercontent.com/d/1r_Bf6LZnC2vxfgneBZm_fRPaGduJapY5=w1600",
   "wadi-rum-um-deserto-de-tirar-o-folego": "images/arquivo-original/wadi-rum.jpg",
   "a-melhor-comida-caseira-jordaniana": "images/arquivo-original/comida-jordaniana.jpg",
-  "casa-grande-resort-e-spa-um-classico-hype-do-guaruja": "images/unique.jpg",
-  "comida-mediterranea-apaixonante-no-morumbi-sao-paulo": "images/arquivo-original/taboula.jpg",
 };
 const drivePhoto = (id) => `https://lh3.googleusercontent.com/d/${id}=w1600`;
 const archiveImageByPath = window.GARIMPANDO_ARCHIVE_IMAGES || {};
@@ -149,17 +145,17 @@ const archiveGarimpoCoverBySlug = Object.fromEntries(
 );
 const garimpoCoverBySlug = {
   "sunset-a-beira-mar": "images/garimpos-restauradas/sunset-a-beira-mar.jpg",
-  "fasano-um-dos-100-melhores-destinos-do-mundo-pela-time": drivePhoto("1610cyEP6lYFP1cQCYl4m__c1ee7vlnL9"),
-  "as-excelentes-acoes-do-turismo": "images/produto-viagem.jpg",
-  "as-criativas-vitrines-de-luxo-no-mundo-hype": drivePhoto("1UpE74WBIxLXGfR-gAkZIvOYfmVKbbc9Y"),
-  "farmers-market-e-the-groove-amei-em-los-angeles": "images/comidinhas.jpg",
-  "o-velho-oeste-americano-autentico-na-rota-66": "images/wadi-rum.jpg",
-  "prime-vacation-novo-conceito-em-turismo-familiar": "images/bemestar.jpg",
-  "fadas-gigantes-universo-encantado": drivePhoto("16cdKpk2GmRG97CrkbeQe3eQJCSDkP2JI"),
   "village-barra-um-hotel-encantador-para-a-familia": "images/garimpos-restauradas/village-barra.png",
-  "o-seguro-e-potente-volvo-s60": drivePhoto("1D3-aCET2VyGNA8fiJKAkYjPzgQ8krad9"),
-  "nara-e-essencia-do-budismo": "https://images.moneycontrol.com/static-mcnews/2023/09/Mount-Fuji-is-covered-in-snow-half-the-year-Photo-Credit-Hannes-via-Wikimedia-Commons.jpg?height=900&impolicy=website&width=1600",
 };
+// No arquivo antigo, estas matérias apontavam para a mesma capa genérica de
+// outro conteúdo. Enquanto o original não estiver disponível, uma capa com o
+// próprio título evita repetir uma foto errada ou de outro tema.
+const neutralCoverSlugs = new Set([
+  "alta-gastronomia-assinada-por-ale-divani-no-espaco-charmoso-de-andre-pedrotti",
+  "nos-templos-sikhs",
+  "o-cultural-mercado-da-ribeira-2",
+  "um-paraiso-na-costa-de-portugal",
+]);
 const travelCoverBySlug = {
   "jordania-apaixonante-jordania": "https://res.cloudinary.com/startup-grind/image/fetch/c_scale%2Cw_2560/c_crop%2Ch_650%2Cw_2560%2Cy_0.41_mul_h_sub_0.41_mul_650/c_crop%2Ch_650%2Cw_2560/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/https%3A/res.cloudinary.com/startup-grind/image/upload/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/v1/gcs/platform-data-startupgrind/chapter_banners/22861395_1623315001061887_8517170722413525260_o%2520%25281%2529_Hd5zIfa.jpg",
   "petra-magnifica": "images/petra-magnifica-v3.jpg",
@@ -228,10 +224,10 @@ const partyCoverBySlug = {
 };
 posts.forEach((post) => {
   if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
-  else if (partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
-  else if (travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
-  else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
   else if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
+  else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
+  else if (!post.image && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
+  else if (!post.image && travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
 });
 const savedArticlePhotos = (html) =>
   (String(html || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
@@ -292,7 +288,7 @@ async function loadOnlinePosts() {
       categoryName: p.category_name || resolvedCategory?.name || "Blog",
       categorySlug:
         resolvedCategory?.slug || normalizeSlug(p.category_name || "blog"),
-      image: partyCoverBySlug[p.slug] || travelCoverBySlug[p.slug] || localCoverBySlug[p.slug] || correction?.image || p.image_url || "",
+      image: correction?.image || p.image_url || localCoverBySlug[p.slug] || archiveGarimpoCoverBySlug[p.slug] || garimpoCoverBySlug[p.slug] || partyCoverBySlug[p.slug] || travelCoverBySlug[p.slug] || "",
       articleImage: isCaririMain ? "images/cariri-capa-single.jpg" : "",
       isFeatured: correction?.is_featured || Boolean(p.is_featured),
       imageAlt: correction?.title || p.title,
@@ -411,33 +407,17 @@ function garimpoFallbacks() {
   return assignments;
 }
 function postCoverFallback(post) {
-  if (localCoverBySlug[post?.slug]) return localCoverBySlug[post.slug];
-  if (post?.categories?.includes(330)) return garimpoFallbacks().get(post.slug) || localCoverPools[330][0];
-  const topic = `${post?.slug || ""} ${post?.title || ""}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  if (/tempero|comida|cozinha|restaurante|gastronomia|sabor|culinaria|prato|vinho/.test(topic)) {
-    return "images/taboula-gastronomia.jpg";
-  }
-  if (/hotel|resort|radisson|intercontinental|palacio tangara|live aqua|coral beach|hospedagem|pousada|cancun/.test(topic)) {
-    return "images/unique.jpg";
-  }
-  if (/teatro|espetaculo|musical|show|concerto|festival/.test(topic)) {
-    return "images/norma-teatro.jpg";
-  }
-  const categoryId = [311, 313, 309, 310, 312, 330].find((id) => post?.categories?.includes(id)) || 330;
-  const pool = localCoverPools[categoryId];
-  const seed = String(post?.slug || post?.title || "garimpando").split("").reduce(
-    (total, character) => (total * 31 + character.charCodeAt(0)) >>> 0,
-    0,
+  const category = categories.find((item) => post?.categories?.includes(item.id));
+  return postCoverPlaceholder(
+    post?.title || "Garimpando Life",
+    category?.name || post?.categoryName || "Matéria",
   );
-  return pool[seed % pool.length];
 }
 function postCover(post) {
+  if (neutralCoverSlugs.has(post?.slug)) return postCoverFallback(post);
   const source = restoreImageUrl(post?.image || firstArticleImage(post) || "");
-  // O arquivo histórico aponta para imagens do WordPress antigo ou Drive privado.
-  // Nas listagens de Garimpos, exibe imediatamente uma foto hospedada no site.
-  if (post?.categories?.includes(330) && /^(?:https?:\/\/)?(?:lh3\.googleusercontent\.com\/d\/|(?:www\.)?garimpandolife\.com\.br\/wp-content\/uploads\/)/i.test(source)) {
-    return postCoverFallback(post);
-  }
+  // Mantém a imagem original da própria matéria. Se ela falhar, o onerror usa
+  // uma capa neutra exclusiva com o título, sem reciclar fotos de outros temas.
   return source || postCoverFallback(post);
 }
 function postCoverPlaceholder(title = "Garimpando Life", category = "MATÉRIA") {
