@@ -93,6 +93,16 @@ const localCoverBySlug = {
   "hotelaria-em-santorini": "https://lh3.googleusercontent.com/d/1r_Bf6LZnC2vxfgneBZm_fRPaGduJapY5=w1600",
   "wadi-rum-um-deserto-de-tirar-o-folego": "images/arquivo-original/wadi-rum.jpg",
   "a-melhor-comida-caseira-jordaniana": "images/arquivo-original/comida-jordaniana.jpg",
+  // Matérias antigas sem uma capa própria válida no WordPress. As escolhas
+  // abaixo usam fotos do mesmo destino/ensaio no acervo original do Drive.
+  "nos-templos-sikhs": "https://lh3.googleusercontent.com/d/1FuD8c7hnW00JBO3DFf7W5vM9cYbpgOCL=w1600",
+  "um-paraiso-na-costa-de-portugal": "https://lh3.googleusercontent.com/d/1I-HnZ6rXG56xfZg4jvj0IZTgJ6HTR-sW=w1600",
+  "nara-e-essencia-do-budismo": "https://lh3.googleusercontent.com/d/14Uurv-dbZcs7qykS_QqgvBUp5GFVGNXA=w1600",
+  "o-veu-e-as-mulheres-no-egito-atual": "https://lh3.googleusercontent.com/d/1WX9S96knuD8c0-oOwLiEcdxT8llUcczq=w1600",
+  "no-vale-sagrado": "https://lh3.googleusercontent.com/d/1LRfQ85-Bz5yEvg_wEeEjo2xU05pFprI1=w1600",
+  "na-cidade-2": "https://lh3.googleusercontent.com/d/1ITOOZ0Mcz6khBq9XLIcyKfcP3aSuCzsA=w1600",
+  "nos-campos-vales-e-montanhas": "https://lh3.googleusercontent.com/d/1OvTVpVi6gb9d7I1gD_56EZZl4n79djqI=w1600",
+  "comidas-nas-cidades": "https://lh3.googleusercontent.com/d/19RGuWEd7FINqc_OTgVZhMWlMCgf1_F5j=w1600",
 };
 const drivePhoto = (id) => `https://lh3.googleusercontent.com/d/${id}=w1600`;
 const archiveImageByPath = window.GARIMPANDO_ARCHIVE_IMAGES || {};
@@ -147,14 +157,11 @@ const garimpoCoverBySlug = {
   "sunset-a-beira-mar": "images/garimpos-restauradas/sunset-a-beira-mar.jpg",
   "village-barra-um-hotel-encantador-para-a-familia": "images/garimpos-restauradas/village-barra.png",
 };
-// No arquivo antigo, estas matérias apontavam para a mesma capa genérica de
-// outro conteúdo. Enquanto o original não estiver disponível, uma capa com o
-// próprio título evita repetir uma foto errada ou de outro tema.
+// O backup antigo associa esta matéria à foto de outro artigo. Como não há
+// nenhuma foto do Ladera/Andes no acervo, a capa editorial com o próprio
+// título é mais correta do que publicar uma pessoa ou um destino errado.
 const neutralCoverSlugs = new Set([
-  "alta-gastronomia-assinada-por-ale-divani-no-espaco-charmoso-de-andre-pedrotti",
-  "nos-templos-sikhs",
-  "o-cultural-mercado-da-ribeira-2",
-  "um-paraiso-na-costa-de-portugal",
+  "ano-novo-hotel-prepara-festa-em-rooftop-com-vista-para-a-cordilheira-dos-andes",
 ]);
 const travelCoverBySlug = {
   "jordania-apaixonante-jordania": "https://res.cloudinary.com/startup-grind/image/fetch/c_scale%2Cw_2560/c_crop%2Ch_650%2Cw_2560%2Cy_0.41_mul_h_sub_0.41_mul_650/c_crop%2Ch_650%2Cw_2560/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/https%3A/res.cloudinary.com/startup-grind/image/upload/c_fill%2Cdpr_2.0%2Cf_auto%2Cg_center%2Cq_auto%3Agood/v1/gcs/platform-data-startupgrind/chapter_banners/22861395_1623315001061887_8517170722413525260_o%2520%25281%2529_Hd5zIfa.jpg",
