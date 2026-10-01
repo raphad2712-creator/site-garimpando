@@ -233,10 +233,13 @@ posts.forEach((post) => {
   const isTravel = post.categories?.includes(313);
   const isParty = post.categories?.includes(312);
   if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
+  // Em Viagens, várias capas do backup antigo eram apenas logos ou banners
+  // pequenos. As fotos de destino revisadas têm prioridade para evitar
+  // pixelização e recortes sem sentido na listagem.
+  else if (isTravel && travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
   // O arquivo do WordPress agora foi reconstruído diretamente a partir da
   // pasta uploads do Drive. A foto original da própria matéria tem prioridade.
   else if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
-  else if (isTravel && travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
   else if (isParty && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
   else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
   else if (!post.image && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
