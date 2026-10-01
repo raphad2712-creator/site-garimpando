@@ -163,7 +163,7 @@ const travelCoverBySlug = {
   "grecia-destino-dos-sonhos": "images/grecia-destino-original.jpg",
   "chapada-diamantina-um-encontro-com-a-mais-poetica-das-regioes-brasileiras": "https://cdn.audleytravel.com/1060/756/60/1340177-chapada-diamantina-national-park.jpg",
   "lindo-e-delicioso-hotel-de-lencois": "https://www.journeylatinamerica.com/app/uploads/hotels-boats/brazil/salvador-da-bahia-and-the-chapada-diamantina/hotel-de-lencois/bra_salvador_hoteldelencois-2-1024x680-c-center.jpg",
-  "uvva-orgullho-baiano-da-chapada-diamantina": "https://letsgobahia.com.br/storage/app/uploads/public/689/e40/265/689e40265e73c336127330.jpg",
+  "uvva-orgullho-baiano-da-chapada-diamantina": "https://aloalobahia.com/images/p/vinicolcaresteuvaas_alo_alo_bahia.jpg",
   "refugio-na-serra-surpreende-em-todos-os-cantos": "https://www.veloso.com/media/qbsdwjks/hotel-01.jpg?anchor=%27center%27&format=jpg&height=630&mode=crop&width=1200",
   "sabores-especiais-de-lencois": "https://www.chapadaadventure.com.br/wp-content/uploads/2025/03/gastronomia-chapada-diamantina-11.jpg",
   "um-icone-gastronomico-em-olinda": "https://imagens.ne10.uol.com.br/veiculos/_midias/jpg/2024/12/04/salao_climatizado_gabriele_lima__1_-33275157.jpg",
@@ -226,11 +226,11 @@ posts.forEach((post) => {
   const isTravel = post.categories?.includes(313);
   const isParty = post.categories?.includes(312);
   if (localCoverBySlug[post.slug]) post.image = localCoverBySlug[post.slug];
-  // Viagens e Festas possuem capas revisadas matéria por matéria. Elas devem
-  // vir antes do arquivo genérico para não trocar um destino/evento por outro.
+  // O arquivo do WordPress agora foi reconstruído diretamente a partir da
+  // pasta uploads do Drive. A foto original da própria matéria tem prioridade.
+  else if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
   else if (isTravel && travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
   else if (isParty && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
-  else if (archiveGarimpoCoverBySlug[post.slug]) post.image = archiveGarimpoCoverBySlug[post.slug];
   else if (garimpoCoverBySlug[post.slug]) post.image = garimpoCoverBySlug[post.slug];
   else if (!post.image && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
   else if (!post.image && travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
