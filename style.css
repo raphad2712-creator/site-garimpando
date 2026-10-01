@@ -257,6 +257,9 @@ a {
   object-position: center;
   transition: 0.5s;
 }
+.photo img[data-cover-slug="mexico-entre-o-ceu-e-o-mar"] {
+  object-position: 72% center;
+}
 .photo:hover img {
   transform: scale(1.035);
 }
