@@ -126,9 +126,83 @@ function restoreImageUrl(url) {
   const id = archiveImageByPath[archiveImageKey(url)];
   return id ? drivePhoto(id) : optimizedRemoteImage(url);
 }
-function prepareArticleContent(html) {
+function linkedPostFromUrl(url) {
+  const value = String(url || "").trim();
+  if (!value || value.startsWith("#")) return null;
+  let parsed;
+  try {
+    parsed = new URL(value, location.href);
+  } catch (error) {
+    return null;
+  }
+  if (!/(^|\.)garimpandolife\.com\.br$/i.test(parsed.hostname)) return null;
+  const segments = decodeURIComponent(parsed.pathname)
+    .replace(/\(abrir em uma nova aba\)/gi, "")
+    .split("/")
+    .filter(Boolean);
+  const slug = normalizeSlug(segments.at(-1) || "");
+  return posts.find((post) => post.slug === slug) || null;
+}
+function prepareArticleContent(html, currentPost = null) {
   const template = document.createElement("template");
   template.innerHTML = String(html || "");
+
+  const relatedPosts = [];
+  const relatedSlugs = new Set();
+  template.content.querySelectorAll("a[href]").forEach((link) => {
+    const related = linkedPostFromUrl(link.getAttribute("href"));
+    if (!related) return;
+    link.setAttribute("href", `#materia/${related.slug}`);
+    link.removeAttribute("target");
+    link.removeAttribute("rel");
+    if (related.slug !== currentPost?.slug && !relatedSlugs.has(related.slug)) {
+      relatedSlugs.add(related.slug);
+      relatedPosts.push(related);
+    }
+  });
+
+  let gallery = template.content.querySelector(".article-gallery");
+  if (!gallery) {
+    const galleryPhotos = [];
+    const usedPhotos = new Set();
+    const addPhoto = (source, alt) => {
+      const restored = restoreImageUrl(source);
+      if (!restored || usedPhotos.has(restored)) return false;
+      usedPhotos.add(restored);
+      galleryPhotos.push({ source: restored, alt: alt || currentPost?.title || "Foto da matéria" });
+      return true;
+    };
+
+    [...template.content.querySelectorAll("img")].forEach((image) => {
+      if (image.closest('a[href*="#materia/"]')) return;
+      const source = image.getAttribute("data-src") || image.getAttribute("src") || "";
+      if (/(?:banner|logo|selo|publicidade|advert)/i.test(source)) return;
+      if (addPhoto(source, image.getAttribute("alt"))) image.remove();
+    });
+
+    if (galleryPhotos.length < 2 && relatedPosts.length > 1) {
+      galleryPhotos.length = 0;
+      usedPhotos.clear();
+      relatedPosts.forEach((post) => addPhoto(postCover(post), post.title));
+    }
+
+    if (galleryPhotos.length > 1) {
+      gallery = document.createElement("section");
+      gallery.className = "article-gallery";
+      gallery.setAttribute("aria-label", "Galeria de fotos da matéria");
+      galleryPhotos.forEach((photo) => {
+        const image = document.createElement("img");
+        image.setAttribute("src", photo.source);
+        image.setAttribute("alt", photo.alt);
+        gallery.appendChild(image);
+      });
+      template.content.appendChild(gallery);
+      [...template.content.querySelectorAll("figure, p, td, tr, tbody, table")].reverse().forEach((element) => {
+        if (!element.textContent.trim() && !element.querySelector("img, video, iframe")) element.remove();
+      });
+    }
+  }
+
   template.content.querySelectorAll("img").forEach((image) => {
     const source = image.getAttribute("data-src") || image.getAttribute("src") || "";
     if (source) image.setAttribute("src", restoreImageUrl(source));
@@ -1156,7 +1230,7 @@ function article(p) {
     '</p></section><div class="article-layout"><article class="article-body">' +
     coverMarkup +
     "<div>" +
-    prepareArticleContent(p.content) +
+    prepareArticleContent(p.content, p) +
     '</div><a class="button" href="#inicio">Voltar ao início</a></article>' +
     sidebar() +
     "</div>";
@@ -1170,7 +1244,7 @@ function publicPage(p) {
     '</h1></section><div class="article-layout"><article class="article-body">' +
     (p.image ? '<img class="article-cover" src="' + esc(restoreImageUrl(p.image)) + '">' : "") +
     "<div>" +
-    prepareArticleContent(p.content) +
+    prepareArticleContent(p.content, p) +
     "</div></article>" +
     sidebar() +
     "</div>";
