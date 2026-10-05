@@ -67,6 +67,8 @@ const defaultPartnerBrands = [
   { name: "Ricardo Almeida", image: "images/logo-ricardo-almeida.png", url: "https://www.ricardoalmeida.com.br/" },
   { name: "Sococo", image: "https://www.google.com/s2/favicons?domain_url=https://sococo.com.br&sz=256", url: "https://www.sococo.com.br/" },
   { name: "Jacques Janine Granja Viana", image: "https://www.google.com/s2/favicons?domain_url=https://jacquesjanine.com.br&sz=256", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
+  { name: "àMesa Gastronomia", image: "images/parceiro-a-mesa-gastronomia.jpg", url: "https://www.instagram.com/amesa.gastronomia/" },
+  { name: "Hyundai", image: "images/parceiro-hyundai.webp", url: "https://www.hyundai.com.br/" },
 ];
 const categories = (window.GARIMPANDO_CONTENT?.categories || []).filter(
   (c) => c.count > 0 && c.slug !== "destaques" && !hiddenCategorySlugs.has(c.slug),
@@ -516,6 +518,11 @@ async function loadBrands() {
   } catch (_) {
     brandItems = [...defaultPartnerBrands];
   }
+  defaultPartnerBrands.slice(-2).forEach((requiredBrand) => {
+    if (!brandItems.some((brand) => slugify(brand.name) === slugify(requiredBrand.name))) {
+      brandItems.push(requiredBrand);
+    }
+  });
   renderBrandItems();
 }
 async function showBrands() {

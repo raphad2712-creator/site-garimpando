@@ -32,7 +32,7 @@ const hiddenCategorySlugs = new Set([
   "silvia-percussi",
   "gabi-goulart",
 ]);
-const collaboratorPartnerBrands = [
+const requiredPartnerBrands = [
   {
     name: "Let's Go Bahia",
     image: "images/logo-lets-go-bahia-oficial.png",
@@ -42,6 +42,16 @@ const collaboratorPartnerBrands = [
     name: "Revista Tudo",
     image: "images/logo-revista-tudo.png",
     url: "https://revistatudo.com.br/",
+  },
+  {
+    name: "àMesa Gastronomia",
+    image: "images/parceiro-a-mesa-gastronomia.jpg",
+    url: "https://www.instagram.com/amesa.gastronomia/",
+  },
+  {
+    name: "Hyundai",
+    image: "images/parceiro-hyundai.webp",
+    url: "https://www.hyundai.com.br/",
   },
 ];
 const defaultPartnerBrands = [
@@ -60,7 +70,7 @@ const defaultPartnerBrands = [
   { name: "Ricardo Almeida", image: "images/parceiro-ricardo-almeida-novo.png", url: "https://www.ricardoalmeida.com.br/" },
   { name: "Sococo", image: "images/parceiro-sococo.png", url: "https://www.sococo.com.br/" },
   { name: "Jacques Janine Granja Viana", image: "images/parceiro-jacques-janine-hq.png", url: "https://jacquesjanine.com.br/unidade/granja-viana/" },
-  ...collaboratorPartnerBrands,
+  ...requiredPartnerBrands,
 ];
 const forcedPartnerLogos = {
   "beeva-brazil": "images/parceiro-beeva-hq.jpeg",
@@ -76,6 +86,10 @@ const forcedPartnerLogos = {
   volvo: "images/parceiro-volvo-hq.jpeg",
   "ricardo-almeida": "images/parceiro-ricardo-almeida-novo.png",
   sococo: "images/parceiro-sococo.png",
+  "amesa-gastronomia": "images/parceiro-a-mesa-gastronomia.jpg",
+  "a-mesa-gastronomia": "images/parceiro-a-mesa-gastronomia.jpg",
+  hyundai: "images/parceiro-hyundai.webp",
+  "hyundai-brasil": "images/parceiro-hyundai.webp",
 };
 let partnerBrands = [...defaultPartnerBrands];
 const localCoverBySlug = {
@@ -257,7 +271,7 @@ const travelCoverBySlug = {
   "sao-francisco-cultura-e-diversao": "https://a0.muscache.com/im/pictures/Mt/MtTemplate-6067337/original/bd8be29f-2ff7-4c85-af94-17ec0030fb8f.jpeg?im_w=720",
   "o-paraiso-alter-do-chao-para": "https://uploads.diariodopara.com.br/2025/10/WhatsApp-Image-2025-10-16-at-16.27.18-984x553.jpeg",
   "o-melhor-do-verao-em-portugal": "https://famango.de/assets/img/camp/1046/urlaub-mit-kindern-europa-strand-portugal.jpg",
-  "roma-em-familia": "https://media1.thrillophilia.com/filestore/5qlj2d6vo6w6rqytqidvvkgwi3og_shutterstock_2239747461.jpg",
+  "roma-em-familia": drivePhoto("18eo461oQ3vApmEUap0dQ2xC8OUuXBvpl"),
   "de-barco-no-coracao-da-amazonia": "https://artprintcave.hu/images/tapet/ft-nw-40954972/2/l/fototapeta-amazonas-folyó-dzsungel-fak.jpg",
   "a-magia-de-rapa-nui-em-familia": "https://i0.wp.com/www.toonsarah-travels.blog/wp-content/uploads/2020/10/12-59-Rapa-Nui-2016-Tongariki-for-feature.jpg?fit=1166%2C812&ssl=1",
   "mexico-entre-o-ceu-e-o-mar": "https://www.budgetyourtrip.com/blog/wp-content/uploads/2020/07/beach-2441199-scaled.jpg",
@@ -321,6 +335,49 @@ posts.forEach((post) => {
   else if (!post.image && partyCoverBySlug[post.slug]) post.image = partyCoverBySlug[post.slug];
   else if (!post.image && travelCoverBySlug[post.slug]) post.image = travelCoverBySlug[post.slug];
 });
+
+const removeTravelCategory = new Map([
+  ["chapada-diamantina-um-encontro-com-a-mais-poetica-das-regioes-brasileiras", 309],
+  ["lindo-e-delicioso-hotel-de-lencois", 309],
+  ["uvva-orgullho-baiano-da-chapada-diamantina", 310],
+  ["refugio-na-serra-surpreende-em-todos-os-cantos", 309],
+  ["sabores-especiais-de-lencois", 311],
+  ["um-icone-gastronomico-em-olinda", 311],
+  ["meus-preferidos-restaurantes-de-recife", 311],
+]);
+const categoryById = (id) => categories.find((category) => category.id === id);
+function applyRequestedEditorialFixes() {
+  posts.forEach((post) => {
+    const slug = normalizeSlug(post.slug);
+    const replacementCategoryId = removeTravelCategory.get(slug);
+    if (replacementCategoryId) {
+      post.categories = [...new Set([
+        ...(post.categories || []).filter((id) => id !== 313),
+        replacementCategoryId,
+      ])];
+      const replacementCategory = categoryById(replacementCategoryId);
+      post.categoryName = replacementCategory?.name || post.categoryName;
+      post.categorySlug = replacementCategory?.slug || post.categorySlug;
+    }
+    if (slug === "grecia-destino-dos-sonhos") {
+      post.categories = [...new Set([...(post.categories || []), 311, 310])];
+    }
+    if (slug === "colombia-colorida-e-magica") {
+      post.content = String(post.content || "").replace(
+        /<p class="has-text-align-center wp-block-paragraph">&#8211;<\/p>[\s\S]*?<p class="has-text-align-center wp-block-paragraph">&#8211;<\/p>/i,
+        "",
+      );
+    }
+    if (slug === "viagem-dos-sonhos") {
+      post.content = `<p>Experiências acompanhando o Garimpando.</p>
+        <p>O Projeto Garimpando, junto de uma conceituada e competente agência de viagens parceira, cria roteiros para destinos especiais com o nosso DNA. Nessas jornadas priorizamos alta qualidade nos serviços, na hotelaria, nas companhias aéreas e em toda a experiência.</p>
+        <p>São dias inesquecíveis pilotados por grandes operadoras nas quais Marcelo Sampaio confia seus garimpos pessoais. Aproveite para mergulhar em uma dessas oportunidades únicas e viver momentos que serão lembrados para sempre.</p>
+        <h2>Próximo roteiro</h2>
+        <p><strong>Croácia e Montenegro — maio de 2027</strong></p>
+        <p>Organização: Mister Travel<br>Contato: Fábio <a href="tel:+5511996145418">+55 11 99614-5418</a></p>`;
+    }
+  });
+}
 const savedArticlePhotos = (html) =>
   (String(html || "").match(/<figure class="article-inline-image"[^>]*>[\s\S]*?<\/figure>/g) || []).join("") +
   (String(html || "").match(/<section class="article-gallery"[^>]*>[\s\S]*?<\/section>/g) || []).join("");
@@ -349,11 +406,11 @@ async function loadOnlinePosts() {
       console.warn("Configuração das marcas inválida", error);
     }
   }
-  collaboratorPartnerBrands.forEach((collaborator) => {
+  requiredPartnerBrands.forEach((requiredBrand) => {
     const alreadyListed = partnerBrands.some(
-      (brand) => normalizeSlug(brand.name || "") === normalizeSlug(collaborator.name),
+      (brand) => normalizeSlug(brand.name || "") === normalizeSlug(requiredBrand.name),
     );
-    if (!alreadyListed) partnerBrands.push(collaborator);
+    if (!alreadyListed) partnerBrands.push(requiredBrand);
   });
   online
     .filter((p) => p.slug !== "config-marcas-parceiras" && !removedPostSlugs.has(normalizeSlug(p.slug)))
@@ -410,6 +467,7 @@ async function loadOnlinePosts() {
     }
     posts.unshift(onlinePost);
   });
+  applyRequestedEditorialFixes();
   removeRepeatedPosts();
 }
 const app = document.querySelector("#app"),
@@ -440,6 +498,7 @@ const normalizeSlug = (value) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+applyRequestedEditorialFixes();
 const firstArticleImage = (post) => {
   const match = String(post?.content || "").match(/<img[^>]+src=["']([^"']+)["']/i);
   return restoreImageUrl(match?.[1] || "");
@@ -1324,7 +1383,22 @@ function route() {
     p ? article(p) : home();
   } else if (parts[0] === "categoria") {
     const c = categories.find((x) => isVisibleCategory(x) && x.slug === parts.slice(1).join("/")),
-      items = c ? posts.filter((p) => belongsToCategory(p, c)) : posts;
+      items = c ? posts.filter((p) => belongsToCategory(p, c)) : posts,
+      priority = c?.slug === "viagem"
+        ? ["alagoas-caribe-brasileiro", "russia-exuberante-e-encantadora"]
+        : [];
+    if (priority.length) {
+      items.sort((first, second) => {
+        const firstPriority = priority.indexOf(normalizeSlug(first.slug));
+        const secondPriority = priority.indexOf(normalizeSlug(second.slug));
+        if (firstPriority !== -1 || secondPriority !== -1) {
+          if (firstPriority === -1) return 1;
+          if (secondPriority === -1) return -1;
+          return firstPriority - secondPriority;
+        }
+        return new Date(second.date) - new Date(first.date);
+      });
+    }
     archive(
       c?.name || "Categorias",
       items,
