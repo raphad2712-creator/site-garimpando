@@ -120,7 +120,7 @@ const localCoverBySlug = {
   "mexico-entre-o-ceu-e-o-mar": "https://lh3.googleusercontent.com/d/1fy0kqGxST-0oSvX0Pmtd1D5ewg5Klyxa=w1600",
   "a-eterna-e-bela-sicilia": "https://lh3.googleusercontent.com/d/1J1IWhzvU-GIqcn7MNPCAyfAseUcPid-F=w1600",
 };
-const drivePhoto = (id) => `https://lh3.googleusercontent.com/d/${id}=w1600`;
+const drivePhoto = (id) => window.GARIMPANDO_LOCAL_DRIVE_IMAGES?.[id] || `https://lh3.googleusercontent.com/d/${id}=w1600`;
 const archiveImageByPath = window.GARIMPANDO_ARCHIVE_IMAGES || {};
 function archiveImageKey(url) {
   let decoded = String(url || "");
