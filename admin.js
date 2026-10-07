@@ -15,7 +15,8 @@ let selectedImage = null,
   currentGalleryUrls = [],
   currentImage = "",
   brandItems = [],
-  brandSettingsId = null;
+  brandSettingsId = null,
+  editingLegacySlug = "";
 const $ = (s) => document.querySelector(s),
   esc = (s) =>
     String(s || "").replace(
@@ -134,6 +135,7 @@ function reset() {
   form.reset();
   $("#body").innerHTML = "";
   $("#postId").value = "";
+  editingLegacySlug = "";
   $("#date").value = new Date().toISOString().slice(0, 10);
   selectedImage = null;
   selectedGalleryFiles = [];
@@ -351,7 +353,7 @@ form.addEventListener("submit", async (e) => {
         title: $("#title").value.trim(),
         slug: id
           ? undefined
-          : slugify($("#title").value) + "-" + Date.now().toString().slice(-6),
+          : editingLegacySlug || slugify($("#title").value) + "-" + Date.now().toString().slice(-6),
         excerpt: $("#excerpt").value.trim() || $("#body").textContent.trim().slice(0, 440),
         content: htmlContent(inlineImages),
         category_id,
@@ -429,6 +431,54 @@ async function showList() {
     .querySelectorAll("[data-delete]")
     .forEach((b) => (b.onclick = () => remove(b.dataset.delete)));
 }
+function categoryForLegacyPost(post) {
+  return categories.find((category) => (post.categories || []).includes(category.id)) || null;
+}
+function renderPostItems(items, title, emptyMessage) {
+  editor.classList.add("hidden");
+  list.classList.remove("hidden");
+  $("#brandEditor").classList.add("hidden");
+  $("#postCount").textContent = `${items.length} ${items.length === 1 ? "matéria" : "matérias"}`;
+  $("#postList .heading small").textContent = title;
+  $("#items").innerHTML = items.length
+    ? items.map((post) => {
+      const category = post.category_name || categoryForLegacyPost(post)?.name || "Blog";
+      const image = post.image_url || post.image || "images/hero.png";
+      const legacy = Boolean(post.legacy);
+      return `<article class="post-item"><img src="${esc(image)}"><div><h2>${esc(post.title)}</h2><p>${post.date ? new Date(post.date).toLocaleDateString("pt-BR") : new Date(post.published_at).toLocaleDateString("pt-BR")} · ${esc(category)}${legacy ? " · Original do site" : ""}</p></div><div class="item-actions"><button ${legacy ? `data-edit-legacy="${esc(post.slug)}"` : `data-edit="${post.id}"`}>Editar</button>${legacy ? "" : `<button class="delete" data-delete="${post.id}">Excluir</button>`}</div></article>`;
+    }).join("")
+    : `<p>${emptyMessage}</p>`;
+  document.querySelectorAll("[data-edit]").forEach((button) => (button.onclick = () => edit(button.dataset.edit)));
+  document.querySelectorAll("[data-edit-legacy]").forEach((button) => (button.onclick = () => editLegacy(button.dataset.editLegacy)));
+  document.querySelectorAll("[data-delete]").forEach((button) => (button.onclick = () => remove(button.dataset.delete)));
+}
+function editLegacy(slug) {
+  const post = (window.GARIMPANDO_CONTENT?.posts || []).find((item) => item.slug === slug);
+  if (!post) return toast("Não foi possível abrir a matéria original");
+  reset();
+  const category = categoryForLegacyPost(post);
+  editingLegacySlug = post.slug;
+  $("#title").value = post.title || "";
+  $("#date").value = String(post.date || "").slice(0, 10) || new Date().toISOString().slice(0, 10);
+  $("#category").value = category?.id || "";
+  updateCategoryDestination();
+  $("#excerpt").value = post.excerpt || "";
+  $("#excerptCount").textContent = $("#excerpt").value.length;
+  $("#body").innerHTML = contentReadyForEditor(post.content);
+  $("#imageUrl").value = post.image || editableTravelCovers[post.slug] || "";
+  previewImage($("#imageUrl").value);
+  $("#editorTitle").textContent = "Editar matéria original";
+  $("#saveState").textContent = "Será salva online";
+}
+function showLegacyCategory(categorySlug, title) {
+  const category = categories.find((item) => item.slug === categorySlug);
+  const originals = (window.GARIMPANDO_CONTENT?.posts || [])
+    .filter((post) => (post.categories || []).includes(category?.id))
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .map((post) => ({ ...post, legacy: true }));
+  renderPostItems(originals, title, "Nenhuma matéria encontrada nesta categoria.");
+}
+
 async function edit(id) {
   const { data, error } = await db
     .from("blog_posts")
@@ -631,6 +681,9 @@ async function importTravelPostsForEditing() {
 
 $("#newPost").onclick = reset;
 $("#showPosts").onclick = () => configured && showList();
+$("#showTourismPosts").onclick = () => configured && showLegacyCategory("turismo", "TURISMO");
+$("#showGastronomyPosts").onclick = () => configured && showLegacyCategory("gastronomia", "GASTRONOMIA");
+$("#showLifestylePosts").onclick = () => configured && showLegacyCategory("estilo-de-vida", "ESTILO DE VIDA");
 $("#importTravelPosts").onclick = importTravelPostsForEditing;
 
 function resetBrandForm() {
