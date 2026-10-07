@@ -164,13 +164,20 @@ function prepareArticleContent(html, currentPost = null) {
 
   // Remove, em qualquer matéria, o bloco promocional antigo que foi trazido
   // junto com alguns textos do site anterior.
-  const isPromotionalBio = (text) =>
-    /marcelo sampaio/i.test(text) &&
-    /(apresentador\s*tv|garimpando\s+com\s+marcelo|travel\s+box|r[áa]dio\s+vibe)/i.test(text);
+  const isPromotionalFooter = (text) => {
+    const value = String(text || "").replace(/\s+/g, " ").trim();
+    return (
+      (/marcelo sampaio/i.test(value) &&
+        /(apresentador\s*tv|garimpando\s+com\s+marcelo|travel\s+box|r[áa]dio\s+vibe)/i.test(value)) ||
+      /^@garimpando\.life$/i.test(value) ||
+      /^garimpandolife\.com\.br$/i.test(value) ||
+      /^(?:-|–|—)$/.test(value)
+    );
+  };
   [...template.content.querySelectorAll("p, li, blockquote, div, section")]
     .filter((element) =>
-      isPromotionalBio(element.textContent || "") &&
-      ![...element.children].some((child) => isPromotionalBio(child.textContent || "")),
+      isPromotionalFooter(element.textContent || "") &&
+      ![...element.children].some((child) => isPromotionalFooter(child.textContent || "")),
     )
     .forEach((element) => element.remove());
 
