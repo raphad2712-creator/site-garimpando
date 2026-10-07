@@ -538,21 +538,31 @@ async function importTravelPostsForEditing() {
     const existingSlugs = new Set((existing || []).map((post) => post.slug));
     const travelCategory = categories.find((category) => category.slug === "viagem");
     const missing = originals.filter((post) => !existingSlugs.has(post.slug));
-    if (missing.length) {
-      const { error: insertError } = await db.from("blog_posts").insert(
-        missing.map((post) => ({
-          title: post.title,
-          slug: post.slug,
-          excerpt: post.excerpt || "",
-          content: contentReadyForEditor(post.content),
-          category_id: travelCategory?.id || 313,
-          category_name: travelCategory?.name || "Viagens",
-          image_url: post.image || "",
-          is_featured: false,
-          published: true,
-          published_at: post.date || new Date().toISOString(),
-        })),
-      );
+    // Uma matéria por vez evita que os textos antigos, muito grandes,
+    // excedam o limite de conexão em uma única publicação.
+    for (let index = 0; index < missing.length; index += 1) {
+      const post = missing[index];
+      button.textContent = `Preparando ${index + 1} de ${missing.length}...`;
+      const payload = {
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt || "",
+        content: contentReadyForEditor(post.content),
+        category_id: travelCategory?.id || 313,
+        category_name: travelCategory?.name || "Viagens",
+        image_url: post.image || "",
+        is_featured: false,
+        published: true,
+        published_at: post.date || new Date().toISOString(),
+      };
+      let insertError = null;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const result = await db.from("blog_posts").insert(payload);
+        insertError = result.error;
+        if (!insertError) break;
+        if (!/fetch|network|timeout/i.test(String(insertError.message || ""))) break;
+        await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)));
+      }
       if (insertError) throw insertError;
     }
     await showList();
