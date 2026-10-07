@@ -926,6 +926,10 @@ function initPartnerCarousels() {
     });
   });
 }
+function newestPostsFirst(items) {
+  const timestamp = (post) => Date.parse(post?.date || "") || 0;
+  return [...items].sort((first, second) => timestamp(second) - timestamp(first));
+}
 function cards(items) {
   return (
     '<section class="post-list">' +
@@ -973,6 +977,7 @@ function cards(items) {
   );
 }
 function archive(title, items, intro) {
+  items = newestPostsFirst(items);
   const visible = items.slice(0, shown);
   app.innerHTML =
     '<section class="page-title"><span>Garimpando Life</span><h1>' +
@@ -1003,9 +1008,7 @@ function archive(title, items, intro) {
   });
 }
 function home() {
-  const sortedPosts = [...posts].sort(
-    (first, second) => new Date(second.date) - new Date(first.date),
-  );
+  const sortedPosts = newestPostsFirst(posts);
   const latestTravelPost = sortedPosts.find(
     (post) => categoryForPost(post)?.slug === "viagem",
   );
@@ -1383,22 +1386,7 @@ function route() {
     p ? article(p) : home();
   } else if (parts[0] === "categoria") {
     const c = categories.find((x) => isVisibleCategory(x) && x.slug === parts.slice(1).join("/")),
-      items = c ? posts.filter((p) => belongsToCategory(p, c)) : posts,
-      priority = c?.slug === "viagem"
-        ? ["alagoas-caribe-brasileiro", "russia-exuberante-e-encantadora"]
-        : [];
-    if (priority.length) {
-      items.sort((first, second) => {
-        const firstPriority = priority.indexOf(normalizeSlug(first.slug));
-        const secondPriority = priority.indexOf(normalizeSlug(second.slug));
-        if (firstPriority !== -1 || secondPriority !== -1) {
-          if (firstPriority === -1) return 1;
-          if (secondPriority === -1) return -1;
-          return firstPriority - secondPriority;
-        }
-        return new Date(second.date) - new Date(first.date);
-      });
-    }
+      items = c ? posts.filter((p) => belongsToCategory(p, c)) : posts;
     archive(
       c?.name || "Categorias",
       items,
