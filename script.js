@@ -1217,6 +1217,20 @@ function positionArticleGalleryBelowText() {
   const gallery = content?.querySelector(".article-gallery");
   if (!content || !gallery) return;
 
+  // Em matérias migradas do WordPress, a galeria deve aparecer imediatamente
+  // antes do shortcode original — nunca solta no fim do texto.
+  const shortcodePattern = /ngg_shortcode_25_placeholder/i;
+  const shortcodeMarker = content.querySelector(
+    '[id*="ngg_shortcode_25_placeholder"], [class*="ngg_shortcode_25_placeholder"]',
+  ) || [...content.querySelectorAll("p, li, div, span, section")].find(
+    (element) => shortcodePattern.test(element.textContent || "") &&
+      ![...element.children].some((child) => shortcodePattern.test(child.textContent || "")),
+  );
+  if (shortcodeMarker) {
+    content.insertBefore(gallery, shortcodeMarker);
+    return;
+  }
+
   const areaLabels = new Set(["viagens", "turismo", "gastronomia", "estilo-de-vida"]);
   const labelPattern = /(?:^|\s)(?:viagens|turismo|gastronomia|estilo\s+de\s+vida)\s*:/i;
   const matterLinkSelector = 'a[href*="#materia/"]';
