@@ -510,15 +510,24 @@ function contentReadyForEditor(html) {
     .filter((element) => relatedTitle.test(element.textContent || "") && ![...element.children].some((child) => relatedTitle.test(child.textContent || "")))
     .forEach((element) => element.remove());
 
-  const allowed = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "A"]);
+  const allowed = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "A", "TABLE", "TBODY", "TR", "TD", "IMG"]);
   [...holder.querySelectorAll("*")].forEach((element) => {
     if (!allowed.has(element.tagName)) {
       element.replaceWith(...element.childNodes);
       return;
     }
     const href = element.tagName === "A" ? element.getAttribute("href") || "" : "";
+    const imageSource = element.tagName === "IMG" ? element.getAttribute("src") || "" : "";
+    const imageAlt = element.tagName === "IMG" ? element.getAttribute("alt") || "Imagem relacionada" : "";
     [...element.attributes].forEach((attribute) => element.removeAttribute(attribute.name));
-    if (element.tagName === "A" && /^(https?:\/\/|mailto:|tel:|#)/i.test(href)) {
+    if (element.tagName === "IMG") {
+      if (!/^https?:\/\//i.test(imageSource)) {
+        element.remove();
+        return;
+      }
+      element.setAttribute("src", imageSource);
+      element.setAttribute("alt", imageAlt);
+    } else if (element.tagName === "A" && /^(https?:\/\/|mailto:|tel:|#)/i.test(href)) {
       element.setAttribute("href", href);
       element.setAttribute("target", "_blank");
       element.setAttribute("rel", "noopener");
