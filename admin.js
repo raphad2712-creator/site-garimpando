@@ -499,6 +499,27 @@ const editableTravelSlugs = new Set([
   "china-o-imenso-pais-dourado",
 ]);
 
+const editableTravelCovers = {
+  "mexico-entre-o-ceu-e-o-mar": "https://lh3.googleusercontent.com/d/1fy0kqGxST-0oSvX0Pmtd1D5ewg5Klyxa=w1600",
+  "india-um-novo-olhar-sobre-o-mundo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Taj_Mahal%2C_Agra%2C_India_edit2.jpg/1280px-Taj_Mahal%2C_Agra%2C_India_edit2.jpg",
+  "peru-experiencias-sem-fim": "https://www.intrepidtravel.com/v3/assets/blt0de87ff52d9c34a8/blteb7ce82977c15f0b/67be345072be043efd6b1706/Intrepid-Travel-Peru-Aguas-Calientes-Machu-Picchu-lookout-leader-Interaction-570334.jpg?branch=prd",
+  "peru-um-mistico-encanto": "https://cdn.kimkim.com/files/a/images/20c38be0d29bd041df07edcc1a2a0476e38a56c7/big-f897bc98b7dd767c9db19eab6c1e2685.jpg",
+  "canada-o-pais-que-sorri-para-todos": "https://www.yonder.fr/sites/default/files/contenu/news/visuel-voyage-au-canada-5-activites-a-decouvrir-en-famille.jpg",
+  "guatemala-seus-misterios-e-sua-historia": "https://ssl.tzoo-img.com/images/tzoo.103677.0.1346888.LakeAtitlan_Guatemala_iStock-870585478.jpg?width=1080",
+  "no-coracao-da-amazonia": "https://img.rezdy.com/PRODUCT_IMAGE/149616/Amazon_clipper_lg.jpg",
+  "a-historia-e-o-sol-de-uma-jamaica": "https://static.independent.co.uk/2024/09/06/11/Sandals-South-Coast-Beach.jpg?fit=crop&height=900&width=1200",
+  "marrocos-o-pais-das-mil-e-uma-noites": "https://www.christophorus.at/app/uploads/2020/02/kamel-expedition-marokko-marrakesch-1024x576.jpg",
+  "africa-do-sul-e-mauritius-em-familia": "https://img.wiki.ac.mu/images/2026/04/family-enjoying-a-peaceful-walk-along-a-mauritius-beach-at-sunset.jpg",
+  "japao-elegante-pais-do-sol-nascente": "https://images.moneycontrol.com/static-mcnews/2023/09/Mount-Fuji-is-covered-in-snow-half-the-year-Photo-Credit-Hannes-via-Wikimedia-Commons.jpg?height=900&impolicy=website&width=1600",
+  "a-eterna-e-bela-sicilia": "https://lh3.googleusercontent.com/d/1J1IWhzvU-GIqcn7MNPCAyfAseUcPid-F=w1600",
+  "parana-uma-terra-de-tradicoes": "https://www.parana.pr.gov.br/sites/default/arquivos_restritos/files/imagem/2024-12/creditos_lucas_franco_viaje_pr_13.jpg",
+  "bahia-de-charme-parte-2": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/43/ac/8f/pelourinho.jpg?h=-1&s=1&w=1800",
+  "bahia-de-charme-parte-1": "https://a.cdn-hotels.com/gdcs/production171/d1145/f5143983-05bb-450c-bea1-9f14b8bb3b96.jpg",
+  "minhas-dicas-sol-de-santa": "https://garimpandolife.com.br/wp-content/uploads/2015/12/dicassanta-1.jpg",
+  "suica-sofisticada-e-saborosa": "https://admin.europaturism.ro/Files/Pictures/Images/elvetia-9918.jpg",
+  "china-o-imenso-pais-dourado": "https://images.rawpixel.com/image_800/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B4NzU5MzMzLWltYWdlLWt3dnY1N2J1LmpwZw.jpg"
+};
+
 function contentReadyForEditor(html) {
   const holder = document.createElement("div");
   holder.innerHTML = String(html || "");
@@ -551,10 +572,11 @@ async function importTravelPostsForEditing() {
     }
     const { data: existing, error: lookupError } = await db
       .from("blog_posts")
-      .select("slug")
+      .select("id,slug,image_url")
       .in("slug", [...editableTravelSlugs]);
     if (lookupError) throw lookupError;
-    const existingSlugs = new Set((existing || []).map((post) => post.slug));
+    const savedBySlug = new Map((existing || []).map((post) => [post.slug, post]));
+    const existingSlugs = new Set(savedBySlug.keys());
     const travelCategory = categories.find((category) => category.slug === "viagem");
     const missing = originals.filter((post) => !existingSlugs.has(post.slug));
     // Uma matéria por vez evita que os textos antigos, muito grandes,
@@ -569,7 +591,7 @@ async function importTravelPostsForEditing() {
         content: contentReadyForEditor(post.content),
         category_id: travelCategory?.id || 313,
         category_name: travelCategory?.name || "Viagens",
-        image_url: post.image || "",
+        image_url: editableTravelCovers[post.slug] || post.image || "",
         is_featured: false,
         published: true,
         published_at: post.date || new Date().toISOString(),
@@ -584,6 +606,18 @@ async function importTravelPostsForEditing() {
       }
       if (insertError) throw insertError;
     }
+    // Se as matérias já haviam sido preparadas antes, atualiza somente as
+    // capas com as imagens corretas da categoria Viagens, sem tocar no texto.
+    for (const post of originals) {
+      const saved = savedBySlug.get(post.slug);
+      const cover = editableTravelCovers[post.slug];
+      if (!saved || !cover || saved.image_url === cover) continue;
+      const { error: coverError } = await db
+        .from("blog_posts")
+        .update({ image_url: cover })
+        .eq("id", saved.id);
+      if (coverError) throw coverError;
+    }
     await showList();
     toast(missing.length ? "18 viagens prontas para editar!" : "As 18 viagens já estão prontas para editar.");
   } catch (error) {
@@ -591,7 +625,7 @@ async function importTravelPostsForEditing() {
     toast(publishErrorMessage(error));
   } finally {
     button.disabled = false;
-    button.textContent = "✦ Preparar 18 viagens para edição";
+    button.textContent = "✦ Preparar/atualizar 18 viagens";
   }
 }
 
