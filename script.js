@@ -1283,8 +1283,10 @@ function positionArticleGalleryBelowText() {
 
   if (!navigationBlocks.length) return;
 
-  const insertionPoint = gallery.nextSibling;
-  navigationBlocks.forEach((block) => content.insertBefore(block, insertionPoint));
+  // As listas de matérias relacionadas fazem parte da leitura da matéria.
+  // Elas precisam aparecer antes da galeria: em alguns artigos antigos a
+  // galeria era renderizada por cima delas no celular, escondendo os links.
+  navigationBlocks.forEach((block) => content.insertBefore(block, gallery));
 }
 function article(p) {
   const c = categoryForPost(p);
