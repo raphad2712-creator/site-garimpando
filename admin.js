@@ -434,13 +434,23 @@ async function showList() {
 function categoryForLegacyPost(post) {
   return categories.find((category) => (post.categories || []).includes(category.id)) || null;
 }
+function restoreLegacyCover(url) {
+  let source = String(url || "").replace(/^http:\/\//i, "https://");
+  try { source = decodeURIComponent(source); } catch (_) { /* usa a URL original */ }
+  const match = source.match(/\/wp-content\/uploads\/((?:\d{4}\/\d{2}|ngg_featured)\/[^"'?#<>\s]+)/i);
+  const key = match?.[1]?.normalize("NFC").toLowerCase();
+  const imageId = key ? window.GARIMPANDO_ARCHIVE_IMAGES?.[key] : "";
+  return imageId
+    ? window.GARIMPANDO_LOCAL_DRIVE_IMAGES?.[imageId] || `https://lh3.googleusercontent.com/d/${imageId}=w1600`
+    : source;
+}
 function legacyCoverForAdmin(post) {
   if (editableTravelCovers[post?.slug]) return editableTravelCovers[post.slug];
   const images = [...String(post?.content || "").matchAll(/<img[^>]+src=["']([^"']+)["']/gi)]
     .map((match) => match[1])
     .filter((source) => !/(?:banner|logo|publicidade|advert)/i.test(source));
   const source = post?.image || images[0] || "";
-  return String(source).replace(/^http:\/\//i, "https://") || "images/hero.png";
+  return restoreLegacyCover(source) || "images/hero.png";
 }
 function renderPostItems(items, title, emptyMessage) {
   editor.classList.add("hidden");
