@@ -468,8 +468,107 @@ async function remove(id) {
   await showList();
   toast("Matéria excluída");
 }
+const editableTravelSlugs = new Set([
+  "mexico-entre-o-ceu-e-o-mar",
+  "india-um-novo-olhar-sobre-o-mundo",
+  "peru-experiencias-sem-fim",
+  "peru-um-mistico-encanto",
+  "canada-o-pais-que-sorri-para-todos",
+  "guatemala-seus-misterios-e-sua-historia",
+  "no-coracao-da-amazonia",
+  "a-historia-e-o-sol-de-uma-jamaica",
+  "marrocos-o-pais-das-mil-e-uma-noites",
+  "africa-do-sul-e-mauritius-em-familia",
+  "japao-elegante-pais-do-sol-nascente",
+  "a-eterna-e-bela-sicilia",
+  "parana-uma-terra-de-tradicoes",
+  "bahia-de-charme-parte-2",
+  "bahia-de-charme-parte-1",
+  "minhas-dicas-sol-de-santa",
+  "suica-sofisticada-e-saborosa",
+  "china-o-imenso-pais-dourado",
+]);
+
+function contentReadyForEditor(html) {
+  const holder = document.createElement("div");
+  holder.innerHTML = String(html || "");
+  // As tabelas antigas eram apenas painéis de matérias relacionadas.
+  // O editor trabalha com texto, links e uma galeria própria de fotos.
+  holder.querySelectorAll("script, style, iframe, object, embed, table, img, figure, .article-gallery").forEach((element) => element.remove());
+  const relatedTitle = /clique nas imagens abaixo[\s\S]*mat[eé]rias relacionadas/i;
+  [...holder.querySelectorAll("h1, h2, h3, h4, p, div, span, strong, b")]
+    .filter((element) => relatedTitle.test(element.textContent || "") && ![...element.children].some((child) => relatedTitle.test(child.textContent || "")))
+    .forEach((element) => element.remove());
+
+  const allowed = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "A"]);
+  [...holder.querySelectorAll("*")].forEach((element) => {
+    if (!allowed.has(element.tagName)) {
+      element.replaceWith(...element.childNodes);
+      return;
+    }
+    const href = element.tagName === "A" ? element.getAttribute("href") || "" : "";
+    [...element.attributes].forEach((attribute) => element.removeAttribute(attribute.name));
+    if (element.tagName === "A" && /^(https?:\/\/|mailto:|tel:|#)/i.test(href)) {
+      element.setAttribute("href", href);
+      element.setAttribute("target", "_blank");
+      element.setAttribute("rel", "noopener");
+    } else if (element.tagName === "A") {
+      element.replaceWith(...element.childNodes);
+    }
+  });
+  return holder.innerHTML.trim() || "<p>Texto da matéria.</p>";
+}
+
+async function importTravelPostsForEditing() {
+  if (!configured) return;
+  const button = $("#importTravelPosts");
+  button.disabled = true;
+  button.textContent = "Preparando matérias...";
+  try {
+    const originals = (window.GARIMPANDO_CONTENT?.posts || [])
+      .filter((post) => editableTravelSlugs.has(post.slug));
+    if (originals.length !== editableTravelSlugs.size) {
+      throw new Error("Não foi possível localizar todas as 18 matérias de viagem.");
+    }
+    const { data: existing, error: lookupError } = await db
+      .from("blog_posts")
+      .select("slug")
+      .in("slug", [...editableTravelSlugs]);
+    if (lookupError) throw lookupError;
+    const existingSlugs = new Set((existing || []).map((post) => post.slug));
+    const travelCategory = categories.find((category) => category.slug === "viagem");
+    const missing = originals.filter((post) => !existingSlugs.has(post.slug));
+    if (missing.length) {
+      const { error: insertError } = await db.from("blog_posts").insert(
+        missing.map((post) => ({
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt || "",
+          content: contentReadyForEditor(post.content),
+          category_id: travelCategory?.id || 313,
+          category_name: travelCategory?.name || "Viagens",
+          image_url: post.image || "",
+          is_featured: false,
+          published: true,
+          published_at: post.date || new Date().toISOString(),
+        })),
+      );
+      if (insertError) throw insertError;
+    }
+    await showList();
+    toast(missing.length ? "18 viagens prontas para editar!" : "As 18 viagens já estão prontas para editar.");
+  } catch (error) {
+    console.error(error);
+    toast(publishErrorMessage(error));
+  } finally {
+    button.disabled = false;
+    button.textContent = "✦ Preparar 18 viagens para edição";
+  }
+}
+
 $("#newPost").onclick = reset;
 $("#showPosts").onclick = () => configured && showList();
+$("#importTravelPosts").onclick = importTravelPostsForEditing;
 
 function resetBrandForm() {
   $("#brandForm").reset();
