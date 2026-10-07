@@ -672,7 +672,7 @@ function renderCategoryMenu() {
   if (selected) renderMegaPosts(selected);
 }
 function renderMegaPosts(category) {
-  const selectedPosts = posts
+  const selectedPosts = newestPostsFirst(posts)
     .filter((post) => belongsToCategory(post, category))
     .slice(0, 3);
   document.querySelector("#megaPosts").innerHTML = selectedPosts.length
