@@ -237,14 +237,24 @@ function sanitizedEditorHtml() {
   const holder = document.createElement("div");
   holder.innerHTML = $("#body").innerHTML.trim();
   holder.querySelectorAll("script,style,iframe,object,embed").forEach((element) => element.remove());
-  const allowed = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "A"]);
+  const allowed = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "A", "TABLE", "TBODY", "TR", "TD", "IMG"]);
   [...holder.querySelectorAll("*")].forEach((element) => {
     if (!allowed.has(element.tagName)) {
       element.replaceWith(...element.childNodes);
       return;
     }
     const linkAddress = element.tagName === "A" ? element.getAttribute("href") || "" : "";
+    const imageSource = element.tagName === "IMG" ? element.getAttribute("src") || "" : "";
+    const imageAlt = element.tagName === "IMG" ? element.getAttribute("alt") || "Imagem relacionada" : "";
     [...element.attributes].forEach((attribute) => element.removeAttribute(attribute.name));
+    if (element.tagName === "IMG") {
+      if (!/^https?:\/\//i.test(imageSource)) {
+        element.remove();
+        return;
+      }
+      element.setAttribute("src", imageSource);
+      element.setAttribute("alt", imageAlt);
+    }
     if (element.tagName === "A") {
       if (!/^(https?:\/\/|mailto:|tel:|#)/i.test(linkAddress)) {
         element.replaceWith(...element.childNodes);
@@ -494,7 +504,7 @@ function contentReadyForEditor(html) {
   holder.innerHTML = String(html || "");
   // As tabelas antigas eram apenas painéis de matérias relacionadas.
   // O editor trabalha com texto, links e uma galeria própria de fotos.
-  holder.querySelectorAll("script, style, iframe, object, embed, table, img, figure, .article-gallery").forEach((element) => element.remove());
+  holder.querySelectorAll("script, style, iframe, object, embed, figure, .article-gallery").forEach((element) => element.remove());
   const relatedTitle = /clique nas imagens abaixo[\s\S]*mat[eé]rias relacionadas/i;
   [...holder.querySelectorAll("h1, h2, h3, h4, p, div, span, strong, b")]
     .filter((element) => relatedTitle.test(element.textContent || "") && ![...element.children].some((child) => relatedTitle.test(child.textContent || "")))
