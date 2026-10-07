@@ -195,6 +195,30 @@ function prepareArticleContent(html, currentPost = null) {
     }
   });
 
+  // Não usamos as miniaturas de “matérias relacionadas” como fotos da matéria.
+  // Em textos antigos de viagens elas eram uma tabela de links e ficavam
+  // espalhadas no celular. Quando não houver fotos originais, o espaço fica
+  // limpo até que as imagens certas sejam adicionadas ao acervo.
+  const legacyRelatedTitle = /clique nas imagens abaixo[\s\S]*mat[eé]rias relacionadas/i;
+  const relatedTitleElements = [...template.content.querySelectorAll("h1, h2, h3, h4, p, div, span, strong, b")]
+    .filter((element) => {
+      const text = element.textContent || "";
+      return legacyRelatedTitle.test(text) &&
+        ![...element.children].some((child) => legacyRelatedTitle.test(child.textContent || ""));
+    });
+  if (relatedTitleElements.length) {
+    template.content.querySelectorAll('a[href^="#materia/"]').forEach((link) => {
+      if (!link.querySelector("img")) return;
+      const card = link.closest("td, figure, li");
+      if (card) card.remove();
+      else link.remove();
+    });
+    relatedTitleElements.forEach((element) => element.remove());
+    [...template.content.querySelectorAll("table, tbody, tr, ul, ol")]
+      .filter((element) => !element.querySelector("a, img") && !element.textContent.trim())
+      .forEach((element) => element.remove());
+  }
+
   const partyAlbum = partyPhotos[currentPost?.slug];
   if (partyAlbum) {
     template.content.querySelectorAll('.article-gallery, img').forEach((image) => image.remove());
@@ -230,12 +254,6 @@ function prepareArticleContent(html, currentPost = null) {
       if (/(?:banner|logo|selo|publicidade|advert)/i.test(source)) return;
       if (addPhoto(source, image.getAttribute("alt"))) image.remove();
     });
-
-    if (galleryPhotos.length < 2 && relatedPosts.length > 1) {
-      galleryPhotos.length = 0;
-      usedPhotos.clear();
-      relatedPosts.forEach((post) => addPhoto(postCover(post), post.title));
-    }
 
     if (galleryPhotos.length > 1) {
       gallery = document.createElement("section");
