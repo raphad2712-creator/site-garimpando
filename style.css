@@ -1051,3 +1051,16 @@ footer p {
   .article-gallery img { height: 360px; padding: 6px; }
   .gallery-arrow { flex-basis: 40px; width: 40px; height: 40px; font-size: 29px; }
 }
+
+
+/* Galerias e tabelas antigas convertidas para uma grade legível no celular. */
+.article-body table { max-width: 100%; }
+@media (max-width: 700px) {
+  .article-body table { display: block; width: 100% !important; overflow: hidden; }
+  .article-body table tbody { display: block; width: 100%; }
+  .article-body table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; margin: 0 0 10px; }
+  .article-body table td { display: block !important; width: auto !important; min-width: 0; padding: 0 !important; }
+  .article-body table td:empty { display: none !important; }
+  .article-body table td > a { display: block; }
+  .article-body table td img { display: block; width: 100% !important; height: auto !important; aspect-ratio: 1 / 1; margin: 0 !important; object-fit: cover; }
+}
