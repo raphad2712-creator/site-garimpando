@@ -1,0 +1,352 @@
+window.GARIMPANDO_PARTY_PHOTOS = {
+  "01-aninho-bem-do-interior": {
+    "cover": "images/festas/01-aninho-bem-do-interior/015.webp",
+    "photos": [
+      "images/festas/01-aninho-bem-do-interior/001.webp",
+      "images/festas/01-aninho-bem-do-interior/002.webp",
+      "images/festas/01-aninho-bem-do-interior/003.webp",
+      "images/festas/01-aninho-bem-do-interior/004.webp",
+      "images/festas/01-aninho-bem-do-interior/005.webp",
+      "images/festas/01-aninho-bem-do-interior/006.webp",
+      "images/festas/01-aninho-bem-do-interior/007.webp",
+      "images/festas/01-aninho-bem-do-interior/008.webp",
+      "images/festas/01-aninho-bem-do-interior/009.webp",
+      "images/festas/01-aninho-bem-do-interior/010.webp",
+      "images/festas/01-aninho-bem-do-interior/011.webp",
+      "images/festas/01-aninho-bem-do-interior/012.webp",
+      "images/festas/01-aninho-bem-do-interior/013.webp",
+      "images/festas/01-aninho-bem-do-interior/014.webp"
+    ]
+  },
+  "15-anos-pop": {
+    "cover": "images/festas/15-anos-pop/014.webp",
+    "photos": [
+      "images/festas/15-anos-pop/001.webp",
+      "images/festas/15-anos-pop/002.webp",
+      "images/festas/15-anos-pop/003.webp",
+      "images/festas/15-anos-pop/004.webp",
+      "images/festas/15-anos-pop/005.webp",
+      "images/festas/15-anos-pop/006.webp",
+      "images/festas/15-anos-pop/007.webp",
+      "images/festas/15-anos-pop/008.webp",
+      "images/festas/15-anos-pop/009.webp",
+      "images/festas/15-anos-pop/010.webp",
+      "images/festas/15-anos-pop/011.webp",
+      "images/festas/15-anos-pop/012.webp",
+      "images/festas/15-anos-pop/013.webp"
+    ]
+  },
+  "80-anos-com-um-gigante-coracao": {
+    "cover": "images/festas/80-anos-com-um-gigante-coracao/001.webp",
+    "photos": [
+      "images/festas/80-anos-com-um-gigante-coracao/002.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/003.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/004.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/005.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/006.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/007.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/008.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/009.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/010.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/011.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/012.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/013.webp",
+      "images/festas/80-anos-com-um-gigante-coracao/014.webp"
+    ]
+  },
+  "aeromexico-festejando-20-anos-de-brasi": {
+    "cover": "images/festas/aeromexico-festejando-20-anos-de-brasi/011.webp",
+    "photos": [
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/001.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/002.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/003.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/004.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/005.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/006.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/007.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/008.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/009.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/010.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/012.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/013.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/014.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/015.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/016.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/017.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/018.webp",
+      "images/festas/aeromexico-festejando-20-anos-de-brasi/019.webp"
+    ]
+  },
+  "afro-festa-sofisticada": {
+    "cover": "images/festas/afro-festa-sofisticada/001.webp",
+    "photos": [
+      "images/festas/afro-festa-sofisticada/002.webp",
+      "images/festas/afro-festa-sofisticada/003.webp",
+      "images/festas/afro-festa-sofisticada/004.webp",
+      "images/festas/afro-festa-sofisticada/005.webp",
+      "images/festas/afro-festa-sofisticada/006.webp",
+      "images/festas/afro-festa-sofisticada/007.webp",
+      "images/festas/afro-festa-sofisticada/008.webp",
+      "images/festas/afro-festa-sofisticada/009.webp",
+      "images/festas/afro-festa-sofisticada/010.webp",
+      "images/festas/afro-festa-sofisticada/011.webp",
+      "images/festas/afro-festa-sofisticada/012.webp",
+      "images/festas/afro-festa-sofisticada/013.webp"
+    ]
+  },
+  "bodas-de-prata-em-familia": {
+    "cover": "images/festas/bodas-de-prata-em-familia/001.webp",
+    "photos": []
+  },
+  "casamento-em-casa-de-familia": {
+    "cover": "images/festas/casamento-em-casa-de-familia/020.webp",
+    "photos": [
+      "images/festas/casamento-em-casa-de-familia/001.webp",
+      "images/festas/casamento-em-casa-de-familia/002.webp",
+      "images/festas/casamento-em-casa-de-familia/003.webp",
+      "images/festas/casamento-em-casa-de-familia/004.webp",
+      "images/festas/casamento-em-casa-de-familia/005.webp",
+      "images/festas/casamento-em-casa-de-familia/006.webp",
+      "images/festas/casamento-em-casa-de-familia/007.webp",
+      "images/festas/casamento-em-casa-de-familia/008.webp",
+      "images/festas/casamento-em-casa-de-familia/009.webp",
+      "images/festas/casamento-em-casa-de-familia/010.webp",
+      "images/festas/casamento-em-casa-de-familia/011.webp",
+      "images/festas/casamento-em-casa-de-familia/012.webp",
+      "images/festas/casamento-em-casa-de-familia/013.webp",
+      "images/festas/casamento-em-casa-de-familia/014.webp",
+      "images/festas/casamento-em-casa-de-familia/015.webp",
+      "images/festas/casamento-em-casa-de-familia/016.webp",
+      "images/festas/casamento-em-casa-de-familia/017.webp",
+      "images/festas/casamento-em-casa-de-familia/018.webp",
+      "images/festas/casamento-em-casa-de-familia/019.webp"
+    ]
+  },
+  "festa-antonela": {
+    "cover": "images/festas/festa-antonela/001.webp",
+    "photos": [
+      "images/festas/festa-antonela/002.webp",
+      "images/festas/festa-antonela/003.webp",
+      "images/festas/festa-antonela/004.webp",
+      "images/festas/festa-antonela/005.webp",
+      "images/festas/festa-antonela/006.webp",
+      "images/festas/festa-antonela/007.webp",
+      "images/festas/festa-antonela/008.webp",
+      "images/festas/festa-antonela/009.webp",
+      "images/festas/festa-antonela/010.webp",
+      "images/festas/festa-antonela/011.webp",
+      "images/festas/festa-antonela/012.webp",
+      "images/festas/festa-antonela/013.webp",
+      "images/festas/festa-antonela/014.webp",
+      "images/festas/festa-antonela/015.webp",
+      "images/festas/festa-antonela/016.webp",
+      "images/festas/festa-antonela/017.webp",
+      "images/festas/festa-antonela/018.webp"
+    ]
+  },
+  "festa-gotica": {
+    "cover": "images/festas/festa-gotica/020.webp",
+    "photos": [
+      "images/festas/festa-gotica/001.webp",
+      "images/festas/festa-gotica/002.webp",
+      "images/festas/festa-gotica/003.webp",
+      "images/festas/festa-gotica/004.webp",
+      "images/festas/festa-gotica/005.webp",
+      "images/festas/festa-gotica/006.webp",
+      "images/festas/festa-gotica/007.webp",
+      "images/festas/festa-gotica/008.webp",
+      "images/festas/festa-gotica/009.webp",
+      "images/festas/festa-gotica/010.webp",
+      "images/festas/festa-gotica/011.webp",
+      "images/festas/festa-gotica/012.webp",
+      "images/festas/festa-gotica/013.webp",
+      "images/festas/festa-gotica/014.webp",
+      "images/festas/festa-gotica/015.webp",
+      "images/festas/festa-gotica/016.webp",
+      "images/festas/festa-gotica/017.webp",
+      "images/festas/festa-gotica/018.webp",
+      "images/festas/festa-gotica/019.webp"
+    ]
+  },
+  "festa-hype-do-vinho": {
+    "cover": "images/festas/festa-hype-do-vinho/001.webp",
+    "photos": [
+      "images/festas/festa-hype-do-vinho/002.webp",
+      "images/festas/festa-hype-do-vinho/003.webp",
+      "images/festas/festa-hype-do-vinho/004.webp",
+      "images/festas/festa-hype-do-vinho/005.webp",
+      "images/festas/festa-hype-do-vinho/006.webp",
+      "images/festas/festa-hype-do-vinho/007.webp",
+      "images/festas/festa-hype-do-vinho/008.webp",
+      "images/festas/festa-hype-do-vinho/009.webp",
+      "images/festas/festa-hype-do-vinho/010.webp",
+      "images/festas/festa-hype-do-vinho/011.webp",
+      "images/festas/festa-hype-do-vinho/012.webp",
+      "images/festas/festa-hype-do-vinho/013.webp",
+      "images/festas/festa-hype-do-vinho/014.webp",
+      "images/festas/festa-hype-do-vinho/015.webp",
+      "images/festas/festa-hype-do-vinho/016.webp",
+      "images/festas/festa-hype-do-vinho/017.webp",
+      "images/festas/festa-hype-do-vinho/018.webp",
+      "images/festas/festa-hype-do-vinho/019.webp",
+      "images/festas/festa-hype-do-vinho/020.webp",
+      "images/festas/festa-hype-do-vinho/021.webp",
+      "images/festas/festa-hype-do-vinho/022.webp",
+      "images/festas/festa-hype-do-vinho/023.webp"
+    ]
+  },
+  "festas-no-interior": {
+    "cover": "images/festas/festas-no-interior/036.webp",
+    "photos": [
+      "images/festas/festas-no-interior/001.webp",
+      "images/festas/festas-no-interior/002.webp",
+      "images/festas/festas-no-interior/003.webp",
+      "images/festas/festas-no-interior/004.webp",
+      "images/festas/festas-no-interior/005.webp",
+      "images/festas/festas-no-interior/006.webp",
+      "images/festas/festas-no-interior/007.webp",
+      "images/festas/festas-no-interior/008.webp",
+      "images/festas/festas-no-interior/009.webp",
+      "images/festas/festas-no-interior/010.webp",
+      "images/festas/festas-no-interior/011.webp",
+      "images/festas/festas-no-interior/012.webp",
+      "images/festas/festas-no-interior/013.webp",
+      "images/festas/festas-no-interior/014.webp",
+      "images/festas/festas-no-interior/015.webp",
+      "images/festas/festas-no-interior/016.webp",
+      "images/festas/festas-no-interior/017.webp",
+      "images/festas/festas-no-interior/018.webp",
+      "images/festas/festas-no-interior/019.webp",
+      "images/festas/festas-no-interior/020.webp",
+      "images/festas/festas-no-interior/021.webp",
+      "images/festas/festas-no-interior/022.webp",
+      "images/festas/festas-no-interior/023.webp",
+      "images/festas/festas-no-interior/024.webp",
+      "images/festas/festas-no-interior/025.webp",
+      "images/festas/festas-no-interior/026.webp",
+      "images/festas/festas-no-interior/027.webp",
+      "images/festas/festas-no-interior/028.webp",
+      "images/festas/festas-no-interior/029.webp",
+      "images/festas/festas-no-interior/030.webp",
+      "images/festas/festas-no-interior/031.webp",
+      "images/festas/festas-no-interior/032.webp",
+      "images/festas/festas-no-interior/033.webp",
+      "images/festas/festas-no-interior/034.webp",
+      "images/festas/festas-no-interior/035.webp"
+    ]
+  },
+  "glamour-do-fundo-do-mar": {
+    "cover": "images/festas/glamour-do-fundo-do-mar/011.webp",
+    "photos": [
+      "images/festas/glamour-do-fundo-do-mar/001.webp",
+      "images/festas/glamour-do-fundo-do-mar/002.webp",
+      "images/festas/glamour-do-fundo-do-mar/003.webp",
+      "images/festas/glamour-do-fundo-do-mar/004.webp",
+      "images/festas/glamour-do-fundo-do-mar/005.webp",
+      "images/festas/glamour-do-fundo-do-mar/006.webp",
+      "images/festas/glamour-do-fundo-do-mar/007.webp",
+      "images/festas/glamour-do-fundo-do-mar/008.webp",
+      "images/festas/glamour-do-fundo-do-mar/009.webp",
+      "images/festas/glamour-do-fundo-do-mar/010.webp"
+    ]
+  },
+  "moderna-e-inesquecive": {
+    "cover": "images/festas/moderna-e-inesquecive/007.webp",
+    "photos": [
+      "images/festas/moderna-e-inesquecive/001.webp",
+      "images/festas/moderna-e-inesquecive/002.webp",
+      "images/festas/moderna-e-inesquecive/003.webp",
+      "images/festas/moderna-e-inesquecive/004.webp",
+      "images/festas/moderna-e-inesquecive/005.webp",
+      "images/festas/moderna-e-inesquecive/006.webp"
+    ]
+  },
+  "moulin-rouge-noite-da-seducao": {
+    "cover": "images/festas/moulin-rouge-noite-da-seducao/001.webp",
+    "photos": [
+      "images/festas/moulin-rouge-noite-da-seducao/002.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/003.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/004.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/005.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/006.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/007.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/008.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/009.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/010.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/011.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/012.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/013.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/014.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/015.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/016.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/017.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/018.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/019.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/020.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/021.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/022.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/023.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/024.webp",
+      "images/festas/moulin-rouge-noite-da-seducao/025.webp"
+    ]
+  },
+  "o-oriente-dentro-de-casa": {
+    "cover": "images/festas/o-oriente-dentro-de-casa/008.webp",
+    "photos": [
+      "images/festas/o-oriente-dentro-de-casa/001.webp",
+      "images/festas/o-oriente-dentro-de-casa/002.webp",
+      "images/festas/o-oriente-dentro-de-casa/003.webp",
+      "images/festas/o-oriente-dentro-de-casa/004.webp",
+      "images/festas/o-oriente-dentro-de-casa/005.webp",
+      "images/festas/o-oriente-dentro-de-casa/006.webp",
+      "images/festas/o-oriente-dentro-de-casa/007.webp"
+    ]
+  },
+  "receber-em-casa": {
+    "cover": "images/festas/receber-em-casa/001.webp",
+    "photos": [
+      "images/festas/receber-em-casa/002.webp",
+      "images/festas/receber-em-casa/003.webp",
+      "images/festas/receber-em-casa/004.webp",
+      "images/festas/receber-em-casa/005.webp",
+      "images/festas/receber-em-casa/006.webp",
+      "images/festas/receber-em-casa/007.webp",
+      "images/festas/receber-em-casa/008.webp",
+      "images/festas/receber-em-casa/009.webp",
+      "images/festas/receber-em-casa/010.webp",
+      "images/festas/receber-em-casa/011.webp",
+      "images/festas/receber-em-casa/012.webp",
+      "images/festas/receber-em-casa/013.webp",
+      "images/festas/receber-em-casa/014.webp",
+      "images/festas/receber-em-casa/015.webp",
+      "images/festas/receber-em-casa/016.webp",
+      "images/festas/receber-em-casa/017.webp",
+      "images/festas/receber-em-casa/018.webp",
+      "images/festas/receber-em-casa/019.webp",
+      "images/festas/receber-em-casa/020.webp",
+      "images/festas/receber-em-casa/021.webp"
+    ]
+  },
+  "sunset-party-aos-50": {
+    "cover": "images/festas/sunset-party-aos-50/015.webp",
+    "photos": [
+      "images/festas/sunset-party-aos-50/001.webp",
+      "images/festas/sunset-party-aos-50/002.webp",
+      "images/festas/sunset-party-aos-50/003.webp",
+      "images/festas/sunset-party-aos-50/004.webp",
+      "images/festas/sunset-party-aos-50/005.webp",
+      "images/festas/sunset-party-aos-50/006.webp",
+      "images/festas/sunset-party-aos-50/007.webp",
+      "images/festas/sunset-party-aos-50/008.webp",
+      "images/festas/sunset-party-aos-50/009.webp",
+      "images/festas/sunset-party-aos-50/010.webp",
+      "images/festas/sunset-party-aos-50/011.webp",
+      "images/festas/sunset-party-aos-50/012.webp",
+      "images/festas/sunset-party-aos-50/013.webp",
+      "images/festas/sunset-party-aos-50/014.webp",
+      "images/festas/sunset-party-aos-50/016.webp",
+      "images/festas/sunset-party-aos-50/017.webp",
+      "images/festas/sunset-party-aos-50/018.webp"
+    ]
+  }
+};

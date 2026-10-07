@@ -16,6 +16,7 @@ const data = window.GARIMPANDO_CONTENT || {
   publicDb = dbReady
     ? window.supabase.createClient(cfg.url, cfg.anonKey)
     : null;
+const partyPhotos = window.GARIMPANDO_PARTY_PHOTOS || {};
 const editorialCorrections = window.GARIMPANDO_EDITORIAL_CORRECTIONS || {};
 const removedPostSlugs = new Set([
   "uma-viagem-pela-alma-meu-roteiro-espiritual-pela-italia",
@@ -175,6 +176,23 @@ function prepareArticleContent(html, currentPost = null) {
     }
   });
 
+  const partyAlbum = partyPhotos[currentPost?.slug];
+  if (partyAlbum) {
+    template.content.querySelectorAll('.article-gallery, img').forEach((image) => image.remove());
+    const album = document.createElement('section');
+    album.className = 'article-gallery';
+    album.setAttribute('aria-label', 'Galeria de fotos da matéria');
+    partyAlbum.photos.forEach((source) => {
+      const image = document.createElement('img');
+      image.src = source;
+      image.alt = currentPost.title;
+      album.appendChild(image);
+    });
+    template.content.appendChild(album);
+    [...template.content.querySelectorAll('figure, li, ul, ol, p, td, tr, tbody, table')].reverse().forEach((element) => {
+      if (!element.textContent.trim() && !element.querySelector('img, video, iframe')) element.remove();
+    });
+  }
   let gallery = template.content.querySelector(".article-gallery");
   if (!gallery) {
     const galleryPhotos = [];
@@ -575,6 +593,7 @@ function postCoverFallback(post) {
   );
 }
 function postCover(post) {
+  if (partyPhotos[post?.slug]) return partyPhotos[post.slug].cover;
   if (neutralCoverSlugs.has(post?.slug)) return postCoverFallback(post);
   const source = restoreImageUrl(post?.image || firstArticleImage(post) || "");
   // Mantém a imagem original da própria matéria. Se ela falhar, o onerror usa
@@ -1269,11 +1288,11 @@ function positionArticleGalleryBelowText() {
 }
 function article(p) {
   const c = categoryForPost(p);
-  const articleImage = p.articleImage
+  const articleImage = partyPhotos[p.slug]?.cover || (p.articleImage
     ? restoreImageUrl(p.articleImage)
-    : postCover(p);
+    : postCover(p));
   const isCaririCover = articleImage.includes("cariri-capa");
-  const coverClass = isCaririCover
+  const coverClass = isCaririCover || Boolean(partyPhotos[p.slug])
     ? "article-cover article-cover-full"
     : "article-cover";
   const coverMarkup =
