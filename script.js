@@ -1219,15 +1219,24 @@ function positionArticleGalleryBelowText() {
 
   // Em matérias migradas do WordPress, a galeria deve aparecer imediatamente
   // antes do shortcode original — nunca solta no fim do texto.
-  const shortcodePattern = /ngg_shortcode_25_placeholder/i;
+  const shortcodePattern = /ngg_shortcode_\d+_placeholder/i;
+  const isLeafMarker = (element, pattern) =>
+    pattern.test(element.textContent || "") &&
+    ![...element.children].some((child) => pattern.test(child.textContent || ""));
   const shortcodeMarker = content.querySelector(
-    '[id*="ngg_shortcode_25_placeholder"], [class*="ngg_shortcode_25_placeholder"]',
+    '[id*="ngg_shortcode_"], [class*="ngg_shortcode_"]',
   ) || [...content.querySelectorAll("p, li, div, span, section")].find(
-    (element) => shortcodePattern.test(element.textContent || "") &&
-      ![...element.children].some((child) => shortcodePattern.test(child.textContent || "")),
+    (element) => isLeafMarker(element, shortcodePattern),
   );
-  if (shortcodeMarker) {
-    content.insertBefore(gallery, shortcodeMarker);
+  // Algumas matérias antigas, como a da Índia, têm a galeria relacionada
+  // sem o marcador do NextGEN. Nelas, a galeria entra antes do título das
+  // matérias relacionadas, preservando todos os links abaixo.
+  const relatedPattern = /clique nas imagens abaixo[\s\S]*mat[eé]rias relacionadas/i;
+  const relatedMarker = [...content.querySelectorAll("h1, h2, h3, h4, p, li, div, span, strong, b")]
+    .find((element) => isLeafMarker(element, relatedPattern));
+  const insertionMarker = shortcodeMarker || relatedMarker;
+  if (insertionMarker) {
+    content.insertBefore(gallery, insertionMarker);
     return;
   }
 
