@@ -162,6 +162,18 @@ function prepareArticleContent(html, currentPost = null) {
   const template = document.createElement("template");
   template.innerHTML = String(html || "");
 
+  // Remove, em qualquer matéria, o bloco promocional antigo que foi trazido
+  // junto com alguns textos do site anterior.
+  const isPromotionalBio = (text) =>
+    /marcelo sampaio/i.test(text) &&
+    /(apresentador\s*tv|garimpando\s+com\s+marcelo|travel\s+box|r[áa]dio\s+vibe)/i.test(text);
+  [...template.content.querySelectorAll("p, li, blockquote, div, section")]
+    .filter((element) =>
+      isPromotionalBio(element.textContent || "") &&
+      ![...element.children].some((child) => isPromotionalBio(child.textContent || "")),
+    )
+    .forEach((element) => element.remove());
+
   const relatedPosts = [];
   const relatedSlugs = new Set();
   template.content.querySelectorAll("a[href]").forEach((link) => {
