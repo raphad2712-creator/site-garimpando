@@ -452,7 +452,9 @@ function renderPostItems(items, title, emptyMessage) {
   document.querySelectorAll("[data-edit-legacy]").forEach((button) => (button.onclick = () => editLegacy(button.dataset.editLegacy)));
   document.querySelectorAll("[data-delete]").forEach((button) => (button.onclick = () => remove(button.dataset.delete)));
 }
-function editLegacy(slug) {
+async function editLegacy(slug) {
+  const { data: saved } = await db.from("blog_posts").select("id").eq("slug", slug).maybeSingle();
+  if (saved?.id) return edit(saved.id);
   const post = (window.GARIMPANDO_CONTENT?.posts || []).find((item) => item.slug === slug);
   if (!post) return toast("Não foi possível abrir a matéria original");
   reset();
