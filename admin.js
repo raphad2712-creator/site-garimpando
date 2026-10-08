@@ -471,19 +471,44 @@ function renderPostItems(items, title, emptyMessage) {
   editor.classList.add("hidden");
   list.classList.remove("hidden");
   $("#brandEditor").classList.add("hidden");
-  $("#postCount").textContent = `${items.length} ${items.length === 1 ? "matéria" : "matérias"}`;
   $("#postList .heading small").textContent = title;
-  $("#items").innerHTML = items.length
-    ? items.map((post) => {
-      const category = post.category_name || categoryForLegacyPost(post)?.name || "Blog";
-      const image = post.image_url || post.image || "images/hero.png";
-      const legacy = Boolean(post.legacy);
-      return `<article class="post-item"><img src="${esc(image)}"><div><h2>${esc(post.title)}</h2><p>${post.date ? new Date(post.date).toLocaleDateString("pt-BR") : new Date(post.published_at).toLocaleDateString("pt-BR")} · ${esc(category)}${legacy ? " · Original do site" : ""}</p></div><div class="item-actions"><button ${legacy ? `data-edit-legacy="${esc(post.slug)}"` : `data-edit="${post.id}"`}>Editar</button>${legacy ? "" : `<button class="delete" data-delete="${post.id}">Excluir</button>`}</div></article>`;
-    }).join("")
-    : `<p>${emptyMessage}</p>`;
-  document.querySelectorAll("[data-edit]").forEach((button) => (button.onclick = () => edit(button.dataset.edit)));
-  document.querySelectorAll("[data-edit-legacy]").forEach((button) => (button.onclick = () => editLegacy(button.dataset.editLegacy)));
-  document.querySelectorAll("[data-delete]").forEach((button) => (button.onclick = () => remove(button.dataset.delete)));
+  const source = Array.isArray(items) ? items : [];
+  const search = $("#postSearch");
+  const render = (query = "") => {
+    const needle = String(query || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+    const visible = needle
+      ? source.filter((post) =>
+          String(post.title || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .includes(needle),
+        )
+      : source;
+    $("#postCount").textContent = needle
+      ? `${visible.length} de ${source.length} matérias`
+      : `${source.length} ${source.length === 1 ? "matéria" : "matérias"}`;
+    $("#items").innerHTML = visible.length
+      ? visible.map((post) => {
+        const category = post.category_name || categoryForLegacyPost(post)?.name || "Blog";
+        const image = post.image_url || post.image || "images/hero.png";
+        const legacy = Boolean(post.legacy);
+        return `<article class="post-item"><img loading="lazy" src="${esc(image)}"><div><h2>${esc(post.title)}</h2><p>${post.date ? new Date(post.date).toLocaleDateString("pt-BR") : new Date(post.published_at).toLocaleDateString("pt-BR")} · ${esc(category)}${legacy ? " · Original do site" : ""}</p></div><div class="item-actions"><button ${legacy ? `data-edit-legacy="${esc(post.slug)}"` : `data-edit="${post.id}"`}>Editar</button>${legacy ? "" : `<button class="delete" data-delete="${post.id}">Excluir</button>`}</div></article>`;
+      }).join("")
+      : `<p>${emptyMessage}</p>`;
+    document.querySelectorAll("[data-edit]").forEach((button) => (button.onclick = () => edit(button.dataset.edit)));
+    document.querySelectorAll("[data-edit-legacy]").forEach((button) => (button.onclick = () => editLegacy(button.dataset.editLegacy)));
+    document.querySelectorAll("[data-delete]").forEach((button) => (button.onclick = () => remove(button.dataset.delete)));
+  };
+  if (search) {
+    search.value = "";
+    search.oninput = () => render(search.value);
+  }
+  render();
 }
 async function editLegacy(slug) {
   const { data: saved } = await db.from("blog_posts").select("id").eq("slug", slug).maybeSingle();
@@ -512,6 +537,14 @@ function showLegacyCategory(categorySlug, title) {
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .map((post) => ({ ...post, image: legacyCoverForAdmin(post), legacy: true }));
   renderPostItems(originals, title, "Nenhuma matéria encontrada nesta categoria.");
+}
+
+function showAllLegacyPosts() {
+  const originals = (window.GARIMPANDO_CONTENT?.posts || [])
+    .slice()
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .map((post) => ({ ...post, image: legacyCoverForAdmin(post), legacy: true }));
+  renderPostItems(originals, "TODAS AS MATÉRIAS", "Nenhuma matéria encontrada.");
 }
 
 async function edit(id) {
@@ -717,6 +750,7 @@ async function importTravelPostsForEditing() {
 
 $("#newPost").onclick = reset;
 $("#showPosts").onclick = () => configured && showList();
+$("#showAllPosts").onclick = () => configured && showAllLegacyPosts();
 $("#showTourismPosts").onclick = () => configured && showLegacyCategory("turismo", "TURISMO");
 $("#showGastronomyPosts").onclick = () => configured && showLegacyCategory("gastronomia", "GASTRONOMIA");
 $("#showLifestylePosts").onclick = () => configured && showLegacyCategory("estilo-de-vida", "ESTILO DE VIDA");
