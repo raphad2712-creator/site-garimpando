@@ -43,6 +43,20 @@ const toast = (message) => {
   el.classList.add("show");
   setTimeout(() => el.classList.remove("show"), 2800);
 };
+function stripComingSoonText(root) {
+  if (!root) return;
+  const phrase = /\s*\(\s*em\s+breve\s*\)|\s+em\s+breve\b/gi;
+  root.querySelectorAll("i, em").forEach((element) => {
+    if (/^\s*\(?\s*em\s+breve\s*\)?\s*$/i.test(element.textContent || "")) element.remove();
+  });
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => {
+    node.nodeValue = String(node.nodeValue || "").replace(phrase, "");
+  });
+}
+
 const hiddenCategorySlugs = new Set([
   "pedro-mariano",
   "adolfo-stulman",
@@ -238,6 +252,7 @@ document.querySelectorAll(".toolbar button").forEach((button) => {
 function sanitizedEditorHtml() {
   const holder = document.createElement("div");
   holder.innerHTML = $("#body").innerHTML.trim();
+  stripComingSoonText(holder);
   holder.querySelectorAll("script,style,iframe,object,embed").forEach((element) => element.remove());
   const allowed = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "A", "TABLE", "TBODY", "TR", "TD", "IMG"]);
   [...holder.querySelectorAll("*")].forEach((element) => {
@@ -593,6 +608,7 @@ const editableTravelCovers = {
 function contentReadyForEditor(html) {
   const holder = document.createElement("div");
   holder.innerHTML = String(html || "");
+  stripComingSoonText(holder);
   // As tabelas antigas eram apenas painéis de matérias relacionadas.
   // O editor trabalha com texto, links e uma galeria própria de fotos.
   holder.querySelectorAll("script, style, iframe, object, embed, figure, .article-gallery").forEach((element) => element.remove());
