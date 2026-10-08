@@ -1427,6 +1427,20 @@ function protectImages() {
     if (image.complete && image.naturalWidth === 0) replaceBrokenImage();
   });
 }
+function stripComingSoonText(root) {
+  if (!root) return;
+  const phrase = /\s*\(\s*em\s+breve\s*\)|\s+em\s+breve\b/gi;
+  root.querySelectorAll("i, em").forEach((element) => {
+    if (/^\s*\(?\s*em\s+breve\s*\)?\s*$/i.test(element.textContent || "")) element.remove();
+  });
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => {
+    node.nodeValue = String(node.nodeValue || "").replace(phrase, "");
+  });
+}
+
 function route() {
   shown = 18;
   const hash = location.hash.slice(1) || "inicio",
@@ -1457,6 +1471,7 @@ function route() {
     const p = pages.find((x) => x.slug === hash);
     p ? publicPage(p) : home();
   }
+  stripComingSoonText(app);
   protectImages();
   initPartnerCarousels();
   initCompanyCarousels();
