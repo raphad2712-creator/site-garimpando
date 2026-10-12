@@ -399,6 +399,12 @@ function applyRequestedEditorialFixes() {
         "",
       );
     }
+    if (slug === "alagoas-caribe-brasileiro") {
+      post.content = String(post.content || "").replace(
+        /<li>(?:(?!<\/li>)[\s\S])*?\(em breve\)(?:(?!<\/li>)[\s\S])*?<\/li>/gi,
+        "",
+      );
+    }
     if (slug === "viagem-dos-sonhos") {
       post.content = `<p>Experiências acompanhando o Garimpando.</p>
         <p>O Projeto Garimpando, junto de uma conceituada e competente agência de viagens parceira, cria roteiros para destinos especiais com o nosso DNA. Nessas jornadas priorizamos alta qualidade nos serviços, na hotelaria, nas companhias aéreas e em toda a experiência.</p>
