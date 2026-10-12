@@ -401,7 +401,7 @@ function applyRequestedEditorialFixes() {
     }
     if (slug === "alagoas-caribe-brasileiro") {
       post.content = String(post.content || "").replace(
-        /<li>(?:(?!<\/li>)[\s\S])*?\(em breve\)(?:(?!<\/li>)[\s\S])*?<\/li>/gi,
+        /<li\b[^>]*>(?:(?!<\/li>)[\s\S])*?(?:\(em breve\)|Piranhas|Artesanato|Áreas Especiais com Gileno Malta|Na Capital Maceió|Com Sococo|Na Praia e Interior|O Mel Beeva)(?:(?!<\/li>)[\s\S])*?<\/li>/gi,
         "",
       );
     }
