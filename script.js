@@ -1496,3 +1496,5 @@ async function startSite() {
   route();
 }
 startSite();
+
+// Nova publicacao do ajuste da materia de Alagoas.
