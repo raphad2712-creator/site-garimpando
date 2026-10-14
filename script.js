@@ -18,6 +18,21 @@ const data = window.GARIMPANDO_CONTENT || {
     : null;
 const partyPhotos = window.GARIMPANDO_PARTY_PHOTOS || {};
 const editorialCorrections = window.GARIMPANDO_EDITORIAL_CORRECTIONS || {};
+const articlesWithoutGallery = new Set([
+  "sao-francisco-cultura-e-diversao",
+]);
+const hiddenRelatedLinkLabelsByArticle = {
+  "russia-exuberante-e-encantadora": new Set([
+    "sao-petesburgo",
+    "moscou",
+    "interior-da-russia",
+    "helsink",
+    "hotel-rocco-forte-sao-petesburgo",
+    "hotel-hyatt-ararat-moscou",
+    "arte-de-sao-petesburgo",
+    "igrejas-russas",
+  ]),
+};
 const removedPostSlugs = new Set([
   "uma-viagem-pela-alma-meu-roteiro-espiritual-pela-italia",
   "aeromexico-celebra-seus-90-anos-com-coquetel-em-sao-paulo-no-hilton-morumbi",
@@ -161,6 +176,30 @@ function linkedPostFromUrl(url) {
 function prepareArticleContent(html, currentPost = null) {
   const template = document.createElement("template");
   template.innerHTML = String(html || "");
+  const currentSlug = normalizeSlug(currentPost?.slug);
+  const galleryDisabled = articlesWithoutGallery.has(currentSlug);
+  const hiddenRelatedLinkLabels = hiddenRelatedLinkLabelsByArticle[currentSlug];
+
+  if (galleryDisabled) {
+    template.content
+      .querySelectorAll(".article-gallery, .wp-block-gallery")
+      .forEach((element) => element.remove());
+  }
+
+  if (hiddenRelatedLinkLabels) {
+    template.content.querySelectorAll("a[href]").forEach((link) => {
+      if (!hiddenRelatedLinkLabels.has(normalizeSlug(link.textContent))) return;
+      const listItem = link.closest("li");
+      if (listItem) listItem.remove();
+      else link.remove();
+    });
+  }
+
+  [...template.content.querySelectorAll("figure, li, ul, ol, p, td, tr, tbody, table")]
+    .reverse()
+    .forEach((element) => {
+      if (!element.textContent.trim() && !element.querySelector("img, video, iframe")) element.remove();
+    });
 
   // Remove, em qualquer matéria, o bloco promocional antigo que foi trazido
   // junto com alguns textos do site anterior.
@@ -213,7 +252,7 @@ function prepareArticleContent(html, currentPost = null) {
     });
   }
   let gallery = template.content.querySelector(".article-gallery");
-  if (!gallery) {
+  if (!gallery && !galleryDisabled) {
     const galleryPhotos = [];
     const usedPhotos = new Set();
     const addPhoto = (source, alt) => {
